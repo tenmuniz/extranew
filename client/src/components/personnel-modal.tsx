@@ -33,7 +33,7 @@ import { Button } from "@/components/ui/button";
 const personnelFormSchema = z.object({
   name: z.string().min(3, { message: "Nome deve ter pelo menos 3 caracteres" }),
   rank: rankEnum,
-  registrationNumber: z.string().min(5, { message: "Registro deve ter pelo menos 5 caracteres" }),
+  extras: z.number().default(0),
 });
 
 type PersonnelFormValues = z.infer<typeof personnelFormSchema>;
@@ -54,7 +54,7 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
     defaultValues: {
       name: "",
       rank: "SD",
-      registrationNumber: "",
+      extras: 0,
     },
   });
 
@@ -62,7 +62,7 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
     form.reset({
       name: "",
       rank: "SD",
-      registrationNumber: "",
+      extras: 0,
     });
     setEditingPersonnel(null);
   };
@@ -113,7 +113,7 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
     form.reset({
       name: person.name,
       rank: person.rank as any,
-      registrationNumber: person.registrationNumber,
+      extras: person.extras,
     });
   };
 
@@ -152,9 +152,13 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
     const rankMap: Record<string, string> = {
       SD: "Soldado",
       CB: "Cabo",
-      SG: "Sargento",
-      TN: "Tenente",
-      CP: "Capitão",
+      "3SGT": "3º Sargento",
+      "2SGT": "2º Sargento",
+      "1SGT": "1º Sargento",
+      SUBTEN: "Sub-Tenente",
+      TEN: "Tenente",
+      "1TEN": "1º Tenente",
+      CAP: "Capitão",
     };
     return rankMap[rank] || rank;
   };

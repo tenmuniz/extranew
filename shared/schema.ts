@@ -4,19 +4,23 @@ import { z } from "zod";
 
 // Define ranks for military personnel
 export const rankEnum = z.enum([
-  "SD", // Soldado
-  "CB", // Cabo
-  "SG", // Sargento
-  "TN", // Tenente
-  "CP"  // Capitão
+  "SD",     // Soldado
+  "CB",     // Cabo
+  "3SGT",   // 3º Sargento
+  "2SGT",   // 2º Sargento
+  "1SGT",   // 1º Sargento
+  "SUBTEN", // Sub-Tenente
+  "TEN",    // Tenente
+  "1TEN",   // 1º Tenente
+  "CAP"     // Capitão
 ]);
 
 // Personnel table
 export const personnel = pgTable("personnel", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  rank: text("rank", { enum: ["SD", "CB", "SG", "TN", "CP"] }).notNull(),
-  registrationNumber: text("registration_number").notNull().unique(),
+  rank: text("rank", { enum: ["SD", "CB", "3SGT", "2SGT", "1SGT", "SUBTEN", "TEN", "1TEN", "CAP"] }).notNull(),
+  extras: integer("extras").notNull().default(0),
 });
 
 // Operation types
