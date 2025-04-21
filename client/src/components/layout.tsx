@@ -10,7 +10,7 @@ export function Layout({ children }: LayoutProps) {
     <div className="min-h-screen flex flex-col bg-[#F5F7FA] font-body">
       {/* Header */}
       <header className="bg-[#1A3A5F] text-white shadow-md">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex items-center">
             <div className="mr-3">
               <div className="h-10 w-10 bg-[#4A6741] rounded-full flex items-center justify-center">
@@ -24,7 +24,7 @@ export function Layout({ children }: LayoutProps) {
                 </svg>
               </div>
             </div>
-            <h1 className="font-heading font-bold text-xl md:text-2xl">
+            <h1 className="font-heading font-bold text-xl">
               Sistema de Escala - 20ªCIPM
             </h1>
           </div>
