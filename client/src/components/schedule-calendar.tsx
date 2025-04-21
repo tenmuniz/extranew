@@ -85,16 +85,6 @@ export function ScheduleCalendar({
       const personnelData = JSON.parse(data);
       const dateStr = formatDateToISO(date);
       
-      // Verificar se a data está no mês atual
-      if (!isCurrentMonth(date)) {
-        toast({
-          title: "Operação não permitida",
-          description: "Não é possível escalar em dias fora do mês atual",
-          variant: "destructive"
-        });
-        return;
-      }
-      
       // Check if date is valid for the current operation
       if (activeOperation === "ESCOLA" && !isWeekday(date)) {
         toast({
@@ -227,13 +217,8 @@ export function ScheduleCalendar({
     return personnel.find(p => p.id === assignment.personnelId);
   };
 
-  // Get assignments for a specific date (only for the current month)
+  // Get assignments for a specific date (para qualquer mês)
   const getAssignmentsForDate = (date: Date): Assignment[] => {
-    // Se não for do mês atual, não mostra nenhuma atribuição
-    if (!isCurrentMonth(date)) {
-      return [];
-    }
-    
     const dateStr = formatDateToISO(date);
     return assignments.filter(
       a => formatDateToISO(new Date(a.date)) === dateStr && a.operationType === activeOperation
@@ -251,13 +236,8 @@ export function ScheduleCalendar({
     return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
   };
 
-  // Check if a day should be disabled based on operation type and month
+  // Check if a day should be disabled based on operation type
   const isDayDisabled = (date: Date): boolean => {
-    // Desabilitar dias que não são do mês atual
-    if (!isCurrentMonth(date)) {
-      return true;
-    }
-    
     // Desabilitar dias não úteis para operação Escola Segura
     return activeOperation === "ESCOLA" && !isWeekday(date);
   };

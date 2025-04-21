@@ -88,10 +88,10 @@ export function CalendarDay({
             </div>
           </div>
         )}
-        {!isCurrentMonth && (
+        {!isCurrentMonth && !children && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-gray-400 text-xs text-center bg-gray-100 bg-opacity-60 w-full h-full flex items-center justify-center">
-              <span className="block">Outro mês</span>
+            <div className="text-gray-400 text-xs text-center bg-gray-100 bg-opacity-40 w-full h-full flex items-center justify-center">
+              <span className="block opacity-70">{date.toLocaleDateString('pt-BR', {month: 'short'})}</span>
             </div>
           </div>
         )}

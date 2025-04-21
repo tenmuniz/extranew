@@ -692,7 +692,7 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
               </p>
             </div>
             
-            <ScrollArea className="flex-1">
+            <ScrollArea className="flex-1" type="always">
               <TabsContent value="geral" className="mt-0 pb-6">
                 <div className="space-y-4">
                   <div className="grid grid-cols-4 gap-3">
@@ -941,7 +941,7 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
                   {stats.conflitos.personnelWithExtras.length > 0 ? (
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100">
                       <h3 className="font-medium text-sm mb-3 text-[#8B0000]">Militares com Conflitos</h3>
-                      <ScrollArea className="h-[350px]">
+                      <ScrollArea className="h-[400px]" type="always">
                         <div className="space-y-3 p-1">
                           {(stats.conflitos.personnelWithExtras as PersonnelWithConflicts[]).map(person => (
                             <div key={person.id} className="flex justify-between items-center p-2 border-b border-gray-100 last:border-b-0">
