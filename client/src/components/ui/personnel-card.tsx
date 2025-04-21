@@ -1,5 +1,5 @@
 import { Personnel } from "@shared/schema";
-import { cn, isPersonnelAvailable, getGarrisonColor } from "@/lib/utils";
+import { cn, isPersonnelInService, getGarrisonColor } from "@/lib/utils";
 
 interface PersonnelCardProps {
   personnel: Personnel;
@@ -112,15 +112,15 @@ export function PersonnelCard({
       <div>
         {(() => {
           const today = new Date();
-          const isAvailable = isPersonnelAvailable(personnel, today);
+          const isInService = isPersonnelInService(personnel, today);
           
           return (
             <span className={`badge text-xs py-1 px-2 rounded-full ${
-              isAvailable 
-                ? "bg-green-100 text-green-800" 
-                : "bg-red-100 text-red-800"
+              isInService 
+                ? "bg-yellow-100 text-yellow-800" 
+                : "bg-green-100 text-green-800"
             }`}>
-              {isAvailable ? "Disponível" : "Em Serviço"}
+              {isInService ? "⚠️ Em Serviço" : "Disponível"}
             </span>
           );
         })()}

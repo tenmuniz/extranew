@@ -82,9 +82,21 @@ export function isPersonnelAvailable(personnel: {platoon?: string}, date: Date):
     return true;
   }
   
+  // Conforme solicitado, não vamos bloquear o militar que está em serviço
+  // Apenas retornaremos true para todos, porque a validação visual será feita no componente
+  return true;
+}
+
+// Function to check if personnel is in service on a given date
+export function isPersonnelInService(personnel: {platoon?: string}, date: Date): boolean {
+  // If the personnel has no platoon or is EXPEDIENTE, they're never in service
+  if (!personnel.platoon || personnel.platoon === "EXPEDIENTE") {
+    return false;
+  }
+  
   // Check if personnel's platoon is on service on the given date
   const activeGuarnition = getActiveGuarnitionForDay(date);
-  return personnel.platoon !== activeGuarnition;
+  return personnel.platoon === activeGuarnition;
 }
 
 // Function to get background color based on garrison
