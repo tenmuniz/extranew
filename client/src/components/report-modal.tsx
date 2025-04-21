@@ -159,15 +159,25 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
     const allMinExtras = allPersonnelWithExtras.length > 0 ? allPersonnelWithExtras[allPersonnelWithExtras.length - 1] : null;
 
     // Militar em conflito: que está em serviço normal e em operação no mesmo dia
+    // Cria um objeto para acompanhar os militares que precisam estar na lista
+    const militaresComConflito: Record<number, boolean> = {};
+    
+    // Primeiramente verifica todas as atribuições para encontrar conflitos
     const conflictsAssignments = assignments.filter(assignment => {
       const person = personnel.find(p => p.id === assignment.personnelId);
-      if (!person) return false;
+      if (!person || !person.id) return false;
       
-      // Verificar se o militar está em serviço na data da operação
       const assignmentDate = new Date(assignment.date);
-      return person.platoon && 
-             person.platoon !== "EXPEDIENTE" && 
-             getActiveGuarnitionForDay(assignmentDate) === person.platoon;
+      const isInService = person.platoon && 
+                          person.platoon !== "EXPEDIENTE" && 
+                          getActiveGuarnitionForDay(assignmentDate) === person.platoon;
+      
+      if (isInService) {
+        // Marca este militar como tendo conflito para garantir que ele esteja na lista
+        militaresComConflito[person.id] = true;
+      }
+      
+      return isInService;
     });
     
     // Agrupar por militar para contar conflitos e guardar detalhes
@@ -813,7 +823,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                   <div className="grid grid-cols-4 gap-3">
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
                       <h3 className="text-2xl font-bold text-[#8B0000]">
-                        {stats.conflitos.personnelWithExtras.reduce((acc, p: any) => acc + (p.extras || 0), 0)}
+                        {stats.conflitos.personnelWithExtras.length}
                       </h3>
                       <p className="text-xs text-gray-500">Total de Conflitos</p>
                     </div>
@@ -825,13 +835,13 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                     </div>
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
                       <h3 className="text-2xl font-bold text-blue-600">
-                        {stats.conflitos.personnelWithExtras.reduce((acc, p: any) => acc + (p.pmfConflicts || 0), 0)}
+                        {stats.conflitos.personnelWithExtras.filter(p => p.pmfConflicts && p.pmfConflicts > 0).length}
                       </h3>
                       <p className="text-xs text-gray-500">PMF</p>
                     </div>
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
                       <h3 className="text-2xl font-bold text-green-600">
-                        {stats.conflitos.personnelWithExtras.reduce((acc, p: any) => acc + (p.escolaConflicts || 0), 0)}
+                        {stats.conflitos.personnelWithExtras.filter(p => p.escolaConflicts && p.escolaConflicts > 0).length}
                       </h3>
                       <p className="text-xs text-gray-500">Escola Segura</p>
                     </div>
