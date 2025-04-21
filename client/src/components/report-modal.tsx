@@ -968,22 +968,59 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
                                   <span className="text-green-600">Escola: {(person as PersonnelWithConflicts).escolaConflicts}</span>
                                 )}
                               </div>
-                              {/* Adicionar botão para expandir detalhes */}
-                              <Button 
-                                variant="outline" 
-                                className="text-xs mt-2 h-6 px-2 text-[#8B0000] border-[#ffcccc]"
-                                onClick={() => {
-                                  // Mostrar alerta com detalhes dos conflitos
-                                  const conflicts = (person as PersonnelWithConflicts).conflictDetails;
-                                  const message = conflicts.map(c => 
-                                    `- Data: ${c.date}\n  Operação: ${c.operation === 'PMF' ? 'Polícia Mais Forte' : 'Escola Segura'}\n  Guarnição em serviço: ${c.guarnition}`
-                                  ).join('\n\n');
-                                  
-                                  alert(`Detalhes dos conflitos para ${person.name}:\n\n${message}`);
-                                }}
-                              >
-                                Ver detalhes
-                              </Button>
+                              {/* Botão e popup para exibir os detalhes dos conflitos */}
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button 
+                                    variant="outline" 
+                                    className="text-xs mt-2 h-6 px-2 text-[#8B0000] border-[#ffcccc]"
+                                  >
+                                    Ver detalhes
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                  <DialogHeader>
+                                    <DialogTitle className="text-lg font-bold text-[#8B0000]">
+                                      Detalhes dos Conflitos
+                                    </DialogTitle>
+                                    <DialogDescription>
+                                      {person.name} tem {person.extras} {person.extras === 1 ? 'conflito' : 'conflitos'} de escala.
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <div className="mt-4 space-y-3 max-h-[300px] overflow-y-auto">
+                                    {(person as PersonnelWithConflicts).conflictDetails.map((conflict, index) => (
+                                      <div key={index} className="bg-[#fff9f9] rounded-lg border border-[#ffcccc] p-3">
+                                        <div className="flex items-center space-x-2 mb-2">
+                                          <div className="h-3 w-3 rounded-full" 
+                                               style={{ 
+                                                 backgroundColor: conflict.operation === 'PMF' 
+                                                  ? '#1e40af' // Azul para PMF 
+                                                  : '#15803d' // Verde para Escola
+                                               }}></div>
+                                          <span className="font-medium">
+                                            {conflict.operation === 'PMF' ? 'Polícia Mais Forte' : 'Escola Segura'}
+                                          </span>
+                                        </div>
+                                        <div className="ml-5 space-y-1 text-sm">
+                                          <div className="flex items-start">
+                                            <span className="font-semibold text-gray-700 mr-2">Data:</span>
+                                            <span>{conflict.date}</span>
+                                          </div>
+                                          <div className="flex items-start">
+                                            <span className="font-semibold text-gray-700 mr-2">Guarnição em serviço:</span>
+                                            <span>{conflict.guarnition}</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                  <DialogFooter>
+                                    <DialogClose asChild>
+                                      <Button variant="outline">Fechar</Button>
+                                    </DialogClose>
+                                  </DialogFooter>
+                                </DialogContent>
+                              </Dialog>
                             </div>
                           </div>
                         ))}
