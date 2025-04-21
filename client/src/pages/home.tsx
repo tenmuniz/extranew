@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { OperationTabs } from "@/components/operation-tabs";
 import { MonthNavigation } from "@/components/month-navigation";
@@ -9,6 +9,19 @@ import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { getMonthDateRange, formatDateToISO } from "@/lib/utils";
 import { Assignment, OperationType, Personnel } from "@shared/schema";
+
+// Mapa de ordem de patentes (para ordenação hierárquica)
+const rankOrder: Record<string, number> = {
+  "CAP": 1,    // Capitão (mais alto)
+  "1TEN": 2,   // 1º Tenente 
+  "TEN": 3,    // Tenente
+  "SUBTEN": 4, // Sub-Tenente
+  "1SGT": 5,   // 1º Sargento
+  "2SGT": 6,   // 2º Sargento
+  "3SGT": 7,   // 3º Sargento
+  "CB": 8,     // Cabo
+  "SD": 9      // Soldado (mais baixo)
+};
 
 export default function Home() {
   const queryClient = useQueryClient();
@@ -80,6 +93,20 @@ export default function Home() {
       queryKey: ["/api/assignments"]
     });
   }, [currentMonth, currentYear, queryClient]);
+  
+  // Ordenar a lista de pessoal por patente (hierarquia militar)
+  const sortedPersonnel = useMemo(() => {
+    if (!personnel.length) return [];
+    
+    return [...personnel].sort((a, b) => {
+      // Primeiro por patente (hierarquia)
+      const rankDiff = (rankOrder[a.rank] || 999) - (rankOrder[b.rank] || 999);
+      if (rankDiff !== 0) return rankDiff;
+      
+      // Depois por número de extras (menor para maior)
+      return (a.extras || 0) - (b.extras || 0);
+    });
+  }, [personnel]);
 
   return (
     <Layout>
@@ -117,13 +144,13 @@ export default function Home() {
 
       {/* Calendar and Personnel List */}
       <div className="flex flex-col lg:flex-row gap-6">
-        <PersonnelList personnel={personnel} />
+        <PersonnelList personnel={sortedPersonnel} />
         <ScheduleCalendar
           currentYear={currentYear}
           currentMonth={currentMonth}
           activeOperation={activeOperation}
           assignments={assignments}
-          personnel={personnel}
+          personnel={sortedPersonnel}
           onAssignmentChange={handleAssignmentChange}
         />
       </div>
@@ -132,7 +159,7 @@ export default function Home() {
       <PersonnelModal
         isOpen={isPersonnelModalOpen}
         onClose={() => setIsPersonnelModalOpen(false)}
-        personnel={personnel}
+        personnel={sortedPersonnel}
         onPersonnelChange={handlePersonnelChange}
       />
     </Layout>
