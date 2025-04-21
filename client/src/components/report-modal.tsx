@@ -23,6 +23,8 @@ import html2pdf from 'html2pdf.js';
 interface ReportModalProps {
   personnel: Personnel[];
   assignments: Assignment[];
+  currentMonth?: number;
+  currentYear?: number;
 }
 
 type ReportTab = "geral" | "pmf" | "escola" | "conflitos";
@@ -44,7 +46,7 @@ interface StatsData {
   personnelWithoutExtras: Personnel[];
 }
 
-export function ReportModal({ personnel, assignments }: ReportModalProps) {
+export function ReportModal({ personnel, assignments, currentMonth, currentYear }: ReportModalProps) {
   const [activeTab, setActiveTab] = useState<ReportTab>("geral");
   const [isOpen, setIsOpen] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);

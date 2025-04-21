@@ -217,8 +217,13 @@ export function ScheduleCalendar({
     return personnel.find(p => p.id === assignment.personnelId);
   };
 
-  // Get assignments for a specific date
+  // Get assignments for a specific date (only for the current month)
   const getAssignmentsForDate = (date: Date): Assignment[] => {
+    // Se não for do mês atual, não mostra nenhuma atribuição
+    if (!isCurrentMonth(date)) {
+      return [];
+    }
+    
     const dateStr = formatDateToISO(date);
     return assignments.filter(
       a => formatDateToISO(new Date(a.date)) === dateStr && a.operationType === activeOperation
@@ -236,8 +241,14 @@ export function ScheduleCalendar({
     return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
   };
 
-  // Check if a day should be disabled based on operation type
+  // Check if a day should be disabled based on operation type and month
   const isDayDisabled = (date: Date): boolean => {
+    // Desabilitar dias que não são do mês atual
+    if (!isCurrentMonth(date)) {
+      return true;
+    }
+    
+    // Desabilitar dias não úteis para operação Escola Segura
     return activeOperation === "ESCOLA" && !isWeekday(date);
   };
 

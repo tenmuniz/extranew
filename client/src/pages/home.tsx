@@ -93,6 +93,7 @@ export default function Home() {
 
   // Refresh assignments when month changes
   useEffect(() => {
+    // Invalidar a consulta para buscar apenas os dados do novo mês
     queryClient.invalidateQueries({
       queryKey: ["/api/assignments"]
     });
