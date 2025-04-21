@@ -154,11 +154,11 @@ export function ScheduleCalendar({
       }
       
       // Incrementar extras do militar (usando a referência do militar que já buscamos anteriormente)
-      if (selectedPersonnel) {
+      if (militarSelecionado) {
         // Atualizar extras do militar
         await apiRequest("PUT", `/api/personnel/${personnelData.id}`, {
-          ...selectedPersonnel,
-          extras: (selectedPersonnel.extras || 0) + 1
+          ...militarSelecionado,
+          extras: (militarSelecionado.extras || 0) + 1
         });
       }
       

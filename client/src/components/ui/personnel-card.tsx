@@ -40,7 +40,8 @@ export function PersonnelCard({
     e.dataTransfer.setData('text/plain', JSON.stringify({
       id: personnel.id,
       name: personnel.name,
-      rank: personnel.rank
+      rank: personnel.rank,
+      platoon: personnel.platoon || "EXPEDIENTE"
     }));
     e.dataTransfer.effectAllowed = 'copy';
   };
@@ -97,6 +98,14 @@ export function PersonnelCard({
             <span className="text-xs">
               Extras: <span className="font-medium text-blue-600">{personnel.extras || 0}</span>
             </span>
+            {personnel.platoon && (
+              <>
+                <span className="mx-2 text-gray-300">•</span>
+                <span className="text-xs bg-gray-100 py-0.5 px-1.5 rounded-sm">
+                  {personnel.platoon}
+                </span>
+              </>
+            )}
           </div>
         </div>
       </div>
