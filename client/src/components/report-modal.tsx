@@ -595,10 +595,10 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
         <DialogHeader className="flex flex-row justify-between items-start">
           <div>
             <DialogTitle className="text-2xl font-heading bg-gradient-to-r from-[#1A3A5F] to-[#4A6741] bg-clip-text text-transparent">
-              Relatório de Operações
+              Relatório de Extras
             </DialogTitle>
             <DialogDescription>
-              Resumo das participações em operações e ranking dos militares.
+              Resumo das participações em extras e ranking dos militares.
             </DialogDescription>
           </div>
           <Button 
@@ -628,7 +628,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
           <div ref={reportRef} className="px-2 pt-2 pb-4 bg-white">
             <div className="mb-6">
               <h2 className="text-xl font-bold text-center text-[#1A3A5F] mb-2">
-                Relatório de Operações - {
+                Relatório de Extras - {
                   activeTab === 'geral' ? 'Geral' : 
                   activeTab === 'pmf' ? 'Polícia Mais Forte' : 
                   activeTab === 'escola' ? 'Escola Segura' : 
@@ -646,7 +646,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                   <div className="grid grid-cols-4 gap-3">
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
                       <h3 className="text-2xl font-bold text-[#1A3A5F]">{stats.geral.totalExtras}</h3>
-                      <p className="text-xs text-gray-500">Total de Operações</p>
+                      <p className="text-xs text-gray-500">Total de Extras</p>
                     </div>
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
                       <h3 className="text-2xl font-bold text-[#1A3A5F]">
@@ -867,7 +867,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                       </svg>
                       <div>
                         <h3 className="text-md font-medium text-[#8B0000]">Conflitos de Escala</h3>
-                        <p className="text-sm text-gray-600">Militares agendados para extras em dias que estão em serviço normal de escala.</p>
+                        <p className="text-sm text-gray-600">Militares escalados para extras em dias que já estão em serviço normal de escala.</p>
                       </div>
                     </div>
                     <div className="mt-2 grid grid-cols-2 gap-2">
