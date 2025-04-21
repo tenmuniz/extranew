@@ -941,92 +941,92 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
                   {stats.conflitos.personnelWithExtras.length > 0 ? (
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100">
                       <h3 className="font-medium text-sm mb-3 text-[#8B0000]">Militares com Conflitos</h3>
-                      <ScrollArea className="h-[400px]" type="always">
-                        <div className="space-y-3 p-1">
-                          {(stats.conflitos.personnelWithExtras as PersonnelWithConflicts[]).map(person => (
-                            <div key={person.id} className="flex justify-between items-center p-2 border-b border-gray-100 last:border-b-0">
-                              <div className="flex items-center">
-                                <div className="bg-[#8B0000] text-white w-7 h-7 rounded-full flex items-center justify-center mr-2">
-                                  <span className="font-bold text-xs">{person.rank}</span>
-                                </div>
-                                <div>
-                                  <p className="font-medium text-sm">{person.name}</p>
-                                  <div className="flex items-center">
-                                    <span className="text-xs text-gray-500">{person.platoon || "Sem Guarnição"}</span>
-                                  </div>
-                                </div>
+                      
+                      {/* Usando div com overflow em vez do ScrollArea */}
+                      <div className="overflow-y-auto pr-2" style={{maxHeight: "500px"}}>
+                        {(stats.conflitos.personnelWithExtras as PersonnelWithConflicts[]).map(person => (
+                          <div key={person.id} className="flex justify-between items-center p-2 border-b border-gray-100 mb-2">
+                            <div className="flex items-center">
+                              <div className="bg-[#8B0000] text-white w-7 h-7 rounded-full flex items-center justify-center mr-2">
+                                <span className="font-bold text-xs">{person.rank}</span>
                               </div>
-                              <div className="flex flex-col items-end">
-                                <span className="text-[#8B0000] font-semibold rounded-full bg-[#fff9f9] px-3 py-1 text-sm mb-1">
-                                  {person.extras} {person.extras === 1 ? 'conflito' : 'conflitos'}
-                                </span>
-                                <div className="flex flex-col text-xs">
-                                  {/* Exibir os conflitos por operação */}
-                                  {(person as PersonnelWithConflicts).pmfConflicts > 0 && (
-                                    <span className="text-blue-600">PMF: {(person as PersonnelWithConflicts).pmfConflicts}</span>
-                                  )}
-                                  {(person as PersonnelWithConflicts).escolaConflicts > 0 && (
-                                    <span className="text-green-600">Escola: {(person as PersonnelWithConflicts).escolaConflicts}</span>
-                                  )}
+                              <div>
+                                <p className="font-medium text-sm">{person.name}</p>
+                                <div className="flex items-center">
+                                  <span className="text-xs text-gray-500">{person.platoon || "Sem Guarnição"}</span>
                                 </div>
-                                {/* Botão e popup para exibir os detalhes dos conflitos */}
-                                <Dialog>
-                                  <DialogTrigger asChild>
-                                    <Button 
-                                      variant="outline" 
-                                      className="text-xs mt-2 h-6 px-2 text-[#8B0000] border-[#ffcccc]"
-                                    >
-                                      Ver detalhes
-                                    </Button>
-                                  </DialogTrigger>
-                                  <DialogContent className="sm:max-w-[425px]">
-                                    <DialogHeader>
-                                      <DialogTitle className="text-lg font-bold text-[#8B0000]">
-                                        Detalhes dos Conflitos
-                                      </DialogTitle>
-                                      <DialogDescription>
-                                        {person.name} tem {person.extras} {person.extras === 1 ? 'conflito' : 'conflitos'} de escala.
-                                      </DialogDescription>
-                                    </DialogHeader>
-                                    <div className="mt-4 space-y-3 max-h-[300px] overflow-y-auto">
-                                      {(person as PersonnelWithConflicts).conflictDetails.map((conflict, index) => (
-                                        <div key={index} className="bg-[#fff9f9] rounded-lg border border-[#ffcccc] p-3">
-                                          <div className="flex items-center space-x-2 mb-2">
-                                            <div className="h-3 w-3 rounded-full" 
-                                                 style={{ 
-                                                   backgroundColor: conflict.operation === 'PMF' 
-                                                    ? '#1e40af' // Azul para PMF 
-                                                    : '#15803d' // Verde para Escola
-                                                 }}></div>
-                                            <span className="font-medium">
-                                              {conflict.operation === 'PMF' ? 'Polícia Mais Forte' : 'Escola Segura'}
-                                            </span>
-                                          </div>
-                                          <div className="ml-5 space-y-1 text-sm">
-                                            <div className="flex items-start">
-                                              <span className="font-semibold text-gray-700 mr-2">Data:</span>
-                                              <span>{conflict.date}</span>
-                                            </div>
-                                            <div className="flex items-start">
-                                              <span className="font-semibold text-gray-700 mr-2">Guarnição em serviço:</span>
-                                              <span>{conflict.guarnition}</span>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                    <DialogFooter>
-                                      <DialogClose asChild>
-                                        <Button variant="outline">Fechar</Button>
-                                      </DialogClose>
-                                    </DialogFooter>
-                                  </DialogContent>
-                                </Dialog>
                               </div>
                             </div>
-                          ))}
-                        </div>
-                      </ScrollArea>
+                            <div className="flex flex-col items-end">
+                              <span className="text-[#8B0000] font-semibold rounded-full bg-[#fff9f9] px-3 py-1 text-sm mb-1">
+                                {person.extras} {person.extras === 1 ? 'conflito' : 'conflitos'}
+                              </span>
+                              <div className="flex flex-col text-xs">
+                                {/* Exibir os conflitos por operação */}
+                                {(person as PersonnelWithConflicts).pmfConflicts > 0 && (
+                                  <span className="text-blue-600">PMF: {(person as PersonnelWithConflicts).pmfConflicts}</span>
+                                )}
+                                {(person as PersonnelWithConflicts).escolaConflicts > 0 && (
+                                  <span className="text-green-600">Escola: {(person as PersonnelWithConflicts).escolaConflicts}</span>
+                                )}
+                              </div>
+                              {/* Botão e popup para exibir os detalhes dos conflitos */}
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button 
+                                    variant="outline" 
+                                    className="text-xs mt-2 h-6 px-2 text-[#8B0000] border-[#ffcccc]"
+                                  >
+                                    Ver detalhes
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                  <DialogHeader>
+                                    <DialogTitle className="text-lg font-bold text-[#8B0000]">
+                                      Detalhes dos Conflitos
+                                    </DialogTitle>
+                                    <DialogDescription>
+                                      {person.name} tem {person.extras} {person.extras === 1 ? 'conflito' : 'conflitos'} de escala.
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <div className="mt-4 space-y-3 max-h-[300px] overflow-y-auto">
+                                    {(person as PersonnelWithConflicts).conflictDetails.map((conflict, index) => (
+                                      <div key={index} className="bg-[#fff9f9] rounded-lg border border-[#ffcccc] p-3">
+                                        <div className="flex items-center space-x-2 mb-2">
+                                          <div className="h-3 w-3 rounded-full" 
+                                               style={{ 
+                                                 backgroundColor: conflict.operation === 'PMF' 
+                                                  ? '#1e40af' // Azul para PMF 
+                                                  : '#15803d' // Verde para Escola
+                                               }}></div>
+                                          <span className="font-medium">
+                                            {conflict.operation === 'PMF' ? 'Polícia Mais Forte' : 'Escola Segura'}
+                                          </span>
+                                        </div>
+                                        <div className="ml-5 space-y-1 text-sm">
+                                          <div className="flex items-start">
+                                            <span className="font-semibold text-gray-700 mr-2">Data:</span>
+                                            <span>{conflict.date}</span>
+                                          </div>
+                                          <div className="flex items-start">
+                                            <span className="font-semibold text-gray-700 mr-2">Guarnição em serviço:</span>
+                                            <span>{conflict.guarnition}</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                  <DialogFooter>
+                                    <DialogClose asChild>
+                                      <Button variant="outline">Fechar</Button>
+                                    </DialogClose>
+                                  </DialogFooter>
+                                </DialogContent>
+                              </Dialog>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ) : (
                     <div className="flex flex-col justify-center items-center h-40 text-gray-500 bg-white p-3 rounded-lg shadow-sm border border-gray-100">

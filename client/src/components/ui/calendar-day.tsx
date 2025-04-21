@@ -31,7 +31,7 @@ export function CalendarDay({
         "calendar-day rounded-lg min-h-[90px] p-2 border transition-all duration-200",
         isCurrentMonth 
           ? "bg-white shadow-sm border-[#E7EBF0] opacity-100" 
-          : "bg-gray-100 opacity-50 border-gray-200",
+          : "bg-white border-dashed border-gray-300 opacity-85",
         isDisabled && "cursor-not-allowed bg-opacity-30 bg-gray-100",
         isToday && "ring-2 ring-blue-400 ring-offset-1"
       )}
@@ -88,10 +88,10 @@ export function CalendarDay({
             </div>
           </div>
         )}
-        {!isCurrentMonth && !children && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-gray-400 text-xs text-center bg-gray-100 bg-opacity-40 w-full h-full flex items-center justify-center">
-              <span className="block opacity-70">{date.toLocaleDateString('pt-BR', {month: 'short'})}</span>
+        {!isCurrentMonth && (
+          <div className="absolute top-1 right-1">
+            <div className="bg-yellow-50 border border-yellow-200 rounded-md text-yellow-700 px-1.5 py-0.5 text-[10px] font-medium">
+              {date.toLocaleDateString('pt-BR', {month: 'short'})}
             </div>
           </div>
         )}
