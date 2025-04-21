@@ -110,7 +110,13 @@ export class MemStorage implements IStorage {
 
   async createPersonnel(data: InsertPersonnel): Promise<Personnel> {
     const id = this.personnelCurrentId++;
-    const newPersonnel: Personnel = { ...data, id };
+    // Garantir que extras sempre tenha um valor numérico
+    const extras = data.extras !== undefined ? data.extras : 0;
+    const newPersonnel: Personnel = { 
+      ...data, 
+      id,
+      extras 
+    };
     this.personnelData.set(id, newPersonnel);
     return newPersonnel;
   }
@@ -119,9 +125,15 @@ export class MemStorage implements IStorage {
     const personnel = this.personnelData.get(id);
     if (!personnel) return undefined;
 
+    // Garantir que extras sempre tenha um valor numérico
+    let updatedData = { ...data };
+    if (updatedData.extras === undefined && data.extras !== 0) {
+      updatedData.extras = personnel.extras;
+    }
+
     const updatedPersonnel: Personnel = {
       ...personnel,
-      ...data
+      ...updatedData
     };
 
     this.personnelData.set(id, updatedPersonnel);

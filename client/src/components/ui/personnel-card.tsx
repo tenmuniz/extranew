@@ -13,6 +13,22 @@ const getRankDisplay = (rank: string) => {
   return rank;
 };
 
+// Get rank full name
+const getRankFullName = (rank: string) => {
+  const rankMap: Record<string, string> = {
+    SD: "Soldado",
+    CB: "Cabo",
+    "3SGT": "3º Sargento",
+    "2SGT": "2º Sargento",
+    "1SGT": "1º Sargento",
+    SUBTEN: "Sub-Tenente",
+    TEN: "Tenente",
+    "1TEN": "1º Tenente",
+    CAP: "Capitão",
+  };
+  return rankMap[rank] || rank;
+};
+
 export function PersonnelCard({
   personnel,
   isAssigned = false,
@@ -64,7 +80,9 @@ export function PersonnelCard({
         </div>
         <div>
           <p className="font-medium">{personnel.name}</p>
-          <p className="text-xs text-[#708090]">Registro: {personnel.registrationNumber}</p>
+          <p className="text-xs text-[#708090]">
+            {getRankFullName(personnel.rank)} • Extras: {personnel.extras || 0}
+          </p>
         </div>
       </div>
       <div>
