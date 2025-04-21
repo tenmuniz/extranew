@@ -5,6 +5,7 @@ import { MonthNavigation } from "@/components/month-navigation";
 import { PersonnelList } from "@/components/personnel-list";
 import { ScheduleCalendar } from "@/components/schedule-calendar";
 import { PersonnelModal } from "@/components/personnel-modal";
+import { ReportModal } from "@/components/report-modal";
 import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { getMonthDateRange, formatDateToISO } from "@/lib/utils";
@@ -129,7 +130,12 @@ export default function Home() {
           activeOperation={activeOperation}
         />
         
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end gap-3 mt-4">
+          <ReportModal
+            personnel={personnel}
+            assignments={assignments}
+          />
+          
           <Button
             className="bg-[#4A6741] hover:bg-[#4A6741]/90 text-white"
             onClick={() => setIsPersonnelModalOpen(true)}
