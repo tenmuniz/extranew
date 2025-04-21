@@ -47,26 +47,24 @@ export function PersonnelCard({
 
   if (isAssigned) {
     return (
-      <div className="assigned-person bg-white p-1.5 rounded text-xs shadow w-full mb-1 border border-gray-100">
-        <div className="flex flex-col w-full">
+      <div className="assigned-person bg-white p-1.5 px-2 rounded text-xs shadow w-full mb-1 border border-gray-100">
+        <div className="flex justify-between items-center w-full">
           {/* Nome do militar com o rank como prefixo */}
-          <div className="font-medium text-xs leading-tight text-center w-full whitespace-normal break-words">
+          <div className="font-medium text-xs leading-tight whitespace-normal max-w-[80%]">
             <span className="font-bold">{personnel.rank}</span> {personnel.name}
           </div>
           
-          {/* Botão de remover como linha separada */}
+          {/* Botão de remover na mesma linha */}
           {onRemove && (
-            <div className="flex justify-center mt-0.5">
-              <button 
-                className="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 rounded-full p-0.5 transition-colors"
-                onClick={onRemove}
-                aria-label="Remover"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
-            </div>
+            <button 
+              className="text-red-500 hover:text-red-700 ml-1 flex-shrink-0"
+              onClick={onRemove}
+              aria-label="Remover"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
           )}
         </div>
       </div>

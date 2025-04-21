@@ -56,7 +56,7 @@ export function CalendarDay({
       {isCurrentMonth && (
         <div className={cn(
           "assigned-personnel relative",
-          !isDisabled && "min-h-[100px]"
+          !isDisabled && "min-h-[80px]"
         )}>
           <div className="flex flex-col w-full px-1">
             {children}
