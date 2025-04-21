@@ -86,8 +86,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       let { startDate, endDate } = req.query as { startDate?: string, endDate?: string };
       
+      // If dates are not provided, get all assignments
       if (!startDate || !endDate) {
-        return res.status(400).json({ message: "Start date and end date are required" });
+        // Use current month as default
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        
+        startDate = firstDay.toISOString().split('T')[0];
+        endDate = lastDay.toISOString().split('T')[0];
       }
       
       const dateRange = dateRangeSchema.parse({ startDate, endDate });
