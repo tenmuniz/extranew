@@ -1,5 +1,5 @@
 import { Personnel } from "@shared/schema";
-import { cn } from "@/lib/utils";
+import { cn, isPersonnelAvailable } from "@/lib/utils";
 
 interface PersonnelCardProps {
   personnel: Personnel;
@@ -110,57 +110,20 @@ export function PersonnelCard({
         </div>
       </div>
       <div>
-        {personnel.platoon === "EXPEDIENTE" ? (
-          <span className="badge bg-green-100 text-green-800 text-xs py-1 px-2 rounded-full">
-            Disponível
-          </span>
-        ) : (
-          <span className={`badge text-xs py-1 px-2 rounded-full ${
-            // Verificar se está em período de serviço com base no dia atual
-            // (Simplificação da lógica para visualização)
-            (() => {
-              const day = new Date().getDate();
-              let activeGuarnitionForDay = "";
-              
-              if (day <= 7) {
-                activeGuarnitionForDay = "ALFA";
-              } else if (day <= 14) {
-                activeGuarnitionForDay = "BRAVO";
-              } else if (day <= 21) {
-                activeGuarnitionForDay = "CHARLIE";
-              } else if (day <= 28) {
-                activeGuarnitionForDay = "ALFA";
-              } else {
-                activeGuarnitionForDay = (day <= 30) ? "BRAVO" : "CHARLIE";
-              }
-              
-              return personnel.platoon === activeGuarnitionForDay 
-                ? "bg-red-100 text-red-800" 
-                : "bg-green-100 text-green-800";
-            })()
-          }`}>
-            {(() => {
-              const day = new Date().getDate();
-              let activeGuarnitionForDay = "";
-              
-              if (day <= 7) {
-                activeGuarnitionForDay = "ALFA";
-              } else if (day <= 14) {
-                activeGuarnitionForDay = "BRAVO";
-              } else if (day <= 21) {
-                activeGuarnitionForDay = "CHARLIE";
-              } else if (day <= 28) {
-                activeGuarnitionForDay = "ALFA";
-              } else {
-                activeGuarnitionForDay = (day <= 30) ? "BRAVO" : "CHARLIE";
-              }
-              
-              return personnel.platoon === activeGuarnitionForDay 
-                ? "Em Serviço" 
-                : "Disponível";
-            })()}
-          </span>
-        )}
+        {(() => {
+          const today = new Date();
+          const isAvailable = isPersonnelAvailable(personnel, today);
+          
+          return (
+            <span className={`badge text-xs py-1 px-2 rounded-full ${
+              isAvailable 
+                ? "bg-green-100 text-green-800" 
+                : "bg-red-100 text-red-800"
+            }`}>
+              {isAvailable ? "Disponível" : "Em Serviço"}
+            </span>
+          );
+        })()}
       </div>
     </div>
   );

@@ -325,13 +325,7 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
                         </span>
                         {person.platoon && (
                           <span className="ml-2 text-xs text-white px-1.5 py-0.5 rounded-sm" 
-                            style={{ 
-                              backgroundColor: 
-                                person.platoon === "ALFA" ? "#1A3A5F" : 
-                                person.platoon === "BRAVO" ? "#4A6741" : 
-                                person.platoon === "CHARLIE" ? "#8B0000" : 
-                                "#6B7280" 
-                            }}>
+                            style={{ backgroundColor: getGarrisonColor(person.platoon) }}>
                             {person.platoon}
                           </span>
                         )}

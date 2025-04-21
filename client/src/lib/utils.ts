@@ -56,3 +56,49 @@ export function getDayColorClass(date: Date): string {
   if (day === 6) return 'bg-slate'; // Saturday
   return 'bg-militaryGreen'; // Weekday
 }
+
+// Function to determine which garrison (guarnição) is on service on a given date
+export function getActiveGuarnitionForDay(date: Date): string {
+  // Determine which garrison is on service based on the day of the month
+  const day = date.getDate();
+  
+  if (day <= 7) {
+    return "ALFA";
+  } else if (day <= 14) {
+    return "BRAVO";
+  } else if (day <= 21) {
+    return "CHARLIE";
+  } else if (day <= 28) {
+    return "ALFA";
+  } else {
+    return (day <= 30) ? "BRAVO" : "CHARLIE";
+  }
+}
+
+// Function to check if personnel is available for an assignment on a given date
+export function isPersonnelAvailable(personnel: {platoon?: string}, date: Date): boolean {
+  // If the personnel has no platoon or is EXPEDIENTE, they're always available
+  if (!personnel.platoon || personnel.platoon === "EXPEDIENTE") {
+    return true;
+  }
+  
+  // Check if personnel's platoon is on service on the given date
+  const activeGuarnition = getActiveGuarnitionForDay(date);
+  return personnel.platoon !== activeGuarnition;
+}
+
+// Function to get background color based on garrison
+export function getGarrisonColor(platoon?: string): string {
+  if (!platoon) return "#6B7280"; // Default gray
+  
+  switch (platoon) {
+    case "ALFA":
+      return "#1A3A5F"; // Navy blue
+    case "BRAVO":
+      return "#4A6741"; // Military green
+    case "CHARLIE":
+      return "#8B0000"; // Dark red
+    default:
+      return "#6B7280"; // Default gray for EXPEDIENTE
+  }
+}

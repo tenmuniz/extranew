@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
 import { CalendarDay } from "@/components/ui/calendar-day";
 import { PersonnelCard } from "@/components/ui/personnel-card";
-import { getFirstDayOfMonth, getLastDayOfMonth, isWeekday, formatDateToISO } from "@/lib/utils";
+import { 
+  getFirstDayOfMonth, 
+  getLastDayOfMonth, 
+  isWeekday, 
+  formatDateToISO,
+  isPersonnelAvailable,
+  getActiveGuarnitionForDay
+} from "@/lib/utils";
 import { Assignment, OperationType, Personnel } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -90,34 +97,9 @@ export function ScheduleCalendar({
       // Verificar se o militar está na guarnição que permite extras (verificação da escala 7x14)
       // Buscar dados do militar
       const militarSelecionado = personnel.find(p => p.id === personnelData.id);
-      if (militarSelecionado && militarSelecionado.platoon !== "EXPEDIENTE") {
-        // Para militares de guarnição (ALFA, BRAVO, CHARLIE), verificar se estão em período de serviço
-        // Lógica da escala 7x14: verificar baseado na data e na guarnição
-        const month = date.getMonth();
-        const day = date.getDate();
-        
-        // Lógica simplificada de verificação da escala 7x14
-        // ALFA: primeiros 7 dias do mês
-        // BRAVO: dias 8-14 do mês
-        // CHARLIE: dias 15-21 do mês
-        // Depois: repetir o ciclo
-        
-        // Determinar qual guarnição está de serviço na data selecionada
-        let activeGuarnitionForDay = "";
-        if (day <= 7) {
-          activeGuarnitionForDay = "ALFA";
-        } else if (day <= 14) {
-          activeGuarnitionForDay = "BRAVO";
-        } else if (day <= 21) {
-          activeGuarnitionForDay = "CHARLIE";
-        } else if (day <= 28) {
-          activeGuarnitionForDay = "ALFA";
-        } else {
-          activeGuarnitionForDay = (day <= 30) ? "BRAVO" : "CHARLIE";
-        }
-        
-        // Se o militar pertence à guarnição de serviço, não pode fazer extras
-        if (militarSelecionado.platoon === activeGuarnitionForDay) {
+      if (militarSelecionado) {
+        // Verificar disponibilidade baseado na escala 7x14
+        if (!isPersonnelAvailable(militarSelecionado, date)) {
           toast({
             title: "Militar indisponível",
             description: `O militar da guarnição ${militarSelecionado.platoon} está em período de serviço e não pode fazer extras`,
