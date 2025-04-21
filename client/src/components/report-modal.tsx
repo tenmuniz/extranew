@@ -220,7 +220,8 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
       }))
       .sort((a, b) => (b.extras || 0) - (a.extras || 0));
     
-    const conflictsMediaExtras = conflictsAssignments.length / (conflictsPersonnel.length || 1);
+    const totalConflicts = conflictsPersonnel.reduce((acc, p: any) => acc + (p.extras || 0), 0);
+    const conflictsMediaExtras = totalConflicts / (conflictsPersonnel.length || 1);
     const conflictsMaxExtras = conflictsPersonnel.length > 0 ? conflictsPersonnel[0] : null;
     const conflictsMinExtras = conflictsPersonnel.length > 0 ? conflictsPersonnel[conflictsPersonnel.length - 1] : null;
     
@@ -250,7 +251,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
         personnelWithoutExtras: allPersonnelWithoutExtras,
       },
       conflitos: {
-        totalExtras: conflictsAssignments.length,
+        totalExtras: conflictsPersonnel.reduce((acc, p: any) => acc + (p.extras || 0), 0),
         mediaExtras: conflictsMediaExtras,
         maxExtras: conflictsMaxExtras,
         minExtras: conflictsMinExtras,
@@ -811,7 +812,9 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                 <div className="space-y-4">
                   <div className="grid grid-cols-4 gap-3">
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
-                      <h3 className="text-2xl font-bold text-[#8B0000]">{stats.conflitos.totalExtras}</h3>
+                      <h3 className="text-2xl font-bold text-[#8B0000]">
+                        {stats.conflitos.personnelWithExtras.reduce((acc, p: any) => acc + (p.extras || 0), 0)}
+                      </h3>
                       <p className="text-xs text-gray-500">Total de Conflitos</p>
                     </div>
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
