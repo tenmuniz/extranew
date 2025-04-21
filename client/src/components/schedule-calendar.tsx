@@ -7,7 +7,8 @@ import {
   isWeekday, 
   formatDateToISO,
   isPersonnelInService,
-  getActiveGuarnitionForDay
+  getActiveGuarnitionForDay,
+  getGarrisonColor
 } from "@/lib/utils";
 import { Assignment, OperationType, Personnel } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
@@ -240,9 +241,11 @@ export function ScheduleCalendar({
     return activeOperation === "ESCOLA" && !isWeekday(date);
   };
 
+
+
   return (
     <div className="lg:w-3/4">
-      <div className="bg-white rounded-lg shadow-md p-4">
+      <div className="bg-white rounded-lg shadow-md p-4">        
         {/* Day of week headers */}
         <div className="grid grid-cols-7 gap-2 mb-4">
           <div className="text-center font-bold text-[#1A3A5F] p-2 border-b-2 border-[#1A3A5F]/20">Dom</div>

@@ -59,20 +59,41 @@ export function getDayColorClass(date: Date): string {
 
 // Function to determine which garrison (guarnição) is on service on a given date
 export function getActiveGuarnitionForDay(date: Date): string {
-  // Determine which garrison is on service based on the day of the month
-  const day = date.getDate();
+  // Implementação baseada na troca às quintas-feiras
+  // Para calcular qual guarnição está de serviço, precisamos saber:
+  // 1. A referência de início (qual guarnição iniciou o ano)
+  // 2. Contar o número de semanas completas (trocas) desde essa data
+
+  // Definindo uma data de referência onde ALFA estava de serviço
+  // 04/01/2025 ALFA estava de serviço (primeiro ciclo do ano)
+  const referenceDate = new Date(2025, 0, 4); // 4 de Janeiro de 2025
+  const referenceGuarnition = "ALFA";
+
+  // Ordem de rotação das guarnições
+  const rotationOrder = ["ALFA", "BRAVO", "CHARLIE"];
   
-  if (day <= 7) {
-    return "ALFA";
-  } else if (day <= 14) {
-    return "BRAVO";
-  } else if (day <= 21) {
-    return "CHARLIE";
-  } else if (day <= 28) {
-    return "ALFA";
-  } else {
-    return (day <= 30) ? "BRAVO" : "CHARLIE";
-  }
+  // Calculamos quantas mudanças de quinta-feira aconteceram entre a data de referência e a data solicitada
+  // Cada quinta-feira é uma troca de guarnição
+  let targetDate = new Date(date);
+  targetDate.setHours(0, 0, 0, 0);
+  
+  // Encontrar a quinta-feira mais recente ou a mesma data se for quinta
+  const dayOfWeek = targetDate.getDay(); // 0 = domingo, 4 = quinta
+  let daysToLastThursday = dayOfWeek >= 4 ? dayOfWeek - 4 : dayOfWeek + 3;
+  
+  // Subtrair dias para chegar à quinta-feira mais recente
+  const lastThursday = new Date(targetDate);
+  lastThursday.setDate(targetDate.getDate() - daysToLastThursday);
+  
+  // Calcular o número de semanas entre a data de referência e a quinta-feira mais recente
+  const weeksDiff = Math.floor((lastThursday.getTime() - referenceDate.getTime()) / (7 * 24 * 60 * 60 * 1000));
+  
+  // Determinar qual guarnição está de serviço com base na rotação
+  const rotationIndex = weeksDiff % 3;
+  let currentIndex = rotationOrder.indexOf(referenceGuarnition);
+  currentIndex = (currentIndex + rotationIndex) % 3;
+  
+  return rotationOrder[currentIndex];
 }
 
 // Function to check if personnel is available for an assignment on a given date

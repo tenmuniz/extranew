@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { cn, getDayColorClass, getDayOfWeekAbbr, getActiveGuarnitionForDay } from "@/lib/utils";
+import { cn, getDayColorClass, getDayOfWeekAbbr, getActiveGuarnitionForDay, getGarrisonColor } from "@/lib/utils";
 
 interface CalendarDayProps {
   date: Date;
@@ -49,9 +49,15 @@ export function CalendarDay({
             {dayOfMonth}
           </span>
           {isCurrentMonth && (
-            <span className="text-xs text-gray-500">
-              {getActiveGuarnitionForDay(date)}
-            </span>
+            <div className="flex items-center mt-1">
+              <div 
+                className="w-3 h-3 rounded-full mr-1" 
+                style={{ backgroundColor: getGarrisonColor(getActiveGuarnitionForDay(date)) }}
+              ></div>
+              <span className="text-xs font-semibold">
+                {getActiveGuarnitionForDay(date)}
+              </span>
+            </div>
           )}
         </div>
         {isCurrentMonth && (
