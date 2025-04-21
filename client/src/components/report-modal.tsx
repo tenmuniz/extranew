@@ -633,7 +633,7 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
           Relatório de Extras
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="sm:max-w-[95vw] max-h-[95vh] overflow-hidden flex flex-col" style={{width: "1200px", height: "800px"}}>
         <DialogHeader className="flex flex-row justify-between items-start">
           <div>
             <DialogTitle className="text-2xl font-heading bg-gradient-to-r from-[#1A3A5F] to-[#4A6741] bg-clip-text text-transparent">
