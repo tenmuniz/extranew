@@ -223,18 +223,18 @@ export function ScheduleCalendar({
     <div className="lg:w-3/4">
       <div className="bg-white rounded-lg shadow-md p-4">
         {/* Day of week headers */}
-        <div className="grid grid-cols-7 gap-1 mb-2">
-          <div className="text-center font-medium text-[#1A3A5F] p-2">Dom</div>
-          <div className="text-center font-medium text-[#1A3A5F] p-2">Seg</div>
-          <div className="text-center font-medium text-[#1A3A5F] p-2">Ter</div>
-          <div className="text-center font-medium text-[#1A3A5F] p-2">Qua</div>
-          <div className="text-center font-medium text-[#1A3A5F] p-2">Qui</div>
-          <div className="text-center font-medium text-[#1A3A5F] p-2">Sex</div>
-          <div className="text-center font-medium text-[#1A3A5F] p-2">Sáb</div>
+        <div className="grid grid-cols-7 gap-2 mb-4">
+          <div className="text-center font-bold text-[#1A3A5F] p-2 border-b-2 border-[#1A3A5F]/20">Dom</div>
+          <div className="text-center font-bold text-[#1A3A5F] p-2 border-b-2 border-[#1A3A5F]/20">Seg</div>
+          <div className="text-center font-bold text-[#1A3A5F] p-2 border-b-2 border-[#1A3A5F]/20">Ter</div>
+          <div className="text-center font-bold text-[#1A3A5F] p-2 border-b-2 border-[#1A3A5F]/20">Qua</div>
+          <div className="text-center font-bold text-[#1A3A5F] p-2 border-b-2 border-[#1A3A5F]/20">Qui</div>
+          <div className="text-center font-bold text-[#1A3A5F] p-2 border-b-2 border-[#1A3A5F]/20">Sex</div>
+          <div className="text-center font-bold text-[#1A3A5F] p-2 border-b-2 border-[#1A3A5F]/20">Sáb</div>
         </div>
         
         {/* Calendar grid */}
-        <div id="calendar-grid" className="grid grid-cols-7 gap-1">
+        <div id="calendar-grid" className="grid grid-cols-7 gap-2">
           {calendarDays.map((day, index) => {
             const dayAssignments = getAssignmentsForDate(day);
             const disabled = isDayDisabled(day);
