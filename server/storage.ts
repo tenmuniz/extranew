@@ -51,16 +51,16 @@ export class MemStorage implements IStorage {
       { name: "SUB TEN ANDRÉ", rank: "SUBTEN", extras: 0, platoon: "EXPEDIENTE" },
       
       // Sargentos - Guarnição BRAVO 
-      { name: "1º SGT PM OLIMAR", rank: "1SGT", extras: 2, platoon: "BRAVO" },
+      { name: "1º SGT PM OLIMAR", rank: "1SGT", extras: 0, platoon: "BRAVO" },
       
       // Sargentos - Guarnição ALFA
       { name: "2º SGT PM PEIXOTO", rank: "2SGT", extras: 0, platoon: "ALFA" },
       
       // Sargentos - Guarnição BRAVO
-      { name: "2º SGT PM FÁBIO", rank: "2SGT", extras: 1, platoon: "BRAVO" },
+      { name: "2º SGT PM FÁBIO", rank: "2SGT", extras: 0, platoon: "BRAVO" },
       
       // Sargentos - Guarnição CHARLIE
-      { name: "2º SGT PM PINHEIRO", rank: "2SGT", extras: 3, platoon: "CHARLIE" },
+      { name: "2º SGT PM PINHEIRO", rank: "2SGT", extras: 0, platoon: "CHARLIE" },
       
       // Sargentos - EXPEDIENTE
       { name: "2º SGT PM A. TAVARES", rank: "2SGT", extras: 0, platoon: "EXPEDIENTE" },
@@ -72,57 +72,57 @@ export class MemStorage implements IStorage {
       { name: "3º SGT PM AMARAL", rank: "3SGT", extras: 0, platoon: "ALFA" },
       
       // Sargentos - Guarnição BRAVO
-      { name: "3º SGT PM ANA CLEIDE", rank: "3SGT", extras: 2, platoon: "BRAVO" },
-      { name: "3º SGT PM GLEIDSON", rank: "3SGT", extras: 1, platoon: "BRAVO" },
-      { name: "3º SGT PM CARLOS EDUARDO", rank: "3SGT", extras: 3, platoon: "BRAVO" },
+      { name: "3º SGT PM ANA CLEIDE", rank: "3SGT", extras: 0, platoon: "BRAVO" },
+      { name: "3º SGT PM GLEIDSON", rank: "3SGT", extras: 0, platoon: "BRAVO" },
+      { name: "3º SGT PM CARLOS EDUARDO", rank: "3SGT", extras: 0, platoon: "BRAVO" },
       { name: "3º SGT PM NEGRÃO", rank: "3SGT", extras: 0, platoon: "BRAVO" },
       
       // Sargentos - Guarnição CHARLIE
-      { name: "3º SGT PM RAFAEL", rank: "3SGT", extras: 2, platoon: "CHARLIE" },
+      { name: "3º SGT PM RAFAEL", rank: "3SGT", extras: 0, platoon: "CHARLIE" },
       
       // Sargentos - EXPEDIENTE
-      { name: "3º SGT PM CUNHA", rank: "3SGT", extras: 1, platoon: "EXPEDIENTE" },
+      { name: "3º SGT PM CUNHA", rank: "3SGT", extras: 0, platoon: "EXPEDIENTE" },
       { name: "3º SGT PM CARAVELAS", rank: "3SGT", extras: 0, platoon: "EXPEDIENTE" },
       
       // Cabos - Guarnição ALFA
       { name: "CB PM CARLA", rank: "CB", extras: 0, platoon: "ALFA" },
       { name: "CB PM FELIPE", rank: "CB", extras: 0, platoon: "ALFA" },
-      { name: "CB PM BARROS", rank: "CB", extras: 1, platoon: "ALFA" },
-      { name: "CB PM A. SILVA", rank: "CB", extras: 2, platoon: "ALFA" },
+      { name: "CB PM BARROS", rank: "CB", extras: 0, platoon: "ALFA" },
+      { name: "CB PM A. SILVA", rank: "CB", extras: 0, platoon: "ALFA" },
       
       // Cabos - Guarnição BRAVO
-      { name: "CB PM BRASIL", rank: "CB", extras: 3, platoon: "BRAVO" },
+      { name: "CB PM BRASIL", rank: "CB", extras: 0, platoon: "BRAVO" },
       
       // Cabos - Guarnição CHARLIE
       { name: "CB PM MIQUEIAS", rank: "CB", extras: 0, platoon: "CHARLIE" },
-      { name: "CB PM M. PAIXÃO", rank: "CB", extras: 1, platoon: "CHARLIE" },
+      { name: "CB PM M. PAIXÃO", rank: "CB", extras: 0, platoon: "CHARLIE" },
       
       // Cabos - FÉRIAS (mantendo no sistema como BRAVO)
-      { name: "CB PM ALAX", rank: "CB", extras: 2, platoon: "BRAVO" },
-      { name: "CB PM VELOSO", rank: "CB", extras: 3, platoon: "BRAVO" },
+      { name: "CB PM ALAX", rank: "CB", extras: 0, platoon: "BRAVO" },
+      { name: "CB PM VELOSO", rank: "CB", extras: 0, platoon: "BRAVO" },
       
       // Cabos - EXPEDIENTE
       { name: "CB PM TONI", rank: "CB", extras: 0, platoon: "EXPEDIENTE" },
       
       // Soldados - Guarnição ALFA
       { name: "SD PM LUAN", rank: "SD", extras: 0, platoon: "ALFA" },
-      { name: "SD PM NAVARRO", rank: "SD", extras: 1, platoon: "ALFA" },
+      { name: "SD PM NAVARRO", rank: "SD", extras: 0, platoon: "ALFA" },
       
       // Soldados - Guarnição BRAVO
-      { name: "SD PM MARVÃO", rank: "SD", extras: 2, platoon: "BRAVO" },
+      { name: "SD PM MARVÃO", rank: "SD", extras: 0, platoon: "BRAVO" },
       { name: "SD PM IDELVAN", rank: "SD", extras: 0, platoon: "BRAVO" },
       
       // Soldados - Guarnição CHARLIE
-      { name: "SD PM CHAGAS", rank: "SD", extras: 3, platoon: "CHARLIE" },
-      { name: "SD PM CARVALHO", rank: "SD", extras: 1, platoon: "CHARLIE" },
+      { name: "SD PM CHAGAS", rank: "SD", extras: 0, platoon: "CHARLIE" },
+      { name: "SD PM CARVALHO", rank: "SD", extras: 0, platoon: "CHARLIE" },
       { name: "SD PM GOVEIA", rank: "SD", extras: 0, platoon: "CHARLIE" },
-      { name: "SD PM ALMEIDA", rank: "SD", extras: 2, platoon: "CHARLIE" },
-      { name: "SD PM PATRIK", rank: "SD", extras: 1, platoon: "CHARLIE" },
-      { name: "SD PM GUIMARÃES", rank: "SD", extras: 3, platoon: "CHARLIE" },
+      { name: "SD PM ALMEIDA", rank: "SD", extras: 0, platoon: "CHARLIE" },
+      { name: "SD PM PATRIK", rank: "SD", extras: 0, platoon: "CHARLIE" },
+      { name: "SD PM GUIMARÃES", rank: "SD", extras: 0, platoon: "CHARLIE" },
       
       // Soldados - EXPEDIENTE
       { name: "SD PM S. CORREA", rank: "SD", extras: 0, platoon: "EXPEDIENTE" },
-      { name: "SD PM RODRIGUES", rank: "SD", extras: 1, platoon: "EXPEDIENTE" }
+      { name: "SD PM RODRIGUES", rank: "SD", extras: 0, platoon: "EXPEDIENTE" }
     ];
 
     samplePersonnel.forEach(person => {
