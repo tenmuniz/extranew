@@ -87,6 +87,46 @@ export function ScheduleCalendar({
         return;
       }
       
+      // Verificar se o militar está na guarnição que permite extras (verificação da escala 7x14)
+      // Buscar dados do militar
+      const militarSelecionado = personnel.find(p => p.id === personnelData.id);
+      if (militarSelecionado && militarSelecionado.platoon !== "EXPEDIENTE") {
+        // Para militares de guarnição (ALFA, BRAVO, CHARLIE), verificar se estão em período de serviço
+        // Lógica da escala 7x14: verificar baseado na data e na guarnição
+        const month = date.getMonth();
+        const day = date.getDate();
+        
+        // Lógica simplificada de verificação da escala 7x14
+        // ALFA: primeiros 7 dias do mês
+        // BRAVO: dias 8-14 do mês
+        // CHARLIE: dias 15-21 do mês
+        // Depois: repetir o ciclo
+        
+        // Determinar qual guarnição está de serviço na data selecionada
+        let activeGuarnitionForDay = "";
+        if (day <= 7) {
+          activeGuarnitionForDay = "ALFA";
+        } else if (day <= 14) {
+          activeGuarnitionForDay = "BRAVO";
+        } else if (day <= 21) {
+          activeGuarnitionForDay = "CHARLIE";
+        } else if (day <= 28) {
+          activeGuarnitionForDay = "ALFA";
+        } else {
+          activeGuarnitionForDay = (day <= 30) ? "BRAVO" : "CHARLIE";
+        }
+        
+        // Se o militar pertence à guarnição de serviço, não pode fazer extras
+        if (militarSelecionado.platoon === activeGuarnitionForDay) {
+          toast({
+            title: "Militar indisponível",
+            description: `O militar da guarnição ${militarSelecionado.platoon} está em período de serviço e não pode fazer extras`,
+            variant: "destructive"
+          });
+          return;
+        }
+      }
+      
       // Verificar se o militar já está escalado neste dia e operação
       const existingAssignments = getAssignmentsForDate(date);
       const alreadyAssigned = existingAssignments.some(
@@ -113,8 +153,7 @@ export function ScheduleCalendar({
         return;
       }
       
-      // Incrementar extras do militar
-      const selectedPersonnel = personnel.find(p => p.id === personnelData.id);
+      // Incrementar extras do militar (usando a referência do militar que já buscamos anteriormente)
       if (selectedPersonnel) {
         // Atualizar extras do militar
         await apiRequest("PUT", `/api/personnel/${personnelData.id}`, {
