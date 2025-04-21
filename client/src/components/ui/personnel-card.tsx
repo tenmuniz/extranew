@@ -47,10 +47,10 @@ export function PersonnelCard({
 
   if (isAssigned) {
     return (
-      <div className="assigned-person bg-white p-2 rounded text-xs shadow w-full mb-1 border border-gray-100 overflow-hidden">
+      <div className="assigned-person bg-white p-2 pb-0.5 rounded text-xs shadow w-full mb-1.5 border border-gray-100">
         <div className="flex flex-col w-full">
           {/* Nome do militar com o rank como prefixo */}
-          <div className="font-medium mb-0.5 text-center truncate">
+          <div className="font-medium mb-1 text-center overflow-visible">
             <span className="font-bold">{personnel.rank}</span> {personnel.name}
           </div>
           

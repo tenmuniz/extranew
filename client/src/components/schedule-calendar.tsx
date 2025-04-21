@@ -234,7 +234,7 @@ export function ScheduleCalendar({
         </div>
         
         {/* Calendar grid */}
-        <div id="calendar-grid" className="grid grid-cols-7 gap-2">
+        <div id="calendar-grid" className="grid grid-cols-7 gap-3">
           {calendarDays.map((day, index) => {
             const dayAssignments = getAssignmentsForDate(day);
             const disabled = isDayDisabled(day);

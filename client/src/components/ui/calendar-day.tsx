@@ -28,7 +28,7 @@ export function CalendarDay({
   return (
     <div
       className={cn(
-        "calendar-day rounded-lg min-h-[120px] p-2 border transition-all duration-200",
+        "calendar-day rounded-lg min-h-[140px] p-2 border transition-all duration-200",
         isCurrentMonth 
           ? "bg-white shadow-sm border-[#E7EBF0] opacity-100" 
           : "bg-gray-100 opacity-50 border-gray-200",
@@ -56,9 +56,9 @@ export function CalendarDay({
       {isCurrentMonth && (
         <div className={cn(
           "assigned-personnel relative",
-          !isDisabled && "min-h-[80px]"
+          !isDisabled && "min-h-[100px]"
         )}>
-          <div className="flex flex-col w-full px-0.5">
+          <div className="flex flex-col w-full px-1">
             {children}
           </div>
           {!children && !isDisabled && (
