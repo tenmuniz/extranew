@@ -39,6 +39,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
   const [activeTab, setActiveTab] = useState<ReportTab>("geral");
   const [isOpen, setIsOpen] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
+  const customReportRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const [stats, setStats] = useState<Record<ReportTab, StatsData>>({
     geral: {
@@ -69,11 +70,16 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
 
   // Processar os dados de operações para gerar estatísticas
   useEffect(() => {
-    if (!personnel.length || !assignments.length) return;
+    if (!personnel.length) return;
 
     // Contagem de operações por militar para cada tipo
     const pmfOperations = assignments.filter(a => a.operationType === "PMF");
     const escolaOperations = assignments.filter(a => a.operationType === "ESCOLA");
+
+    // Contagem total direta a partir dos assignments (não das pessoas)
+    const pmfTotalExtras = pmfOperations.length;
+    const escolaTotalExtras = escolaOperations.length;
+    const totalExtras = pmfTotalExtras + escolaTotalExtras;
 
     // Criar mapa de contagem para PMF
     const pmfCountMap: Record<number, number> = {};
@@ -87,15 +93,26 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
       escolaCountMap[op.personnelId] = (escolaCountMap[op.personnelId] || 0) + 1;
     });
 
+    // Criar mapa de contagem total por pessoa (soma das duas operações)
+    const totalCountMap: Record<number, number> = {};
+    personnel.forEach(p => {
+      if (p.id) {
+        totalCountMap[p.id] = (pmfCountMap[p.id] || 0) + (escolaCountMap[p.id] || 0);
+      }
+    });
+
     // Dados para PMF
     const pmfPersonnelWithExtras = personnel
       .filter(p => pmfCountMap[p.id!] > 0)
-      .sort((a, b) => (pmfCountMap[b.id!] || 0) - (pmfCountMap[a.id!] || 0));
+      .map(p => ({
+        ...p,
+        extras: pmfCountMap[p.id!] || 0
+      }))
+      .sort((a, b) => (b.extras || 0) - (a.extras || 0));
 
     const pmfPersonnelWithoutExtras = personnel
       .filter(p => !pmfCountMap[p.id!] || pmfCountMap[p.id!] === 0);
 
-    const pmfTotalExtras = pmfOperations.length;
     const pmfMediaExtras = pmfTotalExtras / (pmfPersonnelWithExtras.length || 1);
     const pmfMaxExtras = pmfPersonnelWithExtras.length > 0 ? pmfPersonnelWithExtras[0] : null;
     const pmfMinExtras = pmfPersonnelWithExtras.length > 0 ? pmfPersonnelWithExtras[pmfPersonnelWithExtras.length - 1] : null;
@@ -103,28 +120,34 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
     // Dados para ESCOLA
     const escolaPersonnelWithExtras = personnel
       .filter(p => escolaCountMap[p.id!] > 0)
-      .sort((a, b) => (escolaCountMap[b.id!] || 0) - (escolaCountMap[a.id!] || 0));
+      .map(p => ({
+        ...p,
+        extras: escolaCountMap[p.id!] || 0
+      }))
+      .sort((a, b) => (b.extras || 0) - (a.extras || 0));
 
     const escolaPersonnelWithoutExtras = personnel
       .filter(p => !escolaCountMap[p.id!] || escolaCountMap[p.id!] === 0);
 
-    const escolaTotalExtras = escolaOperations.length;
     const escolaMediaExtras = escolaTotalExtras / (escolaPersonnelWithExtras.length || 1);
     const escolaMaxExtras = escolaPersonnelWithExtras.length > 0 ? escolaPersonnelWithExtras[0] : null;
     const escolaMinExtras = escolaPersonnelWithExtras.length > 0 ? escolaPersonnelWithExtras[escolaPersonnelWithExtras.length - 1] : null;
 
-    // Dados gerais - combinados
+    // Dados gerais - baseados no mapa combinado
     const allPersonnelWithExtras = personnel
-      .filter(p => p.extras > 0)
+      .filter(p => p.id && totalCountMap[p.id] > 0)
+      .map(p => ({
+        ...p,
+        extras: totalCountMap[p.id!] || 0
+      }))
       .sort((a, b) => (b.extras || 0) - (a.extras || 0));
 
     const allPersonnelWithoutExtras = personnel
-      .filter(p => !p.extras || p.extras === 0);
-
-    const totalExtras = personnel.reduce((sum, p) => sum + (p.extras || 0), 0);
-    const mediaExtras = totalExtras / (allPersonnelWithExtras.length || 1);
-    const maxExtras = allPersonnelWithExtras.length > 0 ? allPersonnelWithExtras[0] : null;
-    const minExtras = allPersonnelWithExtras.length > 0 ? allPersonnelWithExtras[allPersonnelWithExtras.length - 1] : null;
+      .filter(p => !p.id || totalCountMap[p.id] === 0);
+      
+    const allMediaExtras = totalExtras / (allPersonnelWithExtras.length || 1);
+    const allMaxExtras = allPersonnelWithExtras.length > 0 ? allPersonnelWithExtras[0] : null;
+    const allMinExtras = allPersonnelWithExtras.length > 0 ? allPersonnelWithExtras[allPersonnelWithExtras.length - 1] : null;
 
     setStats({
       pmf: {
@@ -132,10 +155,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
         mediaExtras: pmfMediaExtras,
         maxExtras: pmfMaxExtras,
         minExtras: pmfMinExtras,
-        personnelWithExtras: pmfPersonnelWithExtras.map(p => ({
-          ...p,
-          extras: pmfCountMap[p.id!] || 0
-        })),
+        personnelWithExtras: pmfPersonnelWithExtras,
         personnelWithoutExtras: pmfPersonnelWithoutExtras,
       },
       escola: {
@@ -143,34 +163,174 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
         mediaExtras: escolaMediaExtras,
         maxExtras: escolaMaxExtras,
         minExtras: escolaMinExtras,
-        personnelWithExtras: escolaPersonnelWithExtras.map(p => ({
-          ...p,
-          extras: escolaCountMap[p.id!] || 0
-        })),
+        personnelWithExtras: escolaPersonnelWithExtras,
         personnelWithoutExtras: escolaPersonnelWithoutExtras,
       },
       geral: {
-        totalExtras,
-        mediaExtras,
-        maxExtras,
-        minExtras,
+        totalExtras: totalExtras,
+        mediaExtras: allMediaExtras,
+        maxExtras: allMaxExtras,
+        minExtras: allMinExtras,
         personnelWithExtras: allPersonnelWithExtras,
         personnelWithoutExtras: allPersonnelWithoutExtras,
       },
     });
   }, [personnel, assignments]);
 
+  // Função para criar um relatório customizado para PDF
+  const createCustomReport = () => {
+    const currentStats = stats[activeTab];
+    const date = new Date().toLocaleDateString('pt-BR');
+    
+    return `
+      <div style="font-family: Arial, sans-serif; max-width: 100%; padding: 30px; color: #333;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #1A3A5F; margin-bottom: 5px; font-size: 24px;">Relatório de Operações - ${activeTab === 'geral' ? 'Geral' : activeTab === 'pmf' ? 'Polícia Mais Forte' : 'Escola Segura'}</h1>
+          <p style="color: #777; font-size: 14px;">20ª CIPM - Gerado em: ${date}</p>
+        </div>
+        
+        <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 25px; background-color: #f9f9f9;">
+          <h2 style="color: #1A3A5F; font-size: 18px; margin-bottom: 15px; border-bottom: 2px solid #1A3A5F; padding-bottom: 8px;">Resumo Estatístico</h2>
+          
+          <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
+            <div style="flex: 1; min-width: 150px; background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center;">
+              <h3 style="font-size: 28px; color: #1A3A5F; margin: 0;">${currentStats.totalExtras}</h3>
+              <p style="margin: 5px 0 0; font-size: 12px; color: #777;">Total de Operações</p>
+            </div>
+            
+            <div style="flex: 1; min-width: 150px; background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center;">
+              <h3 style="font-size: 28px; color: #1A3A5F; margin: 0;">${currentStats.mediaExtras.toFixed(1)}</h3>
+              <p style="margin: 5px 0 0; font-size: 12px; color: #777;">Média por Militar</p>
+            </div>
+            
+            ${activeTab === 'geral' ? `
+            <div style="flex: 1; min-width: 150px; background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center;">
+              <h3 style="font-size: 28px; color: #4A6741; margin: 0;">${stats.pmf.totalExtras}</h3>
+              <p style="margin: 5px 0 0; font-size: 12px; color: #777;">PMF</p>
+            </div>
+            
+            <div style="flex: 1; min-width: 150px; background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center;">
+              <h3 style="font-size: 28px; color: #4A6741; margin: 0;">${stats.escola.totalExtras}</h3>
+              <p style="margin: 5px 0 0; font-size: 12px; color: #777;">Escola Segura</p>
+            </div>
+            ` : `
+            <div style="flex: 1; min-width: 150px; background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center;">
+              <h3 style="font-size: 28px; color: #4A6741; margin: 0;">${currentStats.personnelWithExtras.length}</h3>
+              <p style="margin: 5px 0 0; font-size: 12px; color: #777;">Militares Participaram</p>
+            </div>
+            `}
+          </div>
+          
+          <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+            <div style="flex: 1; min-width: 200px; background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+              <p style="font-size: 12px; color: #777; margin: 0 0 8px;">Mais Operações</p>
+              ${currentStats.maxExtras ? `
+                <div style="display: flex; align-items: center;">
+                  <div style="background: #1A3A5F; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                    <span style="font-size: 11px; font-weight: bold;">${currentStats.maxExtras.rank}</span>
+                  </div>
+                  <div>
+                    <p style="font-size: 14px; font-weight: 500; margin: 0;">${currentStats.maxExtras.name}</p>
+                    <p style="font-size: 12px; color: #3b82f6; margin: 0;">${currentStats.maxExtras.extras} operações</p>
+                  </div>
+                </div>
+              ` : `<p style="font-size: 14px; color: #777;">-</p>`}
+            </div>
+            
+            <div style="flex: 1; min-width: 200px; background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+              <p style="font-size: 12px; color: #777; margin: 0 0 8px;">Menos Operações</p>
+              ${currentStats.minExtras ? `
+                <div style="display: flex; align-items: center;">
+                  <div style="background: #1A3A5F; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                    <span style="font-size: 11px; font-weight: bold;">${currentStats.minExtras.rank}</span>
+                  </div>
+                  <div>
+                    <p style="font-size: 14px; font-weight: 500; margin: 0;">${currentStats.minExtras.name}</p>
+                    <p style="font-size: 12px; color: #3b82f6; margin: 0;">${currentStats.minExtras.extras} operações</p>
+                  </div>
+                </div>
+              ` : `<p style="font-size: 14px; color: #777;">-</p>`}
+            </div>
+          </div>
+        </div>
+        
+        <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 25px; background-color: #f9f9f9;">
+          <h2 style="color: #1A3A5F; font-size: 18px; margin-bottom: 15px; border-bottom: 2px solid #1A3A5F; padding-bottom: 8px;">
+            <span style="display: inline-block; margin-right: 8px;">•</span>
+            Ranking de Participação
+          </h2>
+          
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <thead>
+              <tr>
+                <th style="text-align: left; padding: 10px; border-bottom: 2px solid #e0e0e0; color: #1A3A5F; font-size: 14px;">Posição</th>
+                <th style="text-align: left; padding: 10px; border-bottom: 2px solid #e0e0e0; color: #1A3A5F; font-size: 14px;">Militar</th>
+                <th style="text-align: center; padding: 10px; border-bottom: 2px solid #e0e0e0; color: #1A3A5F; font-size: 14px;">Operações</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${currentStats.personnelWithExtras.length > 0 ? 
+                currentStats.personnelWithExtras.map((person, index) => `
+                  <tr style="background-color: ${index % 2 === 0 ? 'white' : '#f5f8ff'};">
+                    <td style="padding: 10px; font-size: 14px; text-align: center; width: 50px;">${index + 1}</td>
+                    <td style="padding: 10px; font-size: 14px;">
+                      <div style="font-weight: 500;">${person.rank} ${person.name}</div>
+                      <div style="font-size: 12px; color: #777;">${person.rank === "CAP" ? "Capitão" : person.rank === "TEN" ? "Tenente" : person.rank}</div>
+                    </td>
+                    <td style="padding: 10px; font-size: 14px; text-align: center; font-weight: 600; color: #3b82f6;">
+                      ${person.extras} ${person.extras === 1 ? 'operação' : 'operações'}
+                    </td>
+                  </tr>
+                `).join('') : 
+                `<tr><td colspan="3" style="padding: 20px; text-align: center; color: #777;">Nenhum militar participou desta operação</td></tr>`
+              }
+            </tbody>
+          </table>
+          
+          <h3 style="color: #4A6741; font-size: 16px; margin: 20px 0 10px;">
+            <span style="display: inline-block; margin-right: 8px;">•</span>
+            Militares sem Participação
+          </h3>
+          
+          ${currentStats.personnelWithoutExtras.length > 0 ? `
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+              ${currentStats.personnelWithoutExtras.map(person => `
+                <div style="background-color: white; padding: 8px; border-radius: 4px; display: flex; align-items: center;">
+                  <span style="display: inline-block; color: #777; margin-right: 5px;">×</span>
+                  <span style="font-size: 13px;">${person.rank} ${person.name}</span>
+                </div>
+              `).join('')}
+            </div>
+          ` : `
+            <div style="background-color: #f0fff4; border-radius: 6px; padding: 15px; text-align: center; color: #22c55e;">
+              <span style="font-weight: 500;">✓ Todos os militares participaram</span>
+            </div>
+          `}
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; color: #777; font-size: 12px; border-top: 1px solid #e0e0e0; padding-top: 15px;">
+          Documento gerado automaticamente pelo Sistema de Gestão de Escalas - 20ª CIPM
+        </div>
+      </div>
+    `;
+  };
+
   // Função para gerar e baixar PDF do relatório
   const generatePDF = () => {
-    const content = reportRef.current;
-    if (!content) return;
-
     const now = new Date();
     const fileName = `relatorio_operacoes_${activeTab}_${now.getFullYear()}-${now.getMonth() + 1}.pdf`;
     
+    // Criar conteúdo personalizado para o PDF
+    const customHtml = createCustomReport();
+    
+    // Criar um elemento temporário para renderizar o HTML personalizado
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = customHtml;
+    document.body.appendChild(tempDiv);
+    
     // Configurações para o PDF
     const options = {
-      margin: [10, 10],
+      margin: [15, 15],
       filename: fileName,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
@@ -182,21 +342,31 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
       description: "O relatório está sendo preparado para download.",
     });
 
-    // Gerar o PDF
-    html2pdf().from(content).set(options).save().then(() => {
-      toast({
-        title: "PDF Gerado com Sucesso!",
-        description: `O arquivo ${fileName} foi baixado.`,
-        variant: "default",
+    // Gerar o PDF a partir do conteúdo personalizado
+    html2pdf().from(tempDiv).set(options).save()
+      .then(() => {
+        // Remover o elemento temporário após gerar o PDF
+        document.body.removeChild(tempDiv);
+        
+        toast({
+          title: "PDF Gerado com Sucesso!",
+          description: `O arquivo ${fileName} foi baixado.`,
+          variant: "default",
+        });
+      })
+      .catch((error: unknown) => {
+        // Remover o elemento temporário em caso de erro
+        if (document.body.contains(tempDiv)) {
+          document.body.removeChild(tempDiv);
+        }
+        
+        toast({
+          title: "Erro ao gerar PDF",
+          description: "Houve um problema ao criar o PDF. Tente novamente.",
+          variant: "destructive",
+        });
+        console.error("Erro ao gerar PDF:", error);
       });
-    }).catch((error: unknown) => {
-      toast({
-        title: "Erro ao gerar PDF",
-        description: "Houve um problema ao criar o PDF. Tente novamente.",
-        variant: "destructive",
-      });
-      console.error("Erro ao gerar PDF:", error);
-    });
   };
 
   // Função para renderizar o ranking de militares para o relatório atual
@@ -452,7 +622,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                           <div>
                             <p className="font-medium text-sm">{stats.pmf.maxExtras.name}</p>
                             <p className="text-xs text-blue-600">
-                              {stats.pmf.personnelWithExtras.find(p => p.id === stats.pmf.maxExtras?.id)?.extras || 0} operações
+                              {stats.pmf.maxExtras.extras} operações
                             </p>
                           </div>
                         </div>
@@ -470,7 +640,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                           <div>
                             <p className="font-medium text-sm">{stats.pmf.minExtras.name}</p>
                             <p className="text-xs text-blue-600">
-                              {stats.pmf.personnelWithExtras.find(p => p.id === stats.pmf.minExtras?.id)?.extras || 0} operações
+                              {stats.pmf.minExtras.extras} operações
                             </p>
                           </div>
                         </div>
@@ -516,7 +686,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                           <div>
                             <p className="font-medium text-sm">{stats.escola.maxExtras.name}</p>
                             <p className="text-xs text-blue-600">
-                              {stats.escola.personnelWithExtras.find(p => p.id === stats.escola.maxExtras?.id)?.extras || 0} operações
+                              {stats.escola.maxExtras.extras} operações
                             </p>
                           </div>
                         </div>
@@ -534,7 +704,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                           <div>
                             <p className="font-medium text-sm">{stats.escola.minExtras.name}</p>
                             <p className="text-xs text-blue-600">
-                              {stats.escola.personnelWithExtras.find(p => p.id === stats.escola.minExtras?.id)?.extras || 0} operações
+                              {stats.escola.minExtras.extras} operações
                             </p>
                           </div>
                         </div>
