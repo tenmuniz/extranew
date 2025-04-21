@@ -569,7 +569,12 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
           <div ref={reportRef} className="px-2 pt-2 pb-4 bg-white">
             <div className="mb-6">
               <h2 className="text-xl font-bold text-center text-[#1A3A5F] mb-2">
-                Relatório de Operações - {activeTab === 'geral' ? 'Geral' : activeTab === 'pmf' ? 'Polícia Mais Forte' : 'Escola Segura'}
+                Relatório de Operações - {
+                  activeTab === 'geral' ? 'Geral' : 
+                  activeTab === 'pmf' ? 'Polícia Mais Forte' : 
+                  activeTab === 'escola' ? 'Escola Segura' : 
+                  'Conflitos'
+                }
               </h2>
               <p className="text-center text-gray-500 text-sm">
                 {`20ª CIPM - Gerado em: ${new Date().toLocaleDateString('pt-BR')}`}
@@ -764,6 +769,74 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                   </div>
 
                   {renderPersonnelRanking()}
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="conflitos" className="mt-0 pb-6">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
+                      <h3 className="text-2xl font-bold text-[#8B0000]">{stats.conflitos.totalExtras}</h3>
+                      <p className="text-xs text-gray-500">Total de Conflitos</p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
+                      <h3 className="text-2xl font-bold text-[#8B0000]">
+                        {stats.conflitos.mediaExtras.toFixed(1)}
+                      </h3>
+                      <p className="text-xs text-gray-500">Média por Militar</p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
+                      <h3 className="text-2xl font-bold text-[#8B0000]">
+                        {stats.conflitos.personnelWithExtras.length}
+                      </h3>
+                      <p className="text-xs text-gray-500">Militares Afetados</p>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-[#fff9f9] rounded-lg border border-[#ffcccc] mb-4">
+                    <div className="flex items-start mb-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#8B0000] mt-0.5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      <div>
+                        <h3 className="text-md font-medium text-[#8B0000]">Conflitos de Escala</h3>
+                        <p className="text-sm text-gray-600">Militares agendados para operações em dias que estão em serviço normal de escala.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {stats.conflitos.personnelWithExtras.length > 0 ? (
+                    <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100">
+                      <h3 className="font-medium text-sm mb-3 text-[#8B0000]">Militares com Conflitos</h3>
+                      <div className="space-y-3">
+                        {stats.conflitos.personnelWithExtras.map((person) => (
+                          <div key={person.id} className="flex justify-between items-center p-2 border-b border-gray-100 last:border-b-0">
+                            <div className="flex items-center">
+                              <div className="bg-[#8B0000] text-white w-7 h-7 rounded-full flex items-center justify-center mr-2">
+                                <span className="font-bold text-xs">{person.rank}</span>
+                              </div>
+                              <div>
+                                <p className="font-medium text-sm">{person.name}</p>
+                                <div className="flex items-center">
+                                  <span className="text-xs text-gray-500">{person.platoon || "Sem Guarnição"}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <span className="text-[#8B0000] font-semibold rounded-full bg-[#fff9f9] px-3 py-1 text-sm">
+                              {person.extras} {person.extras === 1 ? 'conflito' : 'conflitos'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col justify-center items-center h-40 text-gray-500 bg-white p-3 rounded-lg shadow-sm border border-gray-100">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-green-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span className="text-md">Nenhum conflito de escala detectado</span>
+                    </div>
+                  )}
                 </div>
               </TabsContent>
             </ScrollArea>
