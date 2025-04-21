@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Personnel, rankEnum, platoonEnum } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { getGarrisonColor } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,

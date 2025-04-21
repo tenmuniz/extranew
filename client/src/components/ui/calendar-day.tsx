@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { cn, getDayColorClass, getDayOfWeekAbbr } from "@/lib/utils";
+import { cn, getDayColorClass, getDayOfWeekAbbr, getActiveGuarnitionForDay } from "@/lib/utils";
 
 interface CalendarDayProps {
   date: Date;
@@ -39,14 +39,21 @@ export function CalendarDay({
       onDragOver={isDisabled ? undefined : onDragOver}
       onDrop={isDisabled ? undefined : onDrop}
     >
-      <div className="flex justify-between items-center mb-3">
-        <span className={cn(
-          "font-medium text-lg", 
-          !isCurrentMonth && "text-gray-400",
-          isToday && "text-blue-600 font-bold"
-        )}>
-          {dayOfMonth}
-        </span>
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex flex-col">
+          <span className={cn(
+            "font-medium text-lg", 
+            !isCurrentMonth && "text-gray-400",
+            isToday && "text-blue-600 font-bold"
+          )}>
+            {dayOfMonth}
+          </span>
+          {isCurrentMonth && (
+            <span className="text-xs text-gray-500">
+              {getActiveGuarnitionForDay(date)}
+            </span>
+          )}
+        </div>
         {isCurrentMonth && (
           <span className={cn("text-xs text-white px-2 py-1 rounded-full font-semibold", dayColorClass)}>
             {dayOfWeekAbbr}

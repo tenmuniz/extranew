@@ -1,5 +1,5 @@
 import { Personnel } from "@shared/schema";
-import { cn, isPersonnelAvailable } from "@/lib/utils";
+import { cn, isPersonnelAvailable, getGarrisonColor } from "@/lib/utils";
 
 interface PersonnelCardProps {
   personnel: Personnel;
@@ -101,7 +101,7 @@ export function PersonnelCard({
             {personnel.platoon && (
               <>
                 <span className="mx-2 text-gray-300">•</span>
-                <span className="text-xs bg-gray-100 py-0.5 px-1.5 rounded-sm">
+                <span className="text-xs text-white py-0.5 px-1.5 rounded-sm" style={{ backgroundColor: getGarrisonColor(personnel.platoon) }}>
                   {personnel.platoon}
                 </span>
               </>
