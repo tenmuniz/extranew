@@ -90,10 +90,18 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
   // Processar os dados de operações para gerar estatísticas
   useEffect(() => {
     if (!personnel.length) return;
+    
+    // Se temos mês atual definido, filtrar operações apenas do mês atual
+    const currentMonthFilter = (assignment: Assignment) => {
+      if (currentMonth === undefined || currentYear === undefined) return true;
+      
+      const date = new Date(assignment.date);
+      return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+    };
 
     // Contagem de operações por militar para cada tipo
-    const pmfOperations = assignments.filter(a => a.operationType === "PMF");
-    const escolaOperations = assignments.filter(a => a.operationType === "ESCOLA");
+    const pmfOperations = assignments.filter(a => a.operationType === "PMF" && currentMonthFilter(a));
+    const escolaOperations = assignments.filter(a => a.operationType === "ESCOLA" && currentMonthFilter(a));
 
     // Contagem total direta a partir dos assignments (não das pessoas)
     const pmfTotalExtras = pmfOperations.length;
@@ -173,7 +181,8 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
     const conflictsAssignments: Assignment[] = [];
     
     // Para cada atribuição, verificar se o militar está em serviço no dia
-    assignments.forEach(assignment => {
+    // Filtrar apenas atribuições do mês atual
+    assignments.filter(currentMonthFilter).forEach(assignment => {
       const person = personnel.find(p => p.id === assignment.personnelId);
       if (!person || !person.id) return;
       
@@ -284,7 +293,7 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
         personnelWithoutExtras: personnel.filter(p => !p.id || !conflictDetailsMap[p.id]),
       }
     });
-  }, [personnel, assignments]);
+  }, [personnel, assignments, currentMonth, currentYear]);
 
   // Função para criar um relatório customizado para PDF
   const createCustomReport = () => {

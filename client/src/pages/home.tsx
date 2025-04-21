@@ -135,6 +135,8 @@ export default function Home() {
           <ReportModal
             personnel={personnel}
             assignments={assignments}
+            currentMonth={currentMonth}
+            currentYear={currentYear}
           />
           
           <Button
