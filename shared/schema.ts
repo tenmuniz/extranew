@@ -15,12 +15,21 @@ export const rankEnum = z.enum([
   "CAP"     // Capitão
 ]);
 
+// Define platoons/teams
+export const platoonEnum = z.enum([
+  "ALFA",      // Guarnição Alfa (escala 7x14)
+  "BRAVO",     // Guarnição Bravo (escala 7x14)
+  "CHARLIE",   // Guarnição Charlie (escala 7x14)
+  "EXPEDIENTE" // Expediente (serviço normal)
+]);
+
 // Personnel table
 export const personnel = pgTable("personnel", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   rank: text("rank", { enum: ["SD", "CB", "3SGT", "2SGT", "1SGT", "SUBTEN", "TEN", "1TEN", "CAP"] }).notNull(),
   extras: integer("extras").notNull().default(0),
+  platoon: text("platoon", { enum: ["ALFA", "BRAVO", "CHARLIE", "EXPEDIENTE"] }).default("EXPEDIENTE").notNull(),
 });
 
 // Operation types
@@ -50,6 +59,7 @@ export const dateRangeSchema = z.object({
 
 // Type definitions
 export type Rank = z.infer<typeof rankEnum>;
+export type Platoon = z.infer<typeof platoonEnum>;
 export type OperationType = z.infer<typeof operationTypeEnum>;
 export type Personnel = typeof personnel.$inferSelect;
 export type InsertPersonnel = z.infer<typeof insertPersonnelSchema>;

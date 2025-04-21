@@ -2,7 +2,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Personnel, rankEnum } from "@shared/schema";
+import { Personnel, rankEnum, platoonEnum } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -34,6 +34,7 @@ const personnelFormSchema = z.object({
   name: z.string().min(3, { message: "Nome deve ter pelo menos 3 caracteres" }),
   rank: rankEnum,
   extras: z.number().default(0),
+  platoon: platoonEnum.default("EXPEDIENTE"),
 });
 
 type PersonnelFormValues = z.infer<typeof personnelFormSchema>;
@@ -55,6 +56,7 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
       name: "",
       rank: "SD",
       extras: 0,
+      platoon: "EXPEDIENTE",
     },
   });
 
@@ -63,6 +65,7 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
       name: "",
       rank: "SD",
       extras: 0,
+      platoon: "EXPEDIENTE",
     });
     setEditingPersonnel(null);
   };
@@ -114,6 +117,7 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
       name: person.name,
       rank: person.rank as any,
       extras: person.extras,
+      platoon: person.platoon || "EXPEDIENTE",
     });
   };
 
