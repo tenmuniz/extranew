@@ -295,15 +295,29 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
     });
   }, [personnel, assignments, currentMonth, currentYear]);
 
+  // Função para obter o nome do mês
+  const getMonthName = (month: number): string => {
+    const monthNames = [
+      'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    ];
+    return monthNames[month];
+  };
+
   // Função para criar um relatório customizado para PDF
   const createCustomReport = () => {
     const currentStats = stats[activeTab];
     const date = new Date().toLocaleDateString('pt-BR');
     
+    // Obter o nome do mês atual
+    const monthName = currentMonth !== undefined ? getMonthName(currentMonth) : getMonthName(new Date().getMonth());
+    const yearValue = currentYear !== undefined ? currentYear : new Date().getFullYear();
+    
     return `
       <div style="font-family: Arial, sans-serif; max-width: 100%; padding: 30px; color: #333;">
         <div style="text-align: center; margin-bottom: 30px;">
           <h1 style="color: #1A3A5F; margin-bottom: 5px; font-size: 24px;">Relatório de Operações - ${activeTab === 'geral' ? 'Geral' : activeTab === 'pmf' ? 'Polícia Mais Forte' : 'Escola Segura'}</h1>
+          <h2 style="color: #4A6741; margin-bottom: 5px; font-size: 18px;">${monthName} / ${yearValue}</h2>
           <p style="color: #777; font-size: 14px;">20ª CIPM - Gerado em: ${date}</p>
         </div>
         
@@ -435,8 +449,12 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
 
   // Função para gerar e baixar PDF do relatório
   const generatePDF = () => {
-    const now = new Date();
-    const fileName = `relatorio_extras_${activeTab}_${now.getFullYear()}-${now.getMonth() + 1}.pdf`;
+    // Usar o mês e ano atuais do calendário, ou o atual se não definido
+    const reportMonth = currentMonth !== undefined ? currentMonth : new Date().getMonth();
+    const reportYear = currentYear !== undefined ? currentYear : new Date().getFullYear();
+    const monthName = getMonthName(reportMonth);
+    
+    const fileName = `relatorio_extras_${activeTab}_${monthName}_${reportYear}.pdf`;
     
     // Criar conteúdo personalizado para o PDF
     const customHtml = createCustomReport();
@@ -607,6 +625,11 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
           <div>
             <DialogTitle className="text-2xl font-heading bg-gradient-to-r from-[#1A3A5F] to-[#4A6741] bg-clip-text text-transparent">
               Relatório de Extras
+              <div className="text-sm font-medium text-[#4A6741] mt-1">
+                {currentMonth !== undefined && currentYear !== undefined 
+                  ? `${getMonthName(currentMonth)} / ${currentYear}` 
+                  : `${getMonthName(new Date().getMonth())} / ${new Date().getFullYear()}`}
+              </div>
             </DialogTitle>
             <DialogDescription>
               Resumo das participações em extras e ranking dos militares.
@@ -646,6 +669,11 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
                   'Conflitos'
                 }
               </h2>
+              <p className="text-center text-[#4A6741] font-medium text-sm mb-1">
+                {currentMonth !== undefined && currentYear !== undefined 
+                  ? `${getMonthName(currentMonth)} / ${currentYear}` 
+                  : `${getMonthName(new Date().getMonth())} / ${new Date().getFullYear()}`}
+              </p>
               <p className="text-center text-gray-500 text-sm">
                 {`20ª CIPM - Gerado em: ${new Date().toLocaleDateString('pt-BR')}`}
               </p>
