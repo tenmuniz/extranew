@@ -47,20 +47,20 @@ export function PersonnelCard({
 
   if (isAssigned) {
     return (
-      <div className="assigned-person bg-white p-1 py-1.5 rounded text-xs shadow-sm flex justify-between items-center">
-        <div className="flex items-center space-x-1">
-          <div className="bg-[#1A3A5F] text-white w-5 h-5 rounded-full flex items-center justify-center mr-1 shrink-0">
+      <div className="assigned-person bg-white p-1.5 rounded text-xs shadow flex justify-between items-center w-full mb-1 border border-gray-100 overflow-hidden">
+        <div className="flex items-center mr-1 min-w-0 flex-grow">
+          <div className="bg-[#1A3A5F] text-white w-5 h-5 rounded-full flex items-center justify-center mr-1.5 flex-shrink-0">
             <span className="font-medium text-[8px]">{personnel.rank}</span>
           </div>
-          <span className="font-medium truncate">{personnel.name}</span>
+          <span className="font-medium truncate mr-0.5">{personnel.name}</span>
         </div>
         {onRemove && (
           <button 
-            className="text-red-500 hover:text-red-700 ml-1"
+            className="text-red-500 hover:text-red-700 flex-shrink-0"
             onClick={onRemove}
             aria-label="Remover"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>
           </button>
