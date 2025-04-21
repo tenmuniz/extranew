@@ -80,7 +80,7 @@ export function CalendarDay({
         <div className="flex flex-col w-full">
           {children}
         </div>
-        {!children && !isDisabled && isCurrentMonth && (
+        {!children && !isDisabled && (
           <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
             <div className="text-gray-400 text-xs text-center">
               <span className="block">Arraste um militar</span>

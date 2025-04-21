@@ -54,10 +54,7 @@ export default function Home() {
   } = useQuery<Assignment[]>({
     queryKey: [
       "/api/assignments",
-      {
-        startDate: formatDateToISO(startDate),
-        endDate: formatDateToISO(endDate)
-      }
+      // Remover a restrição por data para obter todas as designações
     ],
   });
 
