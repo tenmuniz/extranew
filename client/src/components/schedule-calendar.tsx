@@ -220,9 +220,16 @@ export function ScheduleCalendar({
   // Get assignments for a specific date (para qualquer mês)
   const getAssignmentsForDate = (date: Date): Assignment[] => {
     const dateStr = formatDateToISO(date);
-    return assignments.filter(
-      a => formatDateToISO(new Date(a.date)) === dateStr && a.operationType === activeOperation
-    );
+    console.log(`Buscando assignments para: ${dateStr}, Tipo: ${activeOperation}`);
+    console.log("Total de assignments disponíveis:", assignments.length);
+    
+    const filteredAssignments = assignments.filter(a => {
+      const assignmentDateStr = formatDateToISO(new Date(a.date));
+      return assignmentDateStr === dateStr && a.operationType === activeOperation;
+    });
+    
+    console.log(`Encontrados ${filteredAssignments.length} assignments para o dia ${dateStr}`);
+    return filteredAssignments;
   };
 
   // Handle drag over

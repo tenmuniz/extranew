@@ -84,25 +84,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Assignment routes
   app.get("/api/assignments", async (req, res) => {
     try {
-      let { startDate, endDate } = req.query as { startDate?: string, endDate?: string };
-      
-      // If dates are not provided, get all assignments
-      if (!startDate || !endDate) {
-        // Use current month as default
-        const today = new Date();
-        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        
-        startDate = firstDay.toISOString().split('T')[0];
-        endDate = lastDay.toISOString().split('T')[0];
-      }
-      
-      const dateRange = dateRangeSchema.parse({ startDate, endDate });
-      const assignments = await storage.getAssignmentsByDateRange(
-        dateRange.startDate, 
-        dateRange.endDate
-      );
-      
+      // Obter todos os assignments sem filtragem por data
+      const assignments = await storage.getAllAssignments();
       res.json(assignments);
     } catch (error) {
       handleError(res, error);
