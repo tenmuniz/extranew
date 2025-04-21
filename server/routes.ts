@@ -114,8 +114,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const data = insertAssignmentSchema.parse(req.body);
       
       // Check if the personnel exists
-      const personnel = await storage.getPersonnel(data.personnelId);
-      if (!personnel) {
+      const personnelRecord = await storage.getPersonnel(data.personnelId);
+      if (!personnelRecord) {
         return res.status(404).json({ message: "Personnel not found" });
       }
 
@@ -146,6 +146,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const newAssignment = await storage.createAssignment(data);
+      
+      // Atualizar o contador de extras do militar
+      const personnelToUpdate = await storage.getPersonnel(data.personnelId);
+      if (personnelToUpdate) {
+        // Calcular o total de extras para este militar em ambas as operações
+        const allAssignments = await storage.getAllAssignments();
+        const personnelAssignments = allAssignments.filter((a) => a.personnelId === data.personnelId);
+        const totalExtras = personnelAssignments.length;
+        
+        // Atualizar o contador de extras
+        await storage.updatePersonnel(data.personnelId, { extras: totalExtras });
+      }
+      
       res.status(201).json(newAssignment);
     } catch (error) {
       handleError(res, error);
@@ -158,11 +171,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (isNaN(id)) {
         return res.status(400).json({ message: "Invalid ID format" });
       }
-
+      
+      // Obter a atribuição antes de excluí-la para saber qual militar atualizar
+      const allAssignments = await storage.getAllAssignments();
+      const assignmentToDelete = allAssignments.find((a) => a.id === id);
+      
+      if (!assignmentToDelete) {
+        return res.status(404).json({ message: "Assignment not found" });
+      }
+      
+      const personnelId = assignmentToDelete.personnelId;
+      
+      // Excluir a atribuição
       const success = await storage.deleteAssignment(id);
       
       if (!success) {
         return res.status(404).json({ message: "Assignment not found" });
+      }
+      
+      // Atualizar o contador de extras do militar após a exclusão
+      const personnelToUpdate = await storage.getPersonnel(personnelId);
+      if (personnelToUpdate) {
+        // Calcular o novo total de extras para este militar
+        const updatedAssignments = await storage.getAllAssignments();
+        const personnelAssignments = updatedAssignments.filter((a) => a.personnelId === personnelId);
+        const totalExtras = personnelAssignments.length;
+        
+        // Atualizar o contador de extras
+        await storage.updatePersonnel(personnelId, { extras: totalExtras });
       }
       
       res.status(204).end();

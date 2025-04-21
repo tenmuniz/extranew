@@ -18,6 +18,7 @@ export interface IStorage {
   deletePersonnel(id: number): Promise<boolean>;
   
   // Assignment operations
+  getAllAssignments(): Promise<Assignment[]>;
   getAssignmentsByDateRange(startDate: Date, endDate: Date): Promise<Assignment[]>;
   getAssignmentsByDate(date: Date): Promise<Assignment[]>;
   createAssignment(data: InsertAssignment): Promise<Assignment>;
@@ -193,6 +194,10 @@ export class MemStorage implements IStorage {
   }
 
   // Assignment methods
+  async getAllAssignments(): Promise<Assignment[]> {
+    return Array.from(this.assignmentsData.values());
+  }
+  
   async getAssignmentsByDateRange(startDate: Date, endDate: Date): Promise<Assignment[]> {
     const start = new Date(startDate);
     start.setHours(0, 0, 0, 0);
