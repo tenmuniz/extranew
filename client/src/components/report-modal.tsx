@@ -223,7 +223,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
           
           <div style="display: flex; flex-wrap: wrap; gap: 15px;">
             <div style="flex: 1; min-width: 200px; background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-              <p style="font-size: 12px; color: #777; margin: 0 0 8px;">Mais Operações</p>
+              <p style="font-size: 12px; color: #777; margin: 0 0 8px;">Mais Extras</p>
               ${currentStats.maxExtras ? `
                 <div style="display: flex; align-items: center;">
                   <div style="background: #1A3A5F; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
@@ -231,14 +231,14 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                   </div>
                   <div>
                     <p style="font-size: 14px; font-weight: 500; margin: 0;">${currentStats.maxExtras.name}</p>
-                    <p style="font-size: 12px; color: #3b82f6; margin: 0;">${currentStats.maxExtras.extras} operações</p>
+                    <p style="font-size: 12px; color: #3b82f6; margin: 0;">${currentStats.maxExtras.extras} extras</p>
                   </div>
                 </div>
               ` : `<p style="font-size: 14px; color: #777;">-</p>`}
             </div>
             
             <div style="flex: 1; min-width: 200px; background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-              <p style="font-size: 12px; color: #777; margin: 0 0 8px;">Menos Operações</p>
+              <p style="font-size: 12px; color: #777; margin: 0 0 8px;">Menos Extras</p>
               ${currentStats.minExtras ? `
                 <div style="display: flex; align-items: center;">
                   <div style="background: #1A3A5F; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
@@ -246,7 +246,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                   </div>
                   <div>
                     <p style="font-size: 14px; font-weight: 500; margin: 0;">${currentStats.minExtras.name}</p>
-                    <p style="font-size: 12px; color: #3b82f6; margin: 0;">${currentStats.minExtras.extras} operações</p>
+                    <p style="font-size: 12px; color: #3b82f6; margin: 0;">${currentStats.minExtras.extras} extras</p>
                   </div>
                 </div>
               ` : `<p style="font-size: 14px; color: #777;">-</p>`}
@@ -265,7 +265,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
               <tr>
                 <th style="text-align: left; padding: 10px; border-bottom: 2px solid #e0e0e0; color: #1A3A5F; font-size: 14px;">Posição</th>
                 <th style="text-align: left; padding: 10px; border-bottom: 2px solid #e0e0e0; color: #1A3A5F; font-size: 14px;">Militar</th>
-                <th style="text-align: center; padding: 10px; border-bottom: 2px solid #e0e0e0; color: #1A3A5F; font-size: 14px;">Operações</th>
+                <th style="text-align: center; padding: 10px; border-bottom: 2px solid #e0e0e0; color: #1A3A5F; font-size: 14px;">Extras</th>
               </tr>
             </thead>
             <tbody>
@@ -278,7 +278,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                       <div style="font-size: 12px; color: #777;">${person.rank === "CAP" ? "Capitão" : person.rank === "TEN" ? "Tenente" : person.rank}</div>
                     </td>
                     <td style="padding: 10px; font-size: 14px; text-align: center; font-weight: 600; color: #3b82f6;">
-                      ${person.extras} ${person.extras === 1 ? 'operação' : 'operações'}
+                      ${person.extras} ${person.extras === 1 ? 'extra' : 'extras'}
                     </td>
                   </tr>
                 `).join('') : 
@@ -386,7 +386,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
           <div className="p-4 bg-[#f8fafc] rounded-lg border border-gray-200">
             <div className="flex justify-between items-center mb-3 px-3 text-sm font-bold text-[#1A3A5F]">
               <span>Militar</span>
-              <span>Operações</span>
+              <span>Extras</span>
             </div>
             
             <ScrollArea className="h-[250px]">
@@ -407,7 +407,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                       </div>
                       <div className="flex items-center">
                         <span className="text-blue-600 font-semibold rounded-full bg-blue-50 px-3 py-1 text-sm">
-                          {person.extras} {person.extras === 1 ? 'operação' : 'operações'}
+                          {person.extras} {person.extras === 1 ? 'extra' : 'extras'}
                         </span>
                       </div>
                     </div>
@@ -418,7 +418,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
-                  <span className="text-md">Nenhum militar participou desta operação</span>
+                  <span className="text-md">Nenhum militar realizou extras</span>
                 </div>
               )}
             </ScrollArea>

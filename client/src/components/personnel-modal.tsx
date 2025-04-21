@@ -233,6 +233,32 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
                 />
                 <FormField
                   control={form.control}
+                  name="platoon"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Guarnição</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione a guarnição" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="ALFA">ALFA</SelectItem>
+                          <SelectItem value="BRAVO">BRAVO</SelectItem>
+                          <SelectItem value="CHARLIE">CHARLIE</SelectItem>
+                          <SelectItem value="EXPEDIENTE">EXPEDIENTE</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
                   name="extras"
                   render={({ field }) => (
                     <FormItem>
