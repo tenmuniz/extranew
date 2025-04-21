@@ -87,6 +87,42 @@ export function ScheduleCalendar({
         return;
       }
       
+      // Verificar se o militar já está escalado neste dia e operação
+      const existingAssignments = getAssignmentsForDate(date);
+      const alreadyAssigned = existingAssignments.some(
+        assignment => assignment.personnelId === personnelData.id
+      );
+      
+      if (alreadyAssigned) {
+        toast({
+          title: "Militar já escalado",
+          description: "Este militar já está escalado neste dia para esta operação",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Verificar limites de militares por operação
+      const maxPersonnel = activeOperation === "PMF" ? 3 : 2;
+      if (existingAssignments.length >= maxPersonnel) {
+        toast({
+          title: "Limite excedido",
+          description: `Não é possível escalar mais de ${maxPersonnel} militares nesta operação por dia`,
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Incrementar extras do militar
+      const selectedPersonnel = personnel.find(p => p.id === personnelData.id);
+      if (selectedPersonnel) {
+        // Atualizar extras do militar
+        await apiRequest("PUT", `/api/personnel/${personnelData.id}`, {
+          ...selectedPersonnel,
+          extras: (selectedPersonnel.extras || 0) + 1
+        });
+      }
+      
       // Send assignment request to the server
       const response = await apiRequest("POST", "/api/assignments", {
         personnelId: personnelData.id,
@@ -95,7 +131,7 @@ export function ScheduleCalendar({
       });
       
       if (response.ok) {
-        // Refresh assignments
+        // Refresh assignments and personnel (para atualizar o número de extras)
         onAssignmentChange();
         
         toast({
@@ -116,10 +152,27 @@ export function ScheduleCalendar({
   // Handle removing an assignment
   const handleRemoveAssignment = async (assignmentId: number, personnelName: string) => {
     try {
+      // Primeiro, obtenha a designação para saber qual militar está sendo removido
+      const assignment = assignments.find(a => a.id === assignmentId);
+      if (!assignment) {
+        throw new Error("Designação não encontrada");
+      }
+      
+      // Encontrar o militar para decrementar extras
+      const selectedPersonnel = personnel.find(p => p.id === assignment.personnelId);
+      if (selectedPersonnel && selectedPersonnel.extras > 0) {
+        // Atualizar extras do militar (decrementar)
+        await apiRequest("PUT", `/api/personnel/${selectedPersonnel.id}`, {
+          ...selectedPersonnel,
+          extras: selectedPersonnel.extras - 1
+        });
+      }
+      
+      // Remover a designação
       const response = await apiRequest("DELETE", `/api/assignments/${assignmentId}`);
       
       if (response.ok) {
-        // Refresh assignments
+        // Refresh assignments and personnel (para atualizar o número de extras)
         onAssignmentChange();
         
         toast({

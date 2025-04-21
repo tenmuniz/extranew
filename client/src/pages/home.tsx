@@ -84,7 +84,10 @@ export default function Home() {
   };
 
   const handleAssignmentChange = () => {
+    // Ao alterar designações, também precisamos atualizar a lista de pessoal
+    // para refletir as mudanças nos extras
     refetchAssignments();
+    refetchPersonnel();
   };
 
   // Refresh assignments when month changes
