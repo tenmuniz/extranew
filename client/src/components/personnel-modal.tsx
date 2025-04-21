@@ -182,7 +182,7 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
           </h3>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="name"
@@ -212,11 +212,15 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="SD">Soldado</SelectItem>
+                          <SelectItem value="CAP">Capitão</SelectItem>
+                          <SelectItem value="1TEN">1º Tenente</SelectItem>
+                          <SelectItem value="TEN">Tenente</SelectItem>
+                          <SelectItem value="SUBTEN">Sub-Tenente</SelectItem>
+                          <SelectItem value="1SGT">1º Sargento</SelectItem>
+                          <SelectItem value="2SGT">2º Sargento</SelectItem>
+                          <SelectItem value="3SGT">3º Sargento</SelectItem>
                           <SelectItem value="CB">Cabo</SelectItem>
-                          <SelectItem value="SG">Sargento</SelectItem>
-                          <SelectItem value="TN">Tenente</SelectItem>
-                          <SelectItem value="CP">Capitão</SelectItem>
+                          <SelectItem value="SD">Soldado</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -225,12 +229,17 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
                 />
                 <FormField
                   control={form.control}
-                  name="registrationNumber"
+                  name="extras"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Registro</FormLabel>
+                      <FormLabel>Extras</FormLabel>
                       <FormControl>
-                        <Input placeholder="Número de registro" {...field} />
+                        <Input 
+                          type="number" 
+                          placeholder="Quantidade de extras" 
+                          {...field} 
+                          onChange={(e) => field.onChange(Number(e.target.value))} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -276,12 +285,12 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
                 >
                   <div className="flex items-center">
                     <div className="bg-[#1A3A5F] text-white w-8 h-8 rounded-full flex items-center justify-center mr-2">
-                      <span className="font-medium text-sm">{person.rank}</span>
+                      <span className="font-medium text-xs">{person.rank}</span>
                     </div>
                     <div>
                       <p className="font-medium">{person.name}</p>
                       <p className="text-xs text-[#708090]">
-                        Registro: {person.registrationNumber}
+                        Extras: {person.extras || 0}
                       </p>
                     </div>
                   </div>
