@@ -17,6 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { getActiveGuarnitionForDay } from "@/lib/utils";
 import html2pdf from 'html2pdf.js';
 
 interface ReportModalProps {
@@ -558,10 +559,11 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
           onValueChange={(v) => setActiveTab(v as ReportTab)} 
           className="flex-1 flex flex-col overflow-hidden"
         >
-          <TabsList className="grid grid-cols-3 mb-6">
+          <TabsList className="grid grid-cols-4 mb-6">
             <TabsTrigger value="geral" className="text-base py-3">Geral</TabsTrigger>
             <TabsTrigger value="pmf" className="text-base py-3">Polícia Mais Forte</TabsTrigger>
             <TabsTrigger value="escola" className="text-base py-3">Escola Segura</TabsTrigger>
+            <TabsTrigger value="conflitos" className="text-base py-3">Conflitos</TabsTrigger>
           </TabsList>
           
           <div ref={reportRef} className="px-2 pt-2 pb-4 bg-white">
