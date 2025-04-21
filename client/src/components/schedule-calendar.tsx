@@ -6,7 +6,7 @@ import {
   getLastDayOfMonth, 
   isWeekday, 
   formatDateToISO,
-  isPersonnelAvailable,
+  isPersonnelInService,
   getActiveGuarnitionForDay
 } from "@/lib/utils";
 import { Assignment, OperationType, Personnel } from "@shared/schema";
@@ -94,18 +94,18 @@ export function ScheduleCalendar({
         return;
       }
       
-      // Verificar se o militar está na guarnição que permite extras (verificação da escala 7x14)
+      // Verificar se o militar está na guarnição que está em serviço (não bloqueamos, apenas alertamos)
       // Buscar dados do militar
       const militarSelecionado = personnel.find(p => p.id === personnelData.id);
-      if (militarSelecionado) {
-        // Verificar disponibilidade baseado na escala 7x14
-        if (!isPersonnelAvailable(militarSelecionado, date)) {
+      if (militarSelecionado && militarSelecionado.platoon && militarSelecionado.platoon !== "EXPEDIENTE") {
+        // Verificar se está em serviço baseado na escala 7x14
+        if (isPersonnelInService(militarSelecionado, date)) {
           toast({
-            title: "Militar indisponível",
-            description: `O militar da guarnição ${militarSelecionado.platoon} está em período de serviço e não pode fazer extras`,
-            variant: "destructive"
+            title: "Atenção: Militar em Serviço",
+            description: `O militar da guarnição ${militarSelecionado.platoon} está em período de serviço. Confirme se deseja escalá-lo mesmo assim.`,
+            variant: "default"
           });
-          return;
+          // Não retornamos, permitimos continuar
         }
       }
       

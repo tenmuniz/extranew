@@ -142,10 +142,14 @@ export class MemStorage implements IStorage {
     const id = this.personnelCurrentId++;
     // Garantir que extras sempre tenha um valor numérico
     const extras = data.extras !== undefined ? data.extras : 0;
+    // Garantir que platoon sempre tenha um valor da enum
+    const platoon = data.platoon || "EXPEDIENTE";
+    
     const newPersonnel: Personnel = { 
       ...data, 
       id,
-      extras 
+      extras,
+      platoon 
     };
     this.personnelData.set(id, newPersonnel);
     return newPersonnel;
@@ -159,6 +163,11 @@ export class MemStorage implements IStorage {
     let updatedData = { ...data };
     if (updatedData.extras === undefined && data.extras !== 0) {
       updatedData.extras = personnel.extras;
+    }
+    
+    // Garantir que platoon mantenha um valor válido
+    if (updatedData.platoon === undefined) {
+      updatedData.platoon = personnel.platoon;
     }
 
     const updatedPersonnel: Personnel = {
