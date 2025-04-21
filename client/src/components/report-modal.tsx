@@ -34,7 +34,7 @@ type PersonnelWithConflicts = Personnel & {
   extras: number;
   pmfConflicts: number;
   escolaConflicts: number;
-  conflictDetails: {date: string, operation: OperationType}[];
+  conflictDetails: {date: string, operation: OperationType, guarnition: string}[];
 };
 
 interface StatsData {
@@ -888,7 +888,7 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
                   <div className="grid grid-cols-4 gap-3">
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
                       <h3 className="text-2xl font-bold text-[#8B0000]">
-                        {stats.conflitos.personnelWithExtras.length}
+                        {stats.conflitos.totalExtras}
                       </h3>
                       <p className="text-xs text-gray-500">Total de Conflitos</p>
                     </div>
@@ -900,13 +900,13 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
                     </div>
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
                       <h3 className="text-2xl font-bold text-blue-600">
-                        {(stats.conflitos.personnelWithExtras as PersonnelWithConflicts[]).filter(p => p.pmfConflicts > 0).length}
+                        {(stats.conflitos.personnelWithExtras as PersonnelWithConflicts[]).reduce((acc, p) => acc + p.pmfConflicts, 0)}
                       </h3>
                       <p className="text-xs text-gray-500">PMF</p>
                     </div>
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
                       <h3 className="text-2xl font-bold text-green-600">
-                        {(stats.conflitos.personnelWithExtras as PersonnelWithConflicts[]).filter(p => p.escolaConflicts > 0).length}
+                        {(stats.conflitos.personnelWithExtras as PersonnelWithConflicts[]).reduce((acc, p) => acc + p.escolaConflicts, 0)}
                       </h3>
                       <p className="text-xs text-gray-500">Escola Segura</p>
                     </div>
@@ -919,7 +919,11 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
                       </svg>
                       <div>
                         <h3 className="text-md font-medium text-[#8B0000]">Conflitos de Escala</h3>
-                        <p className="text-sm text-gray-600">Militares escalados para extras em dias que já estão em serviço normal de escala.</p>
+                        <p className="text-sm text-gray-600">
+                          Militares escalados para extras em dias que sua guarnição está de serviço normal. 
+                          Um conflito ocorre quando um militar de guarnição (ALFA, BRAVO ou CHARLIE) é escalado para 
+                          uma operação em um dia em que sua própria guarnição está de serviço regular.
+                        </p>
                       </div>
                     </div>
                     <div className="mt-2 grid grid-cols-2 gap-2">
@@ -964,6 +968,22 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
                                   <span className="text-green-600">Escola: {(person as PersonnelWithConflicts).escolaConflicts}</span>
                                 )}
                               </div>
+                              {/* Adicionar botão para expandir detalhes */}
+                              <Button 
+                                variant="outline" 
+                                className="text-xs mt-2 h-6 px-2 text-[#8B0000] border-[#ffcccc]"
+                                onClick={() => {
+                                  // Mostrar alerta com detalhes dos conflitos
+                                  const conflicts = (person as PersonnelWithConflicts).conflictDetails;
+                                  const message = conflicts.map(c => 
+                                    `- Data: ${c.date}\n  Operação: ${c.operation === 'PMF' ? 'Polícia Mais Forte' : 'Escola Segura'}\n  Guarnição em serviço: ${c.guarnition}`
+                                  ).join('\n\n');
+                                  
+                                  alert(`Detalhes dos conflitos para ${person.name}:\n\n${message}`);
+                                }}
+                              >
+                                Ver detalhes
+                              </Button>
                             </div>
                           </div>
                         ))}
