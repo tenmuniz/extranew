@@ -77,53 +77,57 @@ export function PersonnelCard({
   return (
     <div
       className={cn(
-        "personnel-card bg-white p-3 rounded border border-gray-200 flex justify-between items-center",
+        "personnel-card bg-white p-3 rounded border border-gray-200 flex flex-col w-full",
         isDraggable && "cursor-grab"
       )}
       draggable={isDraggable}
       onDragStart={handleDragStart}
       data-id={personnel.id}
     >
-      <div className="flex items-center">
-        <div className="bg-[#1A3A5F] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">
+      {/* Cabeçalho com nome e rank */}
+      <div className="flex items-center mb-2 w-full">
+        <div className="bg-[#1A3A5F] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
           <span className="font-bold text-xs">{getRankDisplay(personnel.rank)}</span>
         </div>
-        <div>
-          <p className="font-semibold text-gray-800">{personnel.name}</p>
-          <div className="flex items-center mt-1">
-            <span className="text-xs text-gray-500">
-              {getRankFullName(personnel.rank)}
-            </span>
-            <span className="mx-2 text-gray-300">•</span>
-            <span className="text-xs">
-              Extras: <span className="font-medium text-blue-600">{personnel.extras || 0}</span>
-            </span>
-            {personnel.platoon && (
-              <>
-                <span className="mx-2 text-gray-300">•</span>
-                <span className="text-xs text-white py-0.5 px-1.5 rounded-sm" style={{ backgroundColor: getGarrisonColor(personnel.platoon) }}>
-                  {personnel.platoon}
-                </span>
-              </>
-            )}
-          </div>
+        <div className="w-full overflow-hidden">
+          <p className="font-semibold text-gray-800 text-sm break-words">{personnel.name}</p>
+          <span className="text-xs text-gray-500 block">
+            {getRankFullName(personnel.rank)}
+          </span>
         </div>
       </div>
-      <div>
-        {(() => {
-          const today = new Date();
-          const isInService = isPersonnelInService(personnel, today);
+      
+      {/* Informações adicionais */}
+      <div className="flex flex-wrap justify-between items-center w-full mt-1">
+        <div className="flex flex-wrap items-center">
+          <span className="text-xs mr-2">
+            Extras: <span className="font-medium text-blue-600">{personnel.extras || 0}</span>
+          </span>
           
-          return (
-            <span className={`badge text-xs py-1 px-2 rounded-full ${
-              isInService 
-                ? "bg-yellow-100 text-yellow-800" 
-                : "bg-green-100 text-green-800"
-            }`}>
-              {isInService ? "⚠️ Em Serviço" : "Disponível"}
+          {personnel.platoon && (
+            <span className="text-xs text-white py-0.5 px-1.5 rounded-sm inline-block mt-1" 
+                  style={{ backgroundColor: getGarrisonColor(personnel.platoon) }}>
+              {personnel.platoon}
             </span>
-          );
-        })()}
+          )}
+        </div>
+        
+        <div className="mt-1">
+          {(() => {
+            const today = new Date();
+            const isInService = isPersonnelInService(personnel, today);
+            
+            return (
+              <span className={`badge text-xs py-1 px-2 rounded-full inline-block ${
+                isInService 
+                  ? "bg-yellow-100 text-yellow-800" 
+                  : "bg-green-100 text-green-800"
+              }`}>
+                {isInService ? "⚠️ Em Serviço" : "Disponível"}
+              </span>
+            );
+          })()}
+        </div>
       </div>
     </div>
   );

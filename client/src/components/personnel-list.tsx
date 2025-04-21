@@ -7,7 +7,7 @@ interface PersonnelListProps {
 
 export function PersonnelList({ personnel }: PersonnelListProps) {
   return (
-    <div className="lg:w-1/5">
+    <div className="lg:w-1/4">
       <div className="bg-white rounded-lg shadow-md p-4 border border-[#E7EBF0]">
         <h3 className="font-heading font-bold text-xl text-[#1A3A5F] mb-4 flex items-center border-b pb-3">
           <svg

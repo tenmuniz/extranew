@@ -241,7 +241,7 @@ export function ScheduleCalendar({
   };
 
   return (
-    <div className="lg:w-4/5">
+    <div className="lg:w-3/4">
       <div className="bg-white rounded-lg shadow-md p-4">
         {/* Day of week headers */}
         <div className="grid grid-cols-7 gap-2 mb-4">
