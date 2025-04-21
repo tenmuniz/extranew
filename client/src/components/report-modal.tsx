@@ -425,7 +425,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
   // Função para gerar e baixar PDF do relatório
   const generatePDF = () => {
     const now = new Date();
-    const fileName = `relatorio_operacoes_${activeTab}_${now.getFullYear()}-${now.getMonth() + 1}.pdf`;
+    const fileName = `relatorio_extras_${activeTab}_${now.getFullYear()}-${now.getMonth() + 1}.pdf`;
     
     // Criar conteúdo personalizado para o PDF
     const customHtml = createCustomReport();
@@ -588,7 +588,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          Relatório de Operações
+          Relatório de Extras
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-hidden flex flex-col">
@@ -726,7 +726,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100">
-                      <p className="text-xs text-gray-500 mb-1">Mais Operações PMF</p>
+                      <p className="text-xs text-gray-500 mb-1">Mais Extras PMF</p>
                       {stats.pmf.maxExtras ? (
                         <div className="flex items-center">
                           <div className="bg-[#1A3A5F] text-white w-7 h-7 rounded-full flex items-center justify-center mr-2">
@@ -735,7 +735,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                           <div>
                             <p className="font-medium text-sm">{stats.pmf.maxExtras.name}</p>
                             <p className="text-xs text-blue-600">
-                              {stats.pmf.maxExtras.extras} operações
+                              {stats.pmf.maxExtras.extras} extras
                             </p>
                           </div>
                         </div>
@@ -744,7 +744,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                       )}
                     </div>
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100">
-                      <p className="text-xs text-gray-500 mb-1">Menos Operações PMF</p>
+                      <p className="text-xs text-gray-500 mb-1">Menos Extras PMF</p>
                       {stats.pmf.minExtras ? (
                         <div className="flex items-center">
                           <div className="bg-[#1A3A5F] text-white w-7 h-7 rounded-full flex items-center justify-center mr-2">
@@ -753,7 +753,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                           <div>
                             <p className="font-medium text-sm">{stats.pmf.minExtras.name}</p>
                             <p className="text-xs text-blue-600">
-                              {stats.pmf.minExtras.extras} operações
+                              {stats.pmf.minExtras.extras} extras
                             </p>
                           </div>
                         </div>
@@ -790,7 +790,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100">
-                      <p className="text-xs text-gray-500 mb-1">Mais Operações Escola</p>
+                      <p className="text-xs text-gray-500 mb-1">Mais Extras Escola</p>
                       {stats.escola.maxExtras ? (
                         <div className="flex items-center">
                           <div className="bg-[#1A3A5F] text-white w-7 h-7 rounded-full flex items-center justify-center mr-2">
@@ -799,7 +799,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                           <div>
                             <p className="font-medium text-sm">{stats.escola.maxExtras.name}</p>
                             <p className="text-xs text-blue-600">
-                              {stats.escola.maxExtras.extras} operações
+                              {stats.escola.maxExtras.extras} extras
                             </p>
                           </div>
                         </div>
@@ -808,7 +808,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                       )}
                     </div>
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100">
-                      <p className="text-xs text-gray-500 mb-1">Menos Operações Escola</p>
+                      <p className="text-xs text-gray-500 mb-1">Menos Extras Escola</p>
                       {stats.escola.minExtras ? (
                         <div className="flex items-center">
                           <div className="bg-[#1A3A5F] text-white w-7 h-7 rounded-full flex items-center justify-center mr-2">
@@ -817,7 +817,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                           <div>
                             <p className="font-medium text-sm">{stats.escola.minExtras.name}</p>
                             <p className="text-xs text-blue-600">
-                              {stats.escola.minExtras.extras} operações
+                              {stats.escola.minExtras.extras} extras
                             </p>
                           </div>
                         </div>
