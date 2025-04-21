@@ -24,7 +24,7 @@ interface ReportModalProps {
   assignments: Assignment[];
 }
 
-type ReportTab = "geral" | "pmf" | "escola";
+type ReportTab = "geral" | "pmf" | "escola" | "conflitos";
 
 interface StatsData {
   totalExtras: number;
@@ -59,6 +59,14 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
       personnelWithoutExtras: [],
     },
     escola: {
+      totalExtras: 0,
+      mediaExtras: 0,
+      maxExtras: null,
+      minExtras: null,
+      personnelWithExtras: [],
+      personnelWithoutExtras: [],
+    },
+    conflitos: {
       totalExtras: 0,
       mediaExtras: 0,
       maxExtras: null,
@@ -149,6 +157,37 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
     const allMaxExtras = allPersonnelWithExtras.length > 0 ? allPersonnelWithExtras[0] : null;
     const allMinExtras = allPersonnelWithExtras.length > 0 ? allPersonnelWithExtras[allPersonnelWithExtras.length - 1] : null;
 
+    // Militar em conflito: que está em serviço normal e em operação no mesmo dia
+    const conflictsAssignments = assignments.filter(assignment => {
+      const person = personnel.find(p => p.id === assignment.personnelId);
+      if (!person) return false;
+      
+      // Verificar se o militar está em serviço na data da operação
+      const assignmentDate = new Date(assignment.date);
+      return person.platoon && 
+             person.platoon !== "EXPEDIENTE" && 
+             getActiveGuarnitionForDay(assignmentDate) === person.platoon;
+    });
+    
+    // Agrupar por militar para contar conflitos
+    const conflictCountMap: Record<number, number> = {};
+    conflictsAssignments.forEach(op => {
+      conflictCountMap[op.personnelId] = (conflictCountMap[op.personnelId] || 0) + 1;
+    });
+    
+    // Criar lista de militares com conflitos
+    const conflictsPersonnel = personnel
+      .filter(p => p.id && conflictCountMap[p.id] > 0)
+      .map(p => ({
+        ...p,
+        extras: conflictCountMap[p.id!] || 0
+      }))
+      .sort((a, b) => (b.extras || 0) - (a.extras || 0));
+    
+    const conflictsMediaExtras = conflictsAssignments.length / (conflictsPersonnel.length || 1);
+    const conflictsMaxExtras = conflictsPersonnel.length > 0 ? conflictsPersonnel[0] : null;
+    const conflictsMinExtras = conflictsPersonnel.length > 0 ? conflictsPersonnel[conflictsPersonnel.length - 1] : null;
+    
     setStats({
       pmf: {
         totalExtras: pmfTotalExtras,
@@ -174,6 +213,14 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
         personnelWithExtras: allPersonnelWithExtras,
         personnelWithoutExtras: allPersonnelWithoutExtras,
       },
+      conflitos: {
+        totalExtras: conflictsAssignments.length,
+        mediaExtras: conflictsMediaExtras,
+        maxExtras: conflictsMaxExtras,
+        minExtras: conflictsMinExtras,
+        personnelWithExtras: conflictsPersonnel,
+        personnelWithoutExtras: personnel.filter(p => !p.id || !conflictCountMap[p.id]),
+      }
     });
   }, [personnel, assignments]);
 
