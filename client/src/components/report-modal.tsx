@@ -170,18 +170,53 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
              getActiveGuarnitionForDay(assignmentDate) === person.platoon;
     });
     
-    // Agrupar por militar para contar conflitos
-    const conflictCountMap: Record<number, number> = {};
+    // Agrupar por militar para contar conflitos e guardar detalhes
+    type ConflictDetail = {
+      count: number;
+      pmfConflicts: number;
+      escolaConflicts: number;
+      details: {date: string, operation: OperationType}[];
+    };
+    
+    const conflictDetailsMap: Record<number, ConflictDetail> = {};
+    
     conflictsAssignments.forEach(op => {
-      conflictCountMap[op.personnelId] = (conflictCountMap[op.personnelId] || 0) + 1;
+      // Inicializar o objeto de detalhes de conflito se ainda não existir
+      if (!conflictDetailsMap[op.personnelId]) {
+        conflictDetailsMap[op.personnelId] = {
+          count: 0,
+          pmfConflicts: 0,
+          escolaConflicts: 0,
+          details: []
+        };
+      }
+      
+      // Incrementar o contador geral
+      conflictDetailsMap[op.personnelId].count += 1;
+      
+      // Incrementar o contador específico da operação
+      if (op.operationType === "PMF") {
+        conflictDetailsMap[op.personnelId].pmfConflicts += 1;
+      } else if (op.operationType === "ESCOLA") {
+        conflictDetailsMap[op.personnelId].escolaConflicts += 1;
+      }
+      
+      // Adicionar detalhes do conflito
+      conflictDetailsMap[op.personnelId].details.push({
+        date: new Date(op.date).toLocaleDateString('pt-BR'),
+        operation: op.operationType
+      });
     });
     
     // Criar lista de militares com conflitos
     const conflictsPersonnel = personnel
-      .filter(p => p.id && conflictCountMap[p.id] > 0)
+      .filter(p => p.id && conflictDetailsMap[p.id])
       .map(p => ({
         ...p,
-        extras: conflictCountMap[p.id!] || 0
+        extras: conflictDetailsMap[p.id!].count || 0,
+        pmfConflicts: conflictDetailsMap[p.id!].pmfConflicts || 0,
+        escolaConflicts: conflictDetailsMap[p.id!].escolaConflicts || 0,
+        conflictDetails: conflictDetailsMap[p.id!].details || []
       }))
       .sort((a, b) => (b.extras || 0) - (a.extras || 0));
     
@@ -220,7 +255,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
         maxExtras: conflictsMaxExtras,
         minExtras: conflictsMinExtras,
         personnelWithExtras: conflictsPersonnel,
-        personnelWithoutExtras: personnel.filter(p => !p.id || !conflictCountMap[p.id]),
+        personnelWithoutExtras: personnel.filter(p => !p.id || !conflictDetailsMap[p.id]),
       }
     });
   }, [personnel, assignments]);
@@ -774,22 +809,28 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
               
               <TabsContent value="conflitos" className="mt-0 pb-6">
                 <div className="space-y-4">
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-4 gap-3">
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
                       <h3 className="text-2xl font-bold text-[#8B0000]">{stats.conflitos.totalExtras}</h3>
                       <p className="text-xs text-gray-500">Total de Conflitos</p>
                     </div>
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
                       <h3 className="text-2xl font-bold text-[#8B0000]">
-                        {stats.conflitos.mediaExtras.toFixed(1)}
-                      </h3>
-                      <p className="text-xs text-gray-500">Média por Militar</p>
-                    </div>
-                    <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
-                      <h3 className="text-2xl font-bold text-[#8B0000]">
                         {stats.conflitos.personnelWithExtras.length}
                       </h3>
                       <p className="text-xs text-gray-500">Militares Afetados</p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
+                      <h3 className="text-2xl font-bold text-blue-600">
+                        {stats.conflitos.personnelWithExtras.reduce((acc, p: any) => acc + (p.pmfConflicts || 0), 0)}
+                      </h3>
+                      <p className="text-xs text-gray-500">PMF</p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
+                      <h3 className="text-2xl font-bold text-green-600">
+                        {stats.conflitos.personnelWithExtras.reduce((acc, p: any) => acc + (p.escolaConflicts || 0), 0)}
+                      </h3>
+                      <p className="text-xs text-gray-500">Escola Segura</p>
                     </div>
                   </div>
 
@@ -803,13 +844,23 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                         <p className="text-sm text-gray-600">Militares agendados para operações em dias que estão em serviço normal de escala.</p>
                       </div>
                     </div>
+                    <div className="mt-2 grid grid-cols-2 gap-2">
+                      <div className="flex items-center">
+                        <div className="h-3 w-3 rounded-full bg-blue-600 mr-2"></div>
+                        <span className="text-xs text-gray-700">PMF: Polícia Mais Forte</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="h-3 w-3 rounded-full bg-green-600 mr-2"></div>
+                        <span className="text-xs text-gray-700">Escola: Escola Segura</span>
+                      </div>
+                    </div>
                   </div>
 
                   {stats.conflitos.personnelWithExtras.length > 0 ? (
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100">
                       <h3 className="font-medium text-sm mb-3 text-[#8B0000]">Militares com Conflitos</h3>
                       <div className="space-y-3">
-                        {stats.conflitos.personnelWithExtras.map((person) => (
+                        {stats.conflitos.personnelWithExtras.map((person: any) => (
                           <div key={person.id} className="flex justify-between items-center p-2 border-b border-gray-100 last:border-b-0">
                             <div className="flex items-center">
                               <div className="bg-[#8B0000] text-white w-7 h-7 rounded-full flex items-center justify-center mr-2">
@@ -822,9 +873,19 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                                 </div>
                               </div>
                             </div>
-                            <span className="text-[#8B0000] font-semibold rounded-full bg-[#fff9f9] px-3 py-1 text-sm">
-                              {person.extras} {person.extras === 1 ? 'conflito' : 'conflitos'}
-                            </span>
+                            <div className="flex flex-col items-end">
+                              <span className="text-[#8B0000] font-semibold rounded-full bg-[#fff9f9] px-3 py-1 text-sm mb-1">
+                                {person.extras} {person.extras === 1 ? 'conflito' : 'conflitos'}
+                              </span>
+                              <div className="flex flex-col text-xs">
+                                {person.pmfConflicts > 0 && (
+                                  <span className="text-blue-600">PMF: {person.pmfConflicts}</span>
+                                )}
+                                {person.escolaConflicts > 0 && (
+                                  <span className="text-green-600">Escola: {person.escolaConflicts}</span>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         ))}
                       </div>
