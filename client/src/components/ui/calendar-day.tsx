@@ -58,7 +58,7 @@ export function CalendarDay({
           "assigned-personnel relative",
           !isDisabled && "min-h-[80px]"
         )}>
-          <div className="flex flex-col w-full">
+          <div className="flex flex-col w-full px-0.5">
             {children}
           </div>
           {!children && !isDisabled && (
