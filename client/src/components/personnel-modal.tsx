@@ -319,9 +319,23 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
                     </div>
                     <div>
                       <p className="font-medium">{person.name}</p>
-                      <p className="text-xs text-[#708090]">
-                        Extras: {person.extras || 0}
-                      </p>
+                      <div className="flex items-center">
+                        <span className="text-xs text-[#708090]">
+                          Extras: {person.extras || 0}
+                        </span>
+                        {person.platoon && (
+                          <span className="ml-2 text-xs text-white px-1.5 py-0.5 rounded-sm" 
+                            style={{ 
+                              backgroundColor: 
+                                person.platoon === "ALFA" ? "#1A3A5F" : 
+                                person.platoon === "BRAVO" ? "#4A6741" : 
+                                person.platoon === "CHARLIE" ? "#8B0000" : 
+                                "#6B7280" 
+                            }}>
+                            {person.platoon}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="flex space-x-2">
