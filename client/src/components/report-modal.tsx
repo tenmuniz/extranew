@@ -302,7 +302,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
           <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
             <div style="flex: 1; min-width: 150px; background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center;">
               <h3 style="font-size: 28px; color: #1A3A5F; margin: 0;">${currentStats.totalExtras}</h3>
-              <p style="margin: 5px 0 0; font-size: 12px; color: #777;">Total de Operações</p>
+              <p style="margin: 5px 0 0; font-size: 12px; color: #777;">Total de Extras</p>
             </div>
             
             <div style="flex: 1; min-width: 150px; background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center;">
@@ -666,7 +666,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100">
-                      <p className="text-xs text-gray-500 mb-1">Mais Operações</p>
+                      <p className="text-xs text-gray-500 mb-1">Mais Extras</p>
                       {stats.geral.maxExtras ? (
                         <div className="flex items-center">
                           <div className="bg-[#1A3A5F] text-white w-7 h-7 rounded-full flex items-center justify-center mr-2">
@@ -674,7 +674,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                           </div>
                           <div>
                             <p className="font-medium text-sm">{stats.geral.maxExtras.name}</p>
-                            <p className="text-xs text-blue-600">{stats.geral.maxExtras.extras} operações</p>
+                            <p className="text-xs text-blue-600">{stats.geral.maxExtras.extras} extras</p>
                           </div>
                         </div>
                       ) : (
@@ -682,7 +682,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                       )}
                     </div>
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100">
-                      <p className="text-xs text-gray-500 mb-1">Menos Operações</p>
+                      <p className="text-xs text-gray-500 mb-1">Menos Extras</p>
                       {stats.geral.minExtras ? (
                         <div className="flex items-center">
                           <div className="bg-[#1A3A5F] text-white w-7 h-7 rounded-full flex items-center justify-center mr-2">
@@ -690,7 +690,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                           </div>
                           <div>
                             <p className="font-medium text-sm">{stats.geral.minExtras.name}</p>
-                            <p className="text-xs text-blue-600">{stats.geral.minExtras.extras} operações</p>
+                            <p className="text-xs text-blue-600">{stats.geral.minExtras.extras} extras</p>
                           </div>
                         </div>
                       ) : (
@@ -708,7 +708,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                   <div className="grid grid-cols-3 gap-3">
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
                       <h3 className="text-2xl font-bold text-[#1A3A5F]">{stats.pmf.totalExtras}</h3>
-                      <p className="text-xs text-gray-500">Total de Operações</p>
+                      <p className="text-xs text-gray-500">Total de Extras</p>
                     </div>
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
                       <h3 className="text-2xl font-bold text-[#1A3A5F]">
@@ -772,7 +772,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                   <div className="grid grid-cols-3 gap-3">
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
                       <h3 className="text-2xl font-bold text-[#1A3A5F]">{stats.escola.totalExtras}</h3>
-                      <p className="text-xs text-gray-500">Total de Operações</p>
+                      <p className="text-xs text-gray-500">Total de Extras</p>
                     </div>
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
                       <h3 className="text-2xl font-bold text-[#1A3A5F]">
@@ -867,7 +867,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                       </svg>
                       <div>
                         <h3 className="text-md font-medium text-[#8B0000]">Conflitos de Escala</h3>
-                        <p className="text-sm text-gray-600">Militares agendados para operações em dias que estão em serviço normal de escala.</p>
+                        <p className="text-sm text-gray-600">Militares agendados para extras em dias que estão em serviço normal de escala.</p>
                       </div>
                     </div>
                     <div className="mt-2 grid grid-cols-2 gap-2">
