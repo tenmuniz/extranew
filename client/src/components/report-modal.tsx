@@ -188,13 +188,22 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
       
       const assignmentDate = new Date(assignment.date);
       
-      // Verificar se o militar está em serviço na data da operação
-      // Um militar está em serviço quando seu pelotão está ativo naquele dia
+      // Verificar qual guarnição está de serviço no dia da operação
+      const activeGuarnition = getActiveGuarnitionForDay(assignmentDate);
+      
+      // Verificar se o militar pertence à guarnição que está de serviço na data
+      // IMPORTANTE: Um militar está em conflito quando seu pelotão está ativo naquele dia
+      // Por isso comparamos o pelotão do militar com o pelotão ativo no dia
       const isInService = person.platoon && 
                          person.platoon !== "EXPEDIENTE" && 
-                         getActiveGuarnitionForDay(assignmentDate) === person.platoon;
+                         activeGuarnition === person.platoon;
       
       if (isInService) {
+        // Adicionar mensagem de log para debug
+        console.log(`Conflito detectado: ${person.name} pertence à guarnição ${person.platoon} ` + 
+                   `que está de serviço no dia ${assignmentDate.toLocaleDateString('pt-BR')}, ` +
+                   `mas foi escalado para operação ${assignment.operationType}`);
+                   
         // Se estiver em serviço, essa atribuição representa um conflito
         conflictsAssignments.push(assignment);
       }
@@ -205,7 +214,7 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
       count: number;
       pmfConflicts: number;
       escolaConflicts: number;
-      details: {date: string, operation: OperationType}[];
+      details: {date: string, operation: OperationType, guarnition: string}[];
     };
     
     const conflictDetailsMap: Record<number, ConflictDetail> = {};
@@ -231,10 +240,14 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
         conflictDetailsMap[op.personnelId].escolaConflicts += 1;
       }
       
-      // Adicionar detalhes do conflito
+      // Buscar o militar associado ao conflito
+      const personWithConflict = personnel.find(p => p.id === op.personnelId);
+      
+      // Adicionar detalhes do conflito incluindo a guarnição em serviço
       conflictDetailsMap[op.personnelId].details.push({
         date: new Date(op.date).toLocaleDateString('pt-BR'),
-        operation: op.operationType
+        operation: op.operationType,
+        guarnition: personWithConflict?.platoon || "Desconhecida"
       });
     });
     
