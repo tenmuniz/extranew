@@ -85,6 +85,16 @@ export function ScheduleCalendar({
       const personnelData = JSON.parse(data);
       const dateStr = formatDateToISO(date);
       
+      // Verificar se a data está no mês atual
+      if (!isCurrentMonth(date)) {
+        toast({
+          title: "Operação não permitida",
+          description: "Não é possível escalar em dias fora do mês atual",
+          variant: "destructive"
+        });
+        return;
+      }
+      
       // Check if date is valid for the current operation
       if (activeOperation === "ESCOLA" && !isWeekday(date)) {
         toast({

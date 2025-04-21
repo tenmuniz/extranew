@@ -36,8 +36,8 @@ export function CalendarDay({
         isToday && "ring-2 ring-blue-400 ring-offset-1"
       )}
       data-date={date.toISOString().split('T')[0]}
-      onDragOver={isDisabled ? undefined : onDragOver}
-      onDrop={isDisabled ? undefined : onDrop}
+      onDragOver={isDisabled ? (e: React.DragEvent) => e.preventDefault() : onDragOver}
+      onDrop={isDisabled ? (e: React.DragEvent) => e.preventDefault() : onDrop}
     >
       <div className="flex justify-between items-center mb-2">
         <div className="flex flex-col">
