@@ -30,10 +30,10 @@ export function CalendarDay({
       className={cn(
         "calendar-day rounded-lg min-h-[120px] p-2 border transition-all duration-200",
         isCurrentMonth 
-          ? "bg-white shadow-sm hover:shadow-md border-[#E7EBF0]" 
-          : "bg-gray-100 opacity-70 border-gray-200",
-        isDisabled && "cursor-not-allowed bg-opacity-50",
-        isToday && "border-blue-400 border-2"
+          ? "bg-white shadow-sm border-[#E7EBF0] opacity-100" 
+          : "bg-gray-100 opacity-50 border-gray-200",
+        isDisabled && "cursor-not-allowed bg-opacity-30 bg-gray-100",
+        isToday && "ring-2 ring-blue-400 ring-offset-1"
       )}
       data-date={date.toISOString().split('T')[0]}
       onDragOver={isDisabled ? undefined : onDragOver}

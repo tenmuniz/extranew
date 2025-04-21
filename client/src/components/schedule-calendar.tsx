@@ -245,8 +245,8 @@ export function ScheduleCalendar({
                 date={day}
                 isCurrentMonth={isCurrentMonth(day)}
                 isDisabled={disabled}
-                onDragOver={handleDragOver}
-                onDrop={(e) => handleDrop(e, day)}
+                onDragOver={handleDragOver as React.DragEventHandler<HTMLDivElement>}
+                onDrop={(e: React.DragEvent<HTMLDivElement>) => handleDrop(e, day)}
               >
                 {dayAssignments.map((assignment) => {
                   const person = getPersonnelFromAssignment(assignment);
