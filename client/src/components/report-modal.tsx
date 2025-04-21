@@ -848,13 +848,13 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                     </div>
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
                       <h3 className="text-2xl font-bold text-blue-600">
-                        {stats.conflitos.personnelWithExtras.filter(p => (p as PersonnelWithConflicts).pmfConflicts > 0).length}
+                        {(stats.conflitos.personnelWithExtras as PersonnelWithConflicts[]).filter(p => p.pmfConflicts > 0).length}
                       </h3>
                       <p className="text-xs text-gray-500">PMF</p>
                     </div>
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-center">
                       <h3 className="text-2xl font-bold text-green-600">
-                        {stats.conflitos.personnelWithExtras.filter(p => (p as PersonnelWithConflicts).escolaConflicts > 0).length}
+                        {(stats.conflitos.personnelWithExtras as PersonnelWithConflicts[]).filter(p => p.escolaConflicts > 0).length}
                       </h3>
                       <p className="text-xs text-gray-500">Escola Segura</p>
                     </div>
@@ -886,7 +886,7 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100">
                       <h3 className="font-medium text-sm mb-3 text-[#8B0000]">Militares com Conflitos</h3>
                       <div className="space-y-3">
-                        {stats.conflitos.personnelWithExtras.map((person: any) => (
+                        {(stats.conflitos.personnelWithExtras as PersonnelWithConflicts[]).map(person => (
                           <div key={person.id} className="flex justify-between items-center p-2 border-b border-gray-100 last:border-b-0">
                             <div className="flex items-center">
                               <div className="bg-[#8B0000] text-white w-7 h-7 rounded-full flex items-center justify-center mr-2">
@@ -904,11 +904,12 @@ export function ReportModal({ personnel, assignments }: ReportModalProps) {
                                 {person.extras} {person.extras === 1 ? 'conflito' : 'conflitos'}
                               </span>
                               <div className="flex flex-col text-xs">
-                                {person.pmfConflicts > 0 && (
-                                  <span className="text-blue-600">PMF: {person.pmfConflicts}</span>
+                                {/* Exibir os conflitos por operação */}
+                                {(person as PersonnelWithConflicts).pmfConflicts > 0 && (
+                                  <span className="text-blue-600">PMF: {(person as PersonnelWithConflicts).pmfConflicts}</span>
                                 )}
-                                {person.escolaConflicts > 0 && (
-                                  <span className="text-green-600">Escola: {person.escolaConflicts}</span>
+                                {(person as PersonnelWithConflicts).escolaConflicts > 0 && (
+                                  <span className="text-green-600">Escola: {(person as PersonnelWithConflicts).escolaConflicts}</span>
                                 )}
                               </div>
                             </div>
