@@ -48,42 +48,54 @@ export function CalendarDay({
           )}>
             {dayOfMonth}
           </span>
-          {isCurrentMonth && (
-            <div className="flex items-center mt-1">
-              <div 
-                className="w-3 h-3 rounded-full mr-1" 
-                style={{ backgroundColor: getGarrisonColor(getActiveGuarnitionForDay(date)) }}
-              ></div>
-              <span className="text-xs font-semibold">
-                {getActiveGuarnitionForDay(date)}
-              </span>
-            </div>
-          )}
+          {/* Sempre mostrar a guarnição do dia, independente se é mês atual ou não */}
+          <div className="flex items-center mt-1">
+            <div 
+              className={cn(
+                "w-3 h-3 rounded-full mr-1",
+                !isCurrentMonth && "opacity-50"
+              )}
+              style={{ backgroundColor: getGarrisonColor(getActiveGuarnitionForDay(date)) }}
+            ></div>
+            <span className={cn(
+              "text-xs font-semibold",
+              !isCurrentMonth && "text-gray-400"
+            )}>
+              {getActiveGuarnitionForDay(date)}
+            </span>
+          </div>
         </div>
-        {isCurrentMonth && (
-          <span className={cn("text-xs text-white px-2 py-1 rounded-full font-semibold", dayColorClass)}>
-            {dayOfWeekAbbr}
-          </span>
+        <span className={cn(
+          "text-xs text-white px-2 py-1 rounded-full font-semibold", 
+          dayColorClass,
+          !isCurrentMonth && "opacity-50"
+        )}>
+          {dayOfWeekAbbr}
+        </span>
+      </div>
+      <div className={cn(
+        "assigned-personnel relative",
+        !isDisabled && "min-h-[50px]"
+      )}>
+        <div className="flex flex-col w-full">
+          {children}
+        </div>
+        {!children && !isDisabled && isCurrentMonth && (
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+            <div className="text-gray-400 text-xs text-center">
+              <span className="block">Arraste um militar</span>
+              <span className="block">para este dia</span>
+            </div>
+          </div>
+        )}
+        {!isCurrentMonth && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-gray-400 text-xs text-center bg-gray-100 bg-opacity-60 w-full h-full flex items-center justify-center">
+              <span className="block">Outro mês</span>
+            </div>
+          </div>
         )}
       </div>
-      {isCurrentMonth && (
-        <div className={cn(
-          "assigned-personnel relative",
-          !isDisabled && "min-h-[50px]"
-        )}>
-          <div className="flex flex-col w-full">
-            {children}
-          </div>
-          {!children && !isDisabled && (
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-              <div className="text-gray-400 text-xs text-center">
-                <span className="block">Arraste um militar</span>
-                <span className="block">para este dia</span>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }
