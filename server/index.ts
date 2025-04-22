@@ -1,13 +1,14 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { db } from "./db";
-import { initializeDatabase } from "./db-init";
+import { db, pool } from "./db";
+import { initializeDatabase, validateDatabaseIntegrity } from "./db-init";
 
-// Executar push do schema para o banco de dados na inicialização
+// Importações para migrações e schema
 import { drizzle } from "drizzle-orm/neon-serverless";
 import { migrate } from "drizzle-orm/neon-serverless/migrator";
 import * as schema from "@shared/schema";
+import { sql } from "drizzle-orm";
 
 const app = express();
 app.use(express.json());
@@ -45,11 +46,40 @@ app.use((req, res, next) => {
 
 (async () => {
   try {
-    // Executar push do schema e inicializar banco de dados
-    await initializeDatabase();
-    console.log("[DB] Banco de dados inicializado com sucesso");
-  } catch (error) {
-    console.error("[DB] Erro ao inicializar o banco de dados:", error);
+    console.log("[Sistema] Iniciando a aplicação...");
+    
+    // Tentativa #1: Inicializar o banco de dados
+    try {
+      // Verificar a conexão com o banco primeiro
+      const client = await pool.connect();
+      console.log("[DB] Conexão com o banco estabelecida");
+      client.release();
+      
+      // Executar push do schema e inicializar banco de dados
+      await initializeDatabase();
+      console.log("[DB] Banco de dados inicializado com sucesso");
+
+      // Verificar e corrigir a integridade dos dados
+      await validateDatabaseIntegrity();
+    } catch (dbError) {
+      console.error("[DB] Erro na inicialização do banco de dados:", dbError);
+      
+      // Tentativa #2: Se ocorrer um erro, tentar novamente após 2 segundos
+      // Isso ajuda quando o serviço do banco de dados pode estar iniciando
+      console.log("[DB] Tentando reconectar em 2 segundos...");
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      try {
+        await initializeDatabase();
+        await validateDatabaseIntegrity();
+        console.log("[DB] Reconexão e inicialização bem-sucedidas");
+      } catch (retryError) {
+        console.error("[DB] Falha na tentativa de reconexão:", retryError);
+        // Continuaremos mesmo com falha, pois o usuário pode corrigir manualmente depois
+      }
+    }
+  } catch (startupError) {
+    console.error("[Sistema] Erro crítico na inicialização:", startupError);
   }
   
   const server = await registerRoutes(app);

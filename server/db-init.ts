@@ -165,7 +165,10 @@ export async function validateDatabaseIntegrity() {
       
       // Remover assignments inválidos
       if (invalidIds.length > 0) {
-        await db.execute(sql`DELETE FROM assignments WHERE id IN (${sql.join(invalidIds, sql`, `)})`);
+        // Excluir um por um para evitar problemas com o SQL dinâmico
+        for (const id of invalidIds) {
+          await db.execute(sql`DELETE FROM assignments WHERE id = ${id}`);
+        }
         console.log(`[DB] ${invalidIds.length} assignments inválidos removidos com sucesso.`);
       }
     } else {
