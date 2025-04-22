@@ -8,6 +8,7 @@ neonConfig.webSocketConstructor = ws;
 
 // Environment check
 const isDevelopment = process.env.NODE_ENV === 'development';
+const isProduction = process.env.NODE_ENV === 'production';
 console.log(`[DB] Ambiente atual: ${process.env.NODE_ENV || 'não definido'}`);
 
 // Verificar disponibilidade de variáveis de ambiente
@@ -24,7 +25,23 @@ if (!process.env.DATABASE_URL) {
     process.env.DATABASE_URL = `postgres://${user}:${password}@${host}:${port}/${database}`;
     console.log(`[DB] DATABASE_URL construída: postgres://${user}:***@${host}:${port}/${database}`);
   } else {
-    throw new Error("[DB] Não foi possível encontrar as variáveis de ambiente do PostgreSQL");
+    // Em vez de falhar completamente, vamos tentar localizar o banco no ambiente de produção
+    console.error("[DB] Variáveis PGHOST, PGUSER, etc. não encontradas.");
+    
+    if (isProduction) {
+      // No Replit, o PostgreSQL geralmente está disponível em localhost
+      console.log("[DB] Tentando conectar ao PostgreSQL local no ambiente de produção...");
+      
+      // Nome do banco padrão (geralmente postgres ou o nome do projeto)
+      const defaultDb = process.env.REPL_SLUG || "postgres";
+      
+      // Construir URL de conexão no formato postgres://user:password@host:port/dbname
+      process.env.DATABASE_URL = `postgres://postgres:postgres@localhost:5432/${defaultDb}`;
+      
+      console.log(`[DB] Tentando URL: postgres://postgres:***@localhost:5432/${defaultDb}`);
+    } else {
+      throw new Error("[DB] Não foi possível encontrar as variáveis de ambiente do PostgreSQL");
+    }
   }
 }
 
