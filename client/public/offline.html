@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline - Sistema de Escalas 20ª CIPM</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    
+    .offline-container {
+      max-width: 500px;
+      padding: 30px;
+      border-radius: 10px;
+      background-color: white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      color: #1f2937;
+      margin-bottom: 20px;
+    }
+    
+    .icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+    }
+    
+    p {
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    
+    .button {
+      display: inline-block;
+      background: linear-gradient(135deg, #3b82f6, #1e40af);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .button:hover {
+      background: linear-gradient(135deg, #2563eb, #1e3a8a);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="offline-container">
+    <div class="icon">🌐</div>
+    <h1>Você está offline</h1>
+    <p>Não foi possível conectar ao servidor do Sistema de Escalas. Alguns recursos podem estar disponíveis no modo offline se você já acessou o aplicativo anteriormente.</p>
+    <p>O sistema continuará funcionando com os dados armazenados em cache e sincronizará automaticamente quando a conexão for restabelecida.</p>
+    <button class="button" onclick="tryReconnect()">Tentar novamente</button>
+  </div>
+
+  <script>
+    function tryReconnect() {
+      window.location.reload();
+    }
+
+    // Verificar periodicamente se a conexão foi restabelecida
+    function checkConnection() {
+      fetch('/api/health')
+        .then(response => {
+          if (response.ok) {
+            window.location.href = '/';
+          }
+        })
+        .catch(() => {
+          // Ainda offline, verificar novamente em 30 segundos
+          setTimeout(checkConnection, 30000);
+        });
+    }
+
+    // Iniciar verificação periódica após 10 segundos
+    setTimeout(checkConnection, 10000);
+  </script>
+</body>
+</html>
