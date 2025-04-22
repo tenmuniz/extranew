@@ -2,6 +2,9 @@ import { db, pool } from "./db";
 import { personnel, assignments } from "@shared/schema";
 import { eq, sql } from "drizzle-orm";
 
+// Constante para indicar ambiente de produção ou desenvolvimento
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+
 // Função para inicializar o banco de dados com os dados iniciais de pessoal
 export async function initializeDatabase() {
   try {
