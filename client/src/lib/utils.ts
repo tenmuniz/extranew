@@ -64,26 +64,28 @@ export function getActiveGuarnitionForDay(date: Date): string {
   // 1. A referência de início (qual guarnição iniciou o ano)
   // 2. Contar o número de semanas completas (trocas) desde essa data
 
+  // Garantir que estamos usando a data correta sem problemas de fuso horário
+  // Criar uma nova data apenas com ano, mês e dia para evitar problemas de horas
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const day = date.getDate();
+  const cleanDate = new Date(year, month, day, 12, 0, 0); // Meio-dia para evitar problemas de DST
+  
   // Definindo uma data de referência onde ALFA estava de serviço
   // 04/01/2025 ALFA estava de serviço (primeiro ciclo do ano)
-  const referenceDate = new Date(2025, 0, 4); // 4 de Janeiro de 2025
+  const referenceDate = new Date(2025, 0, 4, 12, 0, 0); // 4 de Janeiro de 2025, meio-dia
   const referenceGuarnition = "ALFA";
 
   // Ordem de rotação das guarnições
   const rotationOrder = ["ALFA", "BRAVO", "CHARLIE"];
   
-  // Calculamos quantas mudanças de quinta-feira aconteceram entre a data de referência e a data solicitada
-  // Cada quinta-feira é uma troca de guarnição
-  let targetDate = new Date(date);
-  targetDate.setHours(0, 0, 0, 0);
-  
   // Encontrar a quinta-feira mais recente ou a mesma data se for quinta
-  const dayOfWeek = targetDate.getDay(); // 0 = domingo, 4 = quinta
+  const dayOfWeek = cleanDate.getDay(); // 0 = domingo, 4 = quinta
   let daysToLastThursday = dayOfWeek >= 4 ? dayOfWeek - 4 : dayOfWeek + 3;
   
   // Subtrair dias para chegar à quinta-feira mais recente
-  const lastThursday = new Date(targetDate);
-  lastThursday.setDate(targetDate.getDate() - daysToLastThursday);
+  const lastThursday = new Date(cleanDate);
+  lastThursday.setDate(cleanDate.getDate() - daysToLastThursday);
   
   // Calcular o número de semanas entre a data de referência e a quinta-feira mais recente
   const weeksDiff = Math.floor((lastThursday.getTime() - referenceDate.getTime()) / (7 * 24 * 60 * 60 * 1000));

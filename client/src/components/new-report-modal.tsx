@@ -46,8 +46,13 @@ export function NewReportModal({
     const currentMonthFilter = (assignment: Assignment) => {
       if (currentMonth === undefined || currentYear === undefined) return true;
       
-      const date = new Date(assignment.date);
-      return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+      // Extrair e processar a data corretamente para evitar problemas de fuso horário
+      const dateStr = assignment.date.split('T')[0]; // Extrai apenas a parte da data (YYYY-MM-DD)
+      const [yearStr, monthStr, dayStr] = dateStr.split('-');
+      const year = parseInt(yearStr);
+      const month = parseInt(monthStr) - 1; // Mês em JavaScript é 0-indexado
+      
+      return month === currentMonth && year === currentYear;
     };
     
     const filteredAssignments = assignments.filter(currentMonthFilter);
