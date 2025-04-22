@@ -1,12 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { setupRailwayEnvironment, setupGracefulShutdown } from "./railway";
-
-// Configure o ambiente do Railway se estiver em produção
-if (process.env.NODE_ENV === 'production') {
-  setupRailwayEnvironment();
-}
 
 const app = express();
 app.use(express.json());
@@ -62,33 +56,33 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Configurar graceful shutdown para o Railway
-  if (process.env.NODE_ENV === 'production') {
-    setupGracefulShutdown(server);
-  }
-
-  // Determinar a porta a ser usada
-  const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
+  // Attempt to serve the app on port 5000, but fallback to other ports if needed
+  const tryListen = (initialPort: number, maxAttempts: number = 3) => {
+    let attempts = 0;
+    
+    const attemptListen = (currentPort: number) => {
+      attempts++;
+      server.listen({
+        port: currentPort,
+        host: "0.0.0.0",
+        reusePort: true,
+      }, () => {
+        log(`serving on port ${currentPort}`);
+      }).on('error', (err: any) => {
+        if (err.code === 'EADDRINUSE' && attempts < maxAttempts) {
+          const nextPort = currentPort + 1;
+          log(`Port ${currentPort} is in use, trying port ${nextPort}...`);
+          // Try the next port
+          attemptListen(nextPort);
+        } else {
+          log(`Failed to start server: ${err.message}`);
+          throw err;
+        }
+      });
+    };
+    
+    attemptListen(initialPort);
+  };
   
-  // Iniciar o servidor na porta apropriada
-  server.listen({
-    port: PORT,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`Servidor iniciado na porta ${PORT}`);
-    log(`Ambiente: ${process.env.NODE_ENV || 'development'}`);
-    log(`URL do banco de dados configurada: ${process.env.DATABASE_URL ? 'Sim' : 'Não'}`);
-  }).on('error', (err: any) => {
-    log(`Erro ao iniciar o servidor: ${err.message}`);
-    
-    if (err.code === 'EADDRINUSE') {
-      log(`A porta ${PORT} já está em uso. Configure uma porta diferente na variável PORT.`);
-    }
-    
-    // Em produção, falhar rapidamente
-    if (process.env.NODE_ENV === 'production') {
-      process.exit(1);
-    }
-  });
+  tryListen(5000);
 })();
