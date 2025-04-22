@@ -1,99 +1,77 @@
-// Script para inicializar o banco de dados no ambiente de deploy
-import { pool } from './db.js';
-import { sql } from 'drizzle-orm';
+// Arquivo de inicialização específico para o deploy
 
-async function initializeDeployDatabase() {
-  console.log("[Deploy] Inicializando banco de dados para deploy...");
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import * as dotenv from 'dotenv';
+
+// Obter o diretório atual do script
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Função para inicializar o banco de dados durante o deploy
+export async function initializeDeployDatabase() {
+  console.log('[Deploy] Iniciando processo de deploy do banco de dados...');
   
-  try {
-    // Verificar conexão com o banco
-    const client = await pool.connect();
-    console.log("[Deploy] Conexão com banco de dados estabelecida");
-    
-    // Verificar se as tabelas existem
-    const tablesExist = await client.query(`
-      SELECT EXISTS (
-        SELECT FROM information_schema.tables 
-        WHERE table_schema = 'public' 
-        AND table_name = 'personnel'
-      );
-    `);
-    
-    // Se as tabelas não existirem, precisamos criar
-    if (!tablesExist.rows[0].exists) {
-      console.log("[Deploy] Criando tabelas no banco de dados...");
-      
-      // Criar tabela de personnel
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS personnel (
-          id SERIAL PRIMARY KEY,
-          name TEXT NOT NULL,
-          rank TEXT NOT NULL,
-          extras INTEGER NOT NULL DEFAULT 0,
-          platoon TEXT NOT NULL DEFAULT 'EXPEDIENTE'
-        );
-      `);
-      
-      // Criar tabela de assignments
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS assignments (
-          id SERIAL PRIMARY KEY,
-          personnel_id INTEGER NOT NULL,
-          operation_type TEXT NOT NULL,
-          date DATE NOT NULL,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-          FOREIGN KEY (personnel_id) REFERENCES personnel(id) ON DELETE CASCADE
-        );
-      `);
-      
-      console.log("[Deploy] Tabelas criadas com sucesso");
-    } else {
-      console.log("[Deploy] Tabelas já existem no banco de dados");
-    }
-    
-    // Verificar se há dados na tabela de personnel
-    const personnelCount = await client.query("SELECT COUNT(*) FROM personnel");
-    
-    if (parseInt(personnelCount.rows[0].count) === 0) {
-      console.log("[Deploy] Populando o banco de dados com dados iniciais...");
-      
-      // Adicionar dados iniciais de personnel se estiver vazio
-      const samplePersonnel = [
-        { name: "CAP MUNIZ", rank: "CAP", extras: 0, platoon: "EXPEDIENTE" },
-        { name: "1º TEN QOPM MONTEIRO", rank: "1TEN", extras: 0, platoon: "EXPEDIENTE" },
-        { name: "TEN VANILSON", rank: "TEN", extras: 0, platoon: "EXPEDIENTE" },
-        { name: "SUB TEN ANDRÉ", rank: "SUBTEN", extras: 0, platoon: "EXPEDIENTE" },
-        { name: "1º SGT PM OLIMAR", rank: "1SGT", extras: 0, platoon: "BRAVO" },
-        { name: "2º SGT PM PEIXOTO", rank: "2SGT", extras: 0, platoon: "ALFA" },
-        // Adicione outros conforme necessário
-      ];
-      
-      // Inserir dados usando uma transação
-      await client.query('BEGIN');
-      
-      for (const person of samplePersonnel) {
-        await client.query(
-          'INSERT INTO personnel (name, rank, extras, platoon) VALUES ($1, $2, $3, $4)',
-          [person.name, person.rank, person.extras, person.platoon]
-        );
-      }
-      
-      await client.query('COMMIT');
-      console.log("[Deploy] Dados iniciais inseridos com sucesso");
-    } else {
-      console.log("[Deploy] Banco de dados já contém dados");
-    }
-    
-    client.release();
-    console.log("[Deploy] Inicialização do banco de dados concluída com sucesso");
-    
-  } catch (error) {
-    console.error("[Deploy] Erro ao inicializar banco de dados:", error);
-  } finally {
-    // Fechar o pool de conexões
-    await pool.end();
+  // Definir NODE_ENV como produção se não estiver definido
+  if (!process.env.NODE_ENV) {
+    process.env.NODE_ENV = 'production';
   }
+  
+  // Verificar se temos arquivo .env.production e carregá-lo
+  const envPath = path.resolve(__dirname, '..', '.env.production');
+  if (fs.existsSync(envPath)) {
+    console.log(`[Deploy] Carregando variáveis de ambiente de ${envPath}`);
+    try {
+      const envConfig = dotenv.parse(fs.readFileSync(envPath));
+      for (const key in envConfig) {
+        process.env[key] = envConfig[key];
+      }
+      console.log('[Deploy] Variáveis de ambiente carregadas com sucesso');
+    } catch (error) {
+      console.error('[Deploy] Erro ao carregar variáveis de ambiente:', error);
+    }
+  } else {
+    console.log('[Deploy] Arquivo .env.production não encontrado, usando variáveis existentes');
+  }
+  
+  // Verificar variáveis críticas
+  if (!process.env.DATABASE_URL) {
+    if (process.env.PGHOST && process.env.PGUSER && process.env.PGPASSWORD && process.env.PGDATABASE) {
+      // Construir DATABASE_URL a partir das variáveis individuais
+      const host = process.env.PGHOST;
+      const user = process.env.PGUSER;
+      const password = process.env.PGPASSWORD;
+      const database = process.env.PGDATABASE;
+      const port = process.env.PGPORT || '5432';
+      
+      process.env.DATABASE_URL = `postgres://${user}:${password}@${host}:${port}/${database}`;
+      console.log(`[Deploy] DATABASE_URL construída: postgres://${user}:***@${host}:${port}/${database}`);
+    } else {
+      console.warn('[Deploy] DATABASE_URL não definida e variáveis individuais insuficientes!');
+      // Tente valores padrão para o Replit
+      process.env.DATABASE_URL = 'postgres://postgres:postgres@localhost:5432/postgres';
+      console.log('[Deploy] Tentando usar conexão padrão local do Replit');
+    }
+  } else {
+    console.log('[Deploy] DATABASE_URL já está definida');
+  }
+  
+  // Exibir mensagem de status
+  console.log('[Deploy] Configuração para deploy concluída');
+  
+  return true;
 }
 
-// Executar a função de inicialização
-initializeDeployDatabase();
+// Executar a função se o arquivo for chamado diretamente
+if (import.meta.url === `file://${process.argv[1]}`) {
+  initializeDeployDatabase()
+    .then(() => {
+      console.log('[Deploy] Inicialização de deploy concluída com sucesso');
+      process.exit(0);
+    })
+    .catch(error => {
+      console.error('[Deploy] Falha na inicialização de deploy:', error);
+      process.exit(1);
+    });
+}

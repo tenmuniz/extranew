@@ -6,6 +6,8 @@
  * corretamente configurado e que as tabelas necessárias sejam criadas.
  */
 
+// @ts-check
+
 // Imprimir mensagem de início
 console.log('Iniciando script de implantação...');
 
