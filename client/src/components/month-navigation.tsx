@@ -109,10 +109,6 @@ export function MonthNavigation({
             </button>
           </div>
         </div>
-        
-        <div className="text-sm flex items-center">
-          <span className="text-gray-600 font-semibold">20ª CIPM</span>
-        </div>
       </div>
     </div>
   );
