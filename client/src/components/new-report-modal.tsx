@@ -285,7 +285,7 @@ export function NewReportModal({
           <div className="flex justify-between items-start mb-6">
             <div>
               <h1 className="text-4xl font-bold bg-gradient-to-r from-[#1A3A5F] to-[#4A6741] bg-clip-text text-transparent mb-2">
-                Relatório de Operações
+                Relatório de Extras
               </h1>
               
               <p className="text-gray-600 text-lg">
@@ -300,7 +300,7 @@ export function NewReportModal({
           {/* Cards com estatísticas */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
             <div className="bg-gradient-to-br from-[#1A3A5F] to-[#3066BE] rounded-xl shadow-lg p-6 text-white">
-              <h3 className="text-lg font-medium opacity-80 mb-2">Total de Operações</h3>
+              <h3 className="text-lg font-medium opacity-80 mb-2">Total de Extras</h3>
               <div className="text-5xl font-bold mb-1">{stats.totalOperations}</div>
               <p className="text-sm opacity-70">No período</p>
             </div>
@@ -308,13 +308,13 @@ export function NewReportModal({
             <div className="bg-gradient-to-br from-[#4A6741] to-[#6BA368] rounded-xl shadow-lg p-6 text-white">
               <h3 className="text-lg font-medium opacity-80 mb-2">Militares Envolvidos</h3>
               <div className="text-5xl font-bold mb-1">{stats.personnelInvolved}</div>
-              <p className="text-sm opacity-70">Em operações</p>
+              <p className="text-sm opacity-70">Em extras</p>
             </div>
             
             <div className="bg-gradient-to-br from-[#6441A5] to-[#8843E8] rounded-xl shadow-lg p-6 text-white">
               <h3 className="text-lg font-medium opacity-80 mb-2">Média por Militar</h3>
               <div className="text-5xl font-bold mb-1">{stats.avgOperationsPerPerson}</div>
-              <p className="text-sm opacity-70">Operações/Policial</p>
+              <p className="text-sm opacity-70">Extras/Policial</p>
             </div>
             
             <div className="bg-gradient-to-br from-[#FF416C] to-[#FF4B2B] rounded-xl shadow-lg p-6 text-white">
@@ -329,7 +329,7 @@ export function NewReportModal({
             {/* Coluna da esquerda: Lista de militares com operações */}
             <div className="w-full md:w-2/5 bg-white rounded-xl shadow-lg p-6">
               <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">
-                Militares com Operações
+                Militares com Extras
               </h2>
               
               <div className="max-h-[360px] overflow-y-auto pr-2">
@@ -401,7 +401,7 @@ export function NewReportModal({
                   </div>
                   
                   <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
-                    Detalhes das Operações
+                    Detalhes dos Extras
                   </h3>
                   
                   <div className="max-h-[240px] overflow-y-auto pr-2">
@@ -445,7 +445,7 @@ export function NewReportModal({
           
           {/* Seção de estatísticas por operação */}
           <div className="mt-10">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Estatísticas por Operação</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Estatísticas por Extra</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white rounded-xl shadow-lg p-6">
