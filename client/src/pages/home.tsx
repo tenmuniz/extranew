@@ -4,7 +4,7 @@ import { OperationTabs } from "@/components/operation-tabs";
 import { MonthNavigation } from "@/components/month-navigation";
 import { PersonnelList } from "@/components/personnel-list";
 import { ScheduleCalendar } from "@/components/schedule-calendar";
-import { PersonnelModal } from "@/components/personnel-modal";
+import { PersonnelManagement } from "@/components/personnel-management";
 import { NewReportModal } from "@/components/new-report-modal";
 import { ConflictsDashboard } from "@/components/conflicts-dashboard";
 import { Layout } from "@/components/layout";
@@ -183,12 +183,13 @@ export default function Home() {
       </div>
 
       {/* Personnel Management Modal */}
-      <PersonnelModal
-        isOpen={isPersonnelModalOpen}
-        onClose={() => setIsPersonnelModalOpen(false)}
-        personnel={sortedPersonnel}
-        onPersonnelChange={handlePersonnelChange}
-      />
+      {isPersonnelModalOpen && (
+        <PersonnelManagement
+          personnel={sortedPersonnel}
+          onClose={() => setIsPersonnelModalOpen(false)}
+          onPersonnelChange={handlePersonnelChange}
+        />
+      )}
 
       {/* Dashboard de Conflitos */}
       {isConflictsDashboardOpen && (
