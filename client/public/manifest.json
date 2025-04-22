@@ -10,15 +10,15 @@
   "start_url": "/",
   "icons": [
     {
-      "src": "/icons/icon-72x72.png",
+      "src": "/icons/icon-72x72.svg",
       "sizes": "72x72",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-192x192.png",
+      "src": "/icons/icon-192x192.svg",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ]

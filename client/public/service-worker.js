@@ -9,8 +9,8 @@ const STATIC_ASSETS = [
   '/index.html',
   '/offline.html',
   '/manifest.json',
-  '/icons/icon-72x72.png',
-  '/icons/icon-192x192.png'
+  '/icons/icon-72x72.svg',
+  '/icons/icon-192x192.svg'
 ];
 
 // Instalar o service worker

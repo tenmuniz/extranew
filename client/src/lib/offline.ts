@@ -397,22 +397,87 @@ export function setupOfflineInterceptor() {
 // Inicializar suporte offline
 export async function initOfflineSupport() {
   try {
-    // Tentar sincronizar dados imediatamente
+    // Abrir banco de dados para garantir que está pronto
+    const db = await openDB();
+    console.log('IndexedDB inicializado:', db.name, 'v' + db.version);
+    
+    // Tentar sincronizar dados imediatamente se estiver online
     if (navigator.onLine) {
-      await syncData();
+      try {
+        console.log('Online na inicialização - sincronizando dados');
+        await syncData();
+        
+        // Verificar se há ações pendentes para sincronizar
+        if (await hasPendingActions()) {
+          console.log('Ações pendentes encontradas - sincronizando');
+          await syncPendingActions();
+        }
+      } catch (error) {
+        console.error('Erro na sincronização inicial:', error);
+      }
+    } else {
+      console.log('Offline na inicialização - usando dados em cache');
     }
     
     // Configurar interceptor para quando ficar offline
     setupOfflineInterceptor();
     
-    // Tentar sincronizar novamente quando ficar online
+    // Tentar sincronizar quando a conexão for restaurada
     window.addEventListener('online', async () => {
       console.log('Conexão online detectada - sincronizando dados');
+      
+      // Mostrar indicador visual de sincronização
+      const syncIndicator = document.getElementById('sync-indicator');
+      if (syncIndicator) {
+        syncIndicator.style.display = 'block';
+        syncIndicator.textContent = 'Sincronizando dados...';
+      }
+      
       try {
-        await syncPendingActions();
+        // Primeiro sincronizar ações pendentes
+        const syncResult = await syncPendingActions();
+        
+        // Depois atualizar dados locais
         await syncData();
+        
+        if (syncIndicator) {
+          syncIndicator.textContent = syncResult 
+            ? 'Sincronização concluída!' 
+            : 'Sincronização parcial concluída';
+            
+          // Esconder após alguns segundos
+          setTimeout(() => {
+            syncIndicator.style.display = 'none';
+          }, 3000);
+        }
       } catch (error) {
         console.error('Erro ao sincronizar após ficar online:', error);
+        
+        if (syncIndicator) {
+          syncIndicator.textContent = 'Erro na sincronização';
+          syncIndicator.style.backgroundColor = '#dc2626';
+          
+          // Esconder após alguns segundos
+          setTimeout(() => {
+            syncIndicator.style.display = 'none';
+          }, 5000);
+        }
+      }
+    });
+    
+    // Atualizar interface quando ficar offline
+    window.addEventListener('offline', () => {
+      console.log('Conexão offline detectada - usando dados em cache');
+      
+      // Mostrar notificação se não estiver visível
+      const offlineNotification = document.getElementById('offline-notification');
+      if (offlineNotification && offlineNotification.style.display === 'none') {
+        offlineNotification.style.display = 'block';
+        
+        // Esconder após alguns segundos
+        setTimeout(() => {
+          offlineNotification.style.display = 'none';
+        }, 5000);
       }
     });
     
