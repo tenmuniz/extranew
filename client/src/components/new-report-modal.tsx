@@ -19,6 +19,24 @@ type PersonnelWithExtras = Personnel & {
   details: {date: string, dateObj: Date, operation: OperationType}[];
 }
 
+// Interface para estatísticas
+interface StatsData {
+  totalOperations: number;
+  pmfOperations: number;
+  escolaOperations: number;
+  personnelCount: number;
+  avgOperationsPerPerson: number;
+  maxOperations: { person: PersonnelWithExtras | null, count: number };
+}
+
+// Interface para estatísticas de guarnição
+interface GuarnitionStats {
+  alfa: StatsData;
+  bravo: StatsData;
+  charlie: StatsData;
+  expediente: StatsData;
+}
+
 export function NewReportModal({
   personnel,
   assignments,
@@ -26,6 +44,7 @@ export function NewReportModal({
   currentYear,
   onClose
 }: ReportModalProps) {
+  const [activeTab, setActiveTab] = useState<'geral' | 'alfa' | 'bravo' | 'charlie' | 'expediente'>('geral');
   const [selectedPerson, setSelectedPerson] = useState<PersonnelWithExtras | null>(null);
   const [stats, setStats] = useState({
     totalOperations: 0,
@@ -36,7 +55,48 @@ export function NewReportModal({
     maxOperations: { person: null as PersonnelWithExtras | null, count: 0 },
     minOperations: { person: null as PersonnelWithExtras | null, count: 0 }
   });
+  
+  // Estatísticas por guarnição
+  const [guStats, setGuStats] = useState<GuarnitionStats>({
+    alfa: {
+      totalOperations: 0,
+      pmfOperations: 0,
+      escolaOperations: 0,
+      personnelCount: 0,
+      avgOperationsPerPerson: 0,
+      maxOperations: { person: null as PersonnelWithExtras | null, count: 0 }
+    },
+    bravo: {
+      totalOperations: 0,
+      pmfOperations: 0,
+      escolaOperations: 0,
+      personnelCount: 0,
+      avgOperationsPerPerson: 0,
+      maxOperations: { person: null as PersonnelWithExtras | null, count: 0 }
+    },
+    charlie: {
+      totalOperations: 0,
+      pmfOperations: 0,
+      escolaOperations: 0,
+      personnelCount: 0,
+      avgOperationsPerPerson: 0,
+      maxOperations: { person: null as PersonnelWithExtras | null, count: 0 }
+    },
+    expediente: {
+      totalOperations: 0,
+      pmfOperations: 0,
+      escolaOperations: 0,
+      personnelCount: 0,
+      avgOperationsPerPerson: 0,
+      maxOperations: { person: null as PersonnelWithExtras | null, count: 0 }
+    }
+  });
+  
   const [personnelWithExtras, setPersonnelWithExtras] = useState<PersonnelWithExtras[]>([]);
+  const [alfaPersonnel, setAlfaPersonnel] = useState<PersonnelWithExtras[]>([]);
+  const [bravoPersonnel, setBravoPersonnel] = useState<PersonnelWithExtras[]>([]);
+  const [charliePersonnel, setCharliePersonnel] = useState<PersonnelWithExtras[]>([]);
+  const [expedientePersonnel, setExpedientePersonnel] = useState<PersonnelWithExtras[]>([]);
 
   // Processar dados para o relatório
   useEffect(() => {
@@ -145,6 +205,17 @@ export function NewReportModal({
     
     setPersonnelWithExtras(personnelWithOperations);
     
+    // Agrupar por guarnição
+    const alfa = personnelWithOperations.filter(p => p.platoon === 'ALFA');
+    const bravo = personnelWithOperations.filter(p => p.platoon === 'BRAVO');
+    const charlie = personnelWithOperations.filter(p => p.platoon === 'CHARLIE');
+    const expediente = personnelWithOperations.filter(p => p.platoon === 'EXPEDIENTE');
+    
+    setAlfaPersonnel(alfa);
+    setBravoPersonnel(bravo);
+    setCharliePersonnel(charlie);
+    setExpedientePersonnel(expediente);
+    
     // Encontrar militar com mais e menos operações
     let maxPerson: PersonnelWithExtras | null = null;
     let minPerson: PersonnelWithExtras | null = null;
@@ -182,6 +253,64 @@ export function NewReportModal({
       minOperations: { person: minPerson, count: minCount > 0 && minCount !== Infinity ? minCount : 0 }
     });
     
+    // Calcular estatísticas por guarnição
+    const guStatsData = {
+      alfa: {
+        totalOperations: alfa.reduce((total, p) => total + p.operationsCount, 0),
+        pmfOperations: alfa.reduce((total, p) => total + p.pmfCount, 0),
+        escolaOperations: alfa.reduce((total, p) => total + p.escolaCount, 0),
+        personnelCount: alfa.length,
+        avgOperationsPerPerson: alfa.length 
+          ? Number((alfa.reduce((total, p) => total + p.operationsCount, 0) / alfa.length).toFixed(1))
+          : 0,
+        maxOperations: { 
+          person: alfa.length ? alfa.reduce((max, p) => p.operationsCount > (max?.operationsCount || 0) ? p : max, null as PersonnelWithExtras | null) : null,
+          count: alfa.length ? Math.max(...alfa.map(p => p.operationsCount)) : 0
+        }
+      },
+      bravo: {
+        totalOperations: bravo.reduce((total, p) => total + p.operationsCount, 0),
+        pmfOperations: bravo.reduce((total, p) => total + p.pmfCount, 0),
+        escolaOperations: bravo.reduce((total, p) => total + p.escolaCount, 0),
+        personnelCount: bravo.length,
+        avgOperationsPerPerson: bravo.length 
+          ? Number((bravo.reduce((total, p) => total + p.operationsCount, 0) / bravo.length).toFixed(1))
+          : 0,
+        maxOperations: { 
+          person: bravo.length ? bravo.reduce((max, p) => p.operationsCount > (max?.operationsCount || 0) ? p : max, null as PersonnelWithExtras | null) : null,
+          count: bravo.length ? Math.max(...bravo.map(p => p.operationsCount)) : 0
+        }
+      },
+      charlie: {
+        totalOperations: charlie.reduce((total, p) => total + p.operationsCount, 0),
+        pmfOperations: charlie.reduce((total, p) => total + p.pmfCount, 0),
+        escolaOperations: charlie.reduce((total, p) => total + p.escolaCount, 0),
+        personnelCount: charlie.length,
+        avgOperationsPerPerson: charlie.length 
+          ? Number((charlie.reduce((total, p) => total + p.operationsCount, 0) / charlie.length).toFixed(1))
+          : 0,
+        maxOperations: { 
+          person: charlie.length ? charlie.reduce((max, p) => p.operationsCount > (max?.operationsCount || 0) ? p : max, null as PersonnelWithExtras | null) : null, 
+          count: charlie.length ? Math.max(...charlie.map(p => p.operationsCount)) : 0
+        }
+      },
+      expediente: {
+        totalOperations: expediente.reduce((total, p) => total + p.operationsCount, 0),
+        pmfOperations: expediente.reduce((total, p) => total + p.pmfCount, 0),
+        escolaOperations: expediente.reduce((total, p) => total + p.escolaCount, 0),
+        personnelCount: expediente.length,
+        avgOperationsPerPerson: expediente.length 
+          ? Number((expediente.reduce((total, p) => total + p.operationsCount, 0) / expediente.length).toFixed(1))
+          : 0,
+        maxOperations: { 
+          person: expediente.length ? expediente.reduce((max, p) => p.operationsCount > (max?.operationsCount || 0) ? p : max, null as PersonnelWithExtras | null) : null,
+          count: expediente.length ? Math.max(...expediente.map(p => p.operationsCount)) : 0
+        }
+      }
+    };
+    
+    setGuStats(guStatsData);
+    
     // Seleciona o primeiro militar por padrão, se existir
     if (personnelWithOperations.length > 0 && !selectedPerson) {
       setSelectedPerson(personnelWithOperations[0]);
@@ -189,7 +318,61 @@ export function NewReportModal({
   }, [personnel, assignments, currentMonth, currentYear, selectedPerson]);
   
   // Gerar PDF do relatório
-  const handleGeneratePDF = () => {
+  const handleGeneratePDF = (guarnition?: 'alfa' | 'bravo' | 'charlie' | 'expediente') => {
+    // Selecionar os dados corretos com base na guarnição
+    let personnel: PersonnelWithExtras[] = [];
+    let selectedStats: StatsData = {
+      totalOperations: 0,
+      pmfOperations: 0,
+      escolaOperations: 0,
+      personnelCount: 0,
+      avgOperationsPerPerson: 0,
+      maxOperations: { person: null as PersonnelWithExtras | null, count: 0 }
+    };
+    
+    let reportTitle = "RELATÓRIO DE EXTRAS - 20ª CIPM";
+    let reportSubtitle = "";
+    let colorPrimary = "#1A3A5F";
+    let colorSecondary = "#4A6741";
+    
+    // Configurar dados e cores com base na guarnição selecionada
+    if (guarnition === 'alfa') {
+      personnel = alfaPersonnel;
+      selectedStats = { ...guStats.alfa };
+      reportTitle = "RELATÓRIO DE EXTRAS - GUARNIÇÃO ALFA";
+      colorPrimary = "#1E429F"; // Azul para ALFA
+      colorSecondary = "#1A3A5F";
+    } else if (guarnition === 'bravo') {
+      personnel = bravoPersonnel;
+      selectedStats = { ...guStats.bravo };
+      reportTitle = "RELATÓRIO DE EXTRAS - GUARNIÇÃO BRAVO";
+      colorPrimary = "#065F46"; // Verde para BRAVO
+      colorSecondary = "#1A3A5F";
+    } else if (guarnition === 'charlie') {
+      personnel = charliePersonnel;
+      selectedStats = { ...guStats.charlie };
+      reportTitle = "RELATÓRIO DE EXTRAS - GUARNIÇÃO CHARLIE";
+      colorPrimary = "#991B1B"; // Vermelho para CHARLIE
+      colorSecondary = "#1A3A5F";
+    } else if (guarnition === 'expediente') {
+      personnel = expedientePersonnel;
+      selectedStats = { ...guStats.expediente };
+      reportTitle = "RELATÓRIO DE EXTRAS - EXPEDIENTE";
+      colorPrimary = "#5B21B6"; // Roxo para EXPEDIENTE
+      colorSecondary = "#1A3A5F";
+    } else {
+      personnel = personnelWithExtras;
+      selectedStats = {
+        totalOperations: stats.totalOperations,
+        pmfOperations: stats.pmfOperations,
+        escolaOperations: stats.escolaOperations,
+        personnelCount: stats.personnelInvolved,
+        avgOperationsPerPerson: stats.avgOperationsPerPerson,
+        maxOperations: stats.maxOperations
+      };
+      reportTitle = "RELATÓRIO GERAL DE EXTRAS - 20ª CIPM";
+    }
+    
     // Construir um HTML estruturado para o PDF
     const pdfContainer = document.createElement('div');
     pdfContainer.style.padding = '20px';
@@ -197,39 +380,40 @@ export function NewReportModal({
     
     // Cabeçalho
     const header = document.createElement('div');
+    reportSubtitle = currentMonth !== undefined && currentYear !== undefined 
+        ? `${getMonthName(currentMonth)} / ${currentYear}`
+        : "Todos os Períodos";
+        
     header.innerHTML = `
       <div style="text-align: center; margin-bottom: 20px;">
-        <h1 style="color: #1A3A5F; margin-bottom: 5px; font-size: 24px;">RELATÓRIO DE EXTRAS - 20ª CIPM</h1>
-        <h2 style="color: #4A6741; margin-top: 0; font-size: 18px;">${
-          currentMonth !== undefined && currentYear !== undefined 
-            ? `${getMonthName(currentMonth)} / ${currentYear}`
-            : "Todos os Períodos"
-        }</h2>
-        <div style="border-bottom: 2px solid #1A3A5F; margin: 10px 0;"></div>
+        <h1 style="color: ${colorPrimary}; margin-bottom: 5px; font-size: 24px;">${reportTitle}</h1>
+        <h2 style="color: ${colorSecondary}; margin-top: 0; font-size: 18px;">${reportSubtitle}</h2>
+        <div style="border-bottom: 2px solid ${colorPrimary}; margin: 10px 0;"></div>
       </div>
     `;
     pdfContainer.appendChild(header);
     
     // Resumo estatístico
     const statsSection = document.createElement('div');
+    
     statsSection.innerHTML = `
       <div style="margin-bottom: 25px;">
-        <h2 style="color: #1A3A5F; border-bottom: 1px solid #ccc; padding-bottom: 5px; font-size: 18px;">RESUMO ESTATÍSTICO</h2>
+        <h2 style="color: ${colorPrimary}; border-bottom: 1px solid #ccc; padding-bottom: 5px; font-size: 18px;">RESUMO ESTATÍSTICO</h2>
         <div style="display: flex; justify-content: space-between; margin-top: 15px;">
           <div style="text-align: center; background-color: #f0f7ff; padding: 10px; border-radius: 8px; width: 23%;">
-            <span style="display: block; font-size: 24px; font-weight: bold; color: #1A3A5F;">${stats.totalOperations}</span>
+            <span style="display: block; font-size: 24px; font-weight: bold; color: ${colorPrimary};">${selectedStats.totalOperations}</span>
             <span style="color: #666; font-size: 14px;">Total de Extras</span>
           </div>
           <div style="text-align: center; background-color: #f0faf0; padding: 10px; border-radius: 8px; width: 23%;">
-            <span style="display: block; font-size: 24px; font-weight: bold; color: #4A6741;">${stats.pmfOperations}</span>
+            <span style="display: block; font-size: 24px; font-weight: bold; color: #4A6741;">${selectedStats.pmfOperations}</span>
             <span style="color: #666; font-size: 14px;">PMF</span>
           </div>
           <div style="text-align: center; background-color: #f5f0ff; padding: 10px; border-radius: 8px; width: 23%;">
-            <span style="display: block; font-size: 24px; font-weight: bold; color: #6441A5;">${stats.escolaOperations}</span>
+            <span style="display: block; font-size: 24px; font-weight: bold; color: #6441A5;">${selectedStats.escolaOperations}</span>
             <span style="color: #666; font-size: 14px;">Escola Segura</span>
           </div>
           <div style="text-align: center; background-color: #fff0f3; padding: 10px; border-radius: 8px; width: 23%;">
-            <span style="display: block; font-size: 24px; font-weight: bold; color: #FF416C;">${stats.personnelInvolved}</span>
+            <span style="display: block; font-size: 24px; font-weight: bold; color: #FF416C;">${selectedStats.personnelCount}</span>
             <span style="color: #666; font-size: 14px;">Militares Envolvidos</span>
           </div>
         </div>
@@ -239,15 +423,16 @@ export function NewReportModal({
     
     // Destaque
     const highlightSection = document.createElement('div');
+    
     highlightSection.innerHTML = `
       <div style="margin-bottom: 25px;">
-        <h2 style="color: #1A3A5F; border-bottom: 1px solid #ccc; padding-bottom: 5px; font-size: 18px;">DESTAQUES</h2>
+        <h2 style="color: ${colorPrimary}; border-bottom: 1px solid #ccc; padding-bottom: 5px; font-size: 18px;">DESTAQUES</h2>
         <div style="display: flex; margin-top: 15px;">
           <div style="background-color: #fff0f3; padding: 15px; border-radius: 8px; width: 100%;">
             <h3 style="margin-top: 0; color: #FF416C; font-size: 16px;">Maior Participação em Extras</h3>
-            <p style="margin-bottom: 5px; font-size: 14px;"><strong>Militar:</strong> ${stats.maxOperations.person?.name || "Nenhum"}</p>
-            <p style="margin-bottom: 5px; font-size: 14px;"><strong>Quantidade:</strong> ${stats.maxOperations.count} extras</p>
-            <p style="margin-bottom: 5px; font-size: 14px;"><strong>Média por Militar:</strong> ${stats.avgOperationsPerPerson} extras</p>
+            <p style="margin-bottom: 5px; font-size: 14px;"><strong>Militar:</strong> ${selectedStats.maxOperations.person?.name || "Nenhum"}</p>
+            <p style="margin-bottom: 5px; font-size: 14px;"><strong>Quantidade:</strong> ${selectedStats.maxOperations.count} extras</p>
+            <p style="margin-bottom: 5px; font-size: 14px;"><strong>Média por Militar:</strong> ${selectedStats.avgOperationsPerPerson} extras</p>
           </div>
         </div>
       </div>
@@ -258,24 +443,22 @@ export function NewReportModal({
     const personnelSection = document.createElement('div');
     personnelSection.innerHTML = `
       <div style="margin-bottom: 25px;">
-        <h2 style="color: #1A3A5F; border-bottom: 1px solid #ccc; padding-bottom: 5px; font-size: 18px;">MILITARES COM EXTRAS</h2>
+        <h2 style="color: ${colorPrimary}; border-bottom: 1px solid #ccc; padding-bottom: 5px; font-size: 18px;">MILITARES COM EXTRAS</h2>
         <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
           <thead>
-            <tr style="background-color: #1A3A5F; color: white;">
+            <tr style="background-color: ${colorPrimary}; color: white;">
               <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Militar</th>
               <th style="padding: 8px; text-align: center; border: 1px solid #ddd;">Posto/Grad</th>
-              <th style="padding: 8px; text-align: center; border: 1px solid #ddd;">Guarnição</th>
               <th style="padding: 8px; text-align: center; border: 1px solid #ddd;">PMF</th>
               <th style="padding: 8px; text-align: center; border: 1px solid #ddd;">Escola</th>
               <th style="padding: 8px; text-align: center; border: 1px solid #ddd;">Total</th>
             </tr>
           </thead>
           <tbody>
-            ${personnelWithExtras.map((person, index) => `
+            ${personnel.map((person, index) => `
               <tr style="background-color: ${index % 2 === 0 ? '#f9f9f9' : 'white'};">
                 <td style="padding: 8px; border: 1px solid #ddd;">${person.name}</td>
                 <td style="padding: 8px; text-align: center; border: 1px solid #ddd;">${person.rank}</td>
-                <td style="padding: 8px; text-align: center; border: 1px solid #ddd;">${person.platoon || "N/A"}</td>
                 <td style="padding: 8px; text-align: center; border: 1px solid #ddd;">${person.pmfCount}</td>
                 <td style="padding: 8px; text-align: center; border: 1px solid #ddd;">${person.escolaCount}</td>
                 <td style="padding: 8px; text-align: center; border: 1px solid #ddd; font-weight: bold;">${person.operationsCount}</td>
@@ -286,6 +469,53 @@ export function NewReportModal({
       </div>
     `;
     pdfContainer.appendChild(personnelSection);
+    
+    // Datas e detalhes das operações
+    if (personnel.length > 0) {
+      const datesSection = document.createElement('div');
+      datesSection.innerHTML = `
+        <div style="margin-bottom: 25px;">
+          <h2 style="color: ${colorPrimary}; border-bottom: 1px solid #ccc; padding-bottom: 5px; font-size: 18px;">DETALHAMENTO POR DATA</h2>
+          
+          <div style="margin-top: 15px;">
+            ${personnel.map((person) => `
+              <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+                <div style="background-color: ${colorPrimary}; color: white; padding: 8px 12px;">
+                  <h3 style="margin: 0; font-size: 16px;">${person.name} - ${person.rank}</h3>
+                </div>
+                <div style="padding: 12px;">
+                  <p style="margin: 0 0 10px 0;"><strong>Total de extras:</strong> ${person.operationsCount}</p>
+                  
+                  <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                    <thead>
+                      <tr style="background-color: #f0f0f0;">
+                        <th style="padding: 6px; text-align: center; border: 1px solid #ddd;">Data</th>
+                        <th style="padding: 6px; text-align: center; border: 1px solid #ddd;">Operação</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${person.details
+                        .sort((a, b) => (a.dateObj instanceof Date && b.dateObj instanceof Date) 
+                          ? a.dateObj.getTime() - b.dateObj.getTime() 
+                          : 0)
+                        .map((detail) => `
+                        <tr>
+                          <td style="padding: 6px; text-align: center; border: 1px solid #ddd;">${detail.date}</td>
+                          <td style="padding: 6px; text-align: center; border: 1px solid #ddd;">
+                            ${detail.operation === 'PMF' ? 'Polícia Mais Forte' : 'Escola Segura'}
+                          </td>
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      pdfContainer.appendChild(datesSection);
+    }
     
     // Rodapé
     const footer = document.createElement('div');
@@ -300,9 +530,11 @@ export function NewReportModal({
     // Gerar o PDF
     const options = {
       margin: 10,
-      filename: `relatorio-extras-${currentMonth !== undefined && currentYear !== undefined 
+      filename: `relatorio-extras-${guarnition ? guarnition+'-' : ''}${
+        currentMonth !== undefined && currentYear !== undefined 
         ? `${getMonthName(currentMonth)}-${currentYear}`
-        : 'completo'}.pdf`,
+        : 'completo'
+      }.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -379,7 +611,7 @@ export function NewReportModal({
             </button>
             
             <button 
-              onClick={handleGeneratePDF}
+              onClick={() => handleGeneratePDF()}
               className="bg-gradient-to-r from-[#4A6741] to-[#6BA368] hover:shadow-xl text-white rounded-lg px-3 py-2 shadow-md transition-all duration-300 flex items-center text-sm"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
