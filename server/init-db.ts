@@ -8,35 +8,57 @@ let initializationAttempts = 0;
 const MAX_ATTEMPTS = 5;
 const RETRY_DELAY_MS = 3000;
 
-// Função para inicializar o banco de dados
+// Função para inicializar o banco de dados com tentativas
 export async function initializeDatabase(): Promise<void> {
-  try {
-    // Verificar se as tabelas existem
-    const tableExists = await checkTablesExist();
-    
-    if (!tableExists) {
-      console.log("Inicializando banco de dados...");
+  const attemptInitialization = async (): Promise<boolean> => {
+    try {
+      // Verificar se as tabelas existem
+      const tableExists = await checkTablesExist();
       
-      // Criar tabelas
-      await createTables();
-      
-      // Inserir dados iniciais
-      await seedInitialData();
-      
-      console.log("Banco de dados inicializado com sucesso!");
-    } else {
-      console.log("Banco de dados já está inicializado.");
+      if (!tableExists) {
+        console.log("Inicializando banco de dados...");
+        
+        // Criar tabelas
+        await createTables();
+        
+        // Inserir dados iniciais
+        await seedInitialData();
+        
+        console.log("Banco de dados inicializado com sucesso!");
+      } else {
+        console.log("Banco de dados já está inicializado.");
+      }
+      return true; // Sucesso
+    } catch (error) {
+      console.error(`Tentativa ${initializationAttempts + 1}/${MAX_ATTEMPTS} falhou: ${error}`);
+      return false; // Falha
     }
-  } catch (error) {
-    console.error("Erro ao inicializar o banco de dados:", error);
-    throw error;
+  };
+
+  // Loop de tentativas com delay entre elas
+  while (initializationAttempts < MAX_ATTEMPTS) {
+    const success = await attemptInitialization();
+    if (success) return; // Sair se inicialização bem-sucedida
+    
+    // Incrementar contagem de tentativas
+    initializationAttempts++;
+    
+    // Se chegou ao limite de tentativas, lançar erro
+    if (initializationAttempts >= MAX_ATTEMPTS) {
+      throw new Error(`Falha na inicialização do banco de dados após ${MAX_ATTEMPTS} tentativas`);
+    }
+    
+    // Aguardar antes da próxima tentativa
+    console.log(`Aguardando ${RETRY_DELAY_MS}ms antes da próxima tentativa...`);
+    await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
   }
 }
 
 // Verificar se as tabelas já existem
 async function checkTablesExist(): Promise<boolean> {
   try {
-    const result = await db.execute(sql`
+    // Verificar se a tabela personnel existe
+    const personnelResult = await db.execute(sql`
       SELECT EXISTS (
         SELECT FROM information_schema.tables 
         WHERE table_schema = 'public'
@@ -44,7 +66,39 @@ async function checkTablesExist(): Promise<boolean> {
       );
     `);
     
-    return result.rows[0]?.exists === true;
+    const personnelExists = personnelResult.rows[0]?.exists === true;
+    
+    // Verificar se a tabela assignments existe
+    const assignmentsResult = await db.execute(sql`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public'
+        AND table_name = 'assignments'
+      );
+    `);
+    
+    const assignmentsExists = assignmentsResult.rows[0]?.exists === true;
+    
+    // Verificar se tabelas existem e possuem dados
+    if (personnelExists && assignmentsExists) {
+      // Verificar se há registros na tabela personnel
+      const personnelCountResult = await db.execute(sql`
+        SELECT COUNT(*) as count FROM personnel;
+      `);
+      
+      // Forçar o resultado para string e converter para número
+      const countValue = String(personnelCountResult.rows[0]?.count || '0');
+      const personnelCount = parseInt(countValue, 10) || 0;
+      
+      if (personnelCount === 0) {
+        console.log("Tabelas existem, mas sem dados. Realizando seed inicial...");
+        return false;
+      }
+      
+      return true;
+    }
+    
+    return false;
   } catch (error) {
     console.error("Erro ao verificar tabelas:", error);
     return false;

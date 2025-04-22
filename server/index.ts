@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { initializeDatabase } from "./init-db";
+import { closePool } from "./db";
 
 const app = express();
 app.use(express.json());
@@ -86,4 +87,32 @@ app.use((req, res, next) => {
   };
   
   startServer();
+  
+  // Gerenciamento gracioso de encerramento
+  const gracefulShutdown = async (signal: string) => {
+    console.log(`\n${signal} recebido. Encerrando graciosamente...`);
+    
+    // Fechar o pool de conexões do banco de dados
+    try {
+      await closePool();
+    } catch (error) {
+      console.error('Erro ao fechar conexões do banco de dados:', error);
+    }
+    
+    // Fechar o servidor
+    server.close(() => {
+      console.log('Servidor HTTP encerrado.');
+      process.exit(0);
+    });
+    
+    // Forçar encerramento após 10 segundos
+    setTimeout(() => {
+      console.error('Encerramento forçado após timeout de 10s');
+      process.exit(1);
+    }, 10000);
+  };
+  
+  // Registrar eventos para encerramento gracioso
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 })();
