@@ -178,27 +178,33 @@ export class MemStorage implements IStorage {
   async getAssignmentsByDateRange(startDate: Date, endDate: Date): Promise<Assignment[]> {
     console.log(`[MemStorage] Buscando atribuições entre ${startDate.toISOString()} e ${endDate.toISOString()}`);
     
-    // Garantir que as datas não incluem horas/minutos/segundos para comparação correta
-    const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-    const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59, 999);
+    // Formatação de datas para comparação
+    const startStr = startDate.toISOString().split('T')[0]; // YYYY-MM-DD
+    const endStr = endDate.toISOString().split('T')[0]; // YYYY-MM-DD
     
     return this.assignments.filter(a => {
-      const assignmentDate = new Date(a.date);
-      return assignmentDate >= start && assignmentDate <= end;
+      // Garantir que estamos comparando apenas a parte da data
+      const assignmentDateStr = typeof a.date === 'string' ? 
+        a.date.includes('T') ? a.date.split('T')[0] : a.date : 
+        new Date(a.date).toISOString().split('T')[0];
+      
+      return assignmentDateStr >= startStr && assignmentDateStr <= endStr;
     });
   }
   
   async getAssignmentsByDate(date: Date): Promise<Assignment[]> {
-    const targetDate = new Date(date);
-    // Resetar horas para comparação apenas de data
-    targetDate.setHours(0, 0, 0, 0);
+    // Formatação de data para comparação (YYYY-MM-DD)
+    const targetDateStr = date.toISOString().split('T')[0];
     
-    console.log(`[MemStorage] Buscando atribuições para ${targetDate.toISOString()}`);
+    console.log(`[MemStorage] Buscando atribuições para ${targetDateStr}`);
     
     return this.assignments.filter(a => {
-      const assignmentDate = new Date(a.date);
-      assignmentDate.setHours(0, 0, 0, 0);
-      return assignmentDate.getTime() === targetDate.getTime();
+      // Garantir que estamos comparando apenas a parte da data
+      const assignmentDateStr = typeof a.date === 'string' ? 
+        a.date.includes('T') ? a.date.split('T')[0] : a.date : 
+        new Date(a.date).toISOString().split('T')[0];
+      
+      return assignmentDateStr === targetDateStr;
     });
   }
   
@@ -211,13 +217,18 @@ export class MemStorage implements IStorage {
     
     this.lastAssignmentId++;
     
+    // Garantir formato correto da data (YYYY-MM-DD)
+    const dateStr = data.date instanceof Date ? 
+      data.date.toISOString().split('T')[0] : 
+      data.date;
+    
     // Criar objeto de atribuição
     const newAssignment: Assignment = {
       id: this.lastAssignmentId,
       personnelId: data.personnelId,
       operationType: data.operationType,
-      date: data.date instanceof Date ? data.date.toISOString() : data.date,
-      createdAt: new Date().toISOString()
+      date: dateStr,
+      createdAt: new Date()
     };
     
     this.assignments.push(newAssignment);
@@ -240,14 +251,16 @@ export class MemStorage implements IStorage {
   }
   
   async getAssignmentsCountForDay(date: Date, operationType: OperationType): Promise<number> {
-    const targetDate = new Date(date);
-    // Resetar horas para comparação apenas de data
-    targetDate.setHours(0, 0, 0, 0);
+    // Formatação de data para comparação (YYYY-MM-DD)
+    const targetDateStr = date.toISOString().split('T')[0];
     
     const count = this.assignments.filter(a => {
-      const assignmentDate = new Date(a.date);
-      assignmentDate.setHours(0, 0, 0, 0);
-      return assignmentDate.getTime() === targetDate.getTime() && a.operationType === operationType;
+      // Garantir que estamos comparando apenas a parte da data
+      const assignmentDateStr = typeof a.date === 'string' ? 
+        a.date.includes('T') ? a.date.split('T')[0] : a.date : 
+        new Date(a.date).toISOString().split('T')[0];
+      
+      return assignmentDateStr === targetDateStr && a.operationType === operationType;
     }).length;
     
     return count;
