@@ -11,6 +11,15 @@ import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Health check route para verificação de disponibilidade (usado pelo PWA)
+  app.get('/api/health', (_req, res) => {
+    res.status(200).json({ 
+      status: 'ok', 
+      timestamp: new Date().toISOString(),
+      version: '1.0.0'
+    });
+  });
+
   // Error handling utility
   const handleError = (res: Response, error: unknown) => {
     if (error instanceof ZodError) {
@@ -221,6 +230,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
         currentCount,
         maxAllowed,
         isValidDay
+      });
+    } catch (error) {
+      handleError(res, error);
+    }
+  });
+
+  // Rota para sincronização de dados offline
+  app.post("/api/sync", async (req, res) => {
+    try {
+      const { pendingChanges } = req.body;
+      
+      if (!Array.isArray(pendingChanges)) {
+        return res.status(400).json({ message: "pendingChanges should be an array" });
+      }
+      
+      const results = [];
+      
+      // Processar cada alteração pendente
+      for (const change of pendingChanges) {
+        try {
+          const { type, data, id } = change;
+          
+          if (type === 'create_personnel') {
+            const validatedData = insertPersonnelSchema.parse(data);
+            const newPersonnel = await storage.createPersonnel(validatedData);
+            results.push({ success: true, id, result: newPersonnel });
+          } 
+          else if (type === 'update_personnel') {
+            const validatedData = insertPersonnelSchema.partial().parse(data);
+            const personnel = await storage.updatePersonnel(data.id, validatedData);
+            results.push({ success: !!personnel, id, result: personnel });
+          }
+          else if (type === 'delete_personnel') {
+            const success = await storage.deletePersonnel(data.id);
+            results.push({ success, id });
+          }
+          else if (type === 'create_assignment') {
+            const validatedData = insertAssignmentSchema.parse(data);
+            const newAssignment = await storage.createAssignment(validatedData);
+            results.push({ success: true, id, result: newAssignment });
+          }
+          else if (type === 'delete_assignment') {
+            const success = await storage.deleteAssignment(data.id);
+            results.push({ success, id });
+          }
+          else {
+            results.push({ success: false, id, error: "Unknown change type" });
+          }
+        } catch (error) {
+          // Erros individuais não devem interromper o processo inteiro
+          console.error('Error processing sync item:', error);
+          results.push({ 
+            success: false, 
+            id: change.id, 
+            error: error instanceof Error ? error.message : "Unknown error" 
+          });
+        }
+      }
+      
+      // Responder com resultados de todas as operações
+      res.json({ 
+        success: true,
+        timestamp: new Date().toISOString(),
+        results 
       });
     } catch (error) {
       handleError(res, error);
