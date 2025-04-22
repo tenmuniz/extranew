@@ -461,7 +461,7 @@ export function NewReportModal({
                 <div className="grid grid-cols-3 gap-4">
                   <div className="bg-blue-50 rounded-lg p-3 text-center">
                     <span className="block text-2xl font-bold text-blue-700">{stats.pmfOperations}</span>
-                    <span className="text-blue-600 text-sm">Operações</span>
+                    <span className="text-blue-600 text-sm">Extras</span>
                   </div>
                   
                   <div className="bg-blue-50 rounded-lg p-3 text-center">
@@ -491,7 +491,7 @@ export function NewReportModal({
                 <div className="grid grid-cols-3 gap-4">
                   <div className="bg-green-50 rounded-lg p-3 text-center">
                     <span className="block text-2xl font-bold text-green-700">{stats.escolaOperations}</span>
-                    <span className="text-green-600 text-sm">Operações</span>
+                    <span className="text-green-600 text-sm">Extras</span>
                   </div>
                   
                   <div className="bg-green-50 rounded-lg p-3 text-center">
