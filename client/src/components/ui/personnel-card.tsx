@@ -14,59 +14,69 @@ const getRankSymbols = (rank: string) => {
     case "CAP":
       return (
         <div className="flex">
-          <span className="text-yellow-400 text-xs">★★★</span>
+          <span className="text-yellow-400 text-[10px] font-bold">★★★</span>
         </div>
       );
     case "1TEN":
       return (
         <div className="flex">
-          <span className="text-yellow-400 text-xs">★★</span>
+          <span className="text-yellow-400 text-[10px] font-bold">★★</span>
         </div>
       );
     case "TEN":
     case "2TEN":
       return (
         <div className="flex">
-          <span className="text-yellow-400 text-xs">★</span>
+          <span className="text-yellow-400 text-[10px] font-bold">★</span>
         </div>
       );
     case "SUBTEN":
       return (
         <div className="flex flex-col items-center">
-          <span className="text-yellow-300 text-xs">≡≡≡</span>
+          <span className="text-yellow-300 text-[10px] font-bold">≡≡≡</span>
         </div>
       );
     case "1SGT":
       return (
         <div className="flex flex-col items-center">
-          <span className="text-yellow-300 text-xs">≡≡≡</span>
-          <span className="text-yellow-300 text-[8px]">v</span>
+          <div className="text-yellow-300 text-[10px] leading-3 text-center font-bold">
+            <div>≡≡≡</div>
+            <div>∨</div>
+          </div>
         </div>
       );
     case "2SGT":
       return (
         <div className="flex flex-col items-center">
-          <span className="text-yellow-300 text-xs">≡≡</span>
-          <span className="text-yellow-300 text-[8px]">v</span>
+          <div className="text-yellow-300 text-[10px] leading-3 text-center font-bold">
+            <div>≡≡</div>
+            <div>∨</div>
+          </div>
         </div>
       );
     case "3SGT":
       return (
         <div className="flex flex-col items-center">
-          <span className="text-yellow-300 text-xs">≡</span>
-          <span className="text-yellow-300 text-[8px]">v</span>
+          <div className="text-yellow-300 text-[10px] leading-3 text-center font-bold">
+            <div>≡</div>
+            <div>∨</div>
+          </div>
         </div>
       );
     case "CB":
       return (
         <div className="flex flex-col items-center">
-          <span className="text-yellow-300 text-xs">^^</span>
+          <div className="text-yellow-300 text-[10px] font-bold">
+            <div>∧∧</div>
+          </div>
         </div>
       );
     case "SD":
       return (
         <div className="flex flex-col items-center">
-          <span className="text-yellow-300 text-xs">^</span>
+          <div className="text-yellow-300 text-[10px] font-bold">
+            <div>∧</div>
+          </div>
         </div>
       );
     default:
