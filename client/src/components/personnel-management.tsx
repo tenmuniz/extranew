@@ -205,18 +205,21 @@ export function PersonnelManagement({
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] flex items-center justify-center z-50 overflow-auto">
-      <div className="bg-[#F8FAFC] rounded-xl shadow-2xl w-[90%] max-w-5xl max-h-[90vh] overflow-auto">
-        <div className="relative p-6">
-          {/* Close button */}
+      <div className="bg-[#F8FAFC] rounded-xl shadow-2xl w-full max-w-7xl h-[95vh] overflow-hidden flex flex-col">
+        <div className="bg-[#1A3A5F] text-white py-4 px-6 flex justify-between items-center shadow-md">
+          <h2 className="text-xl md:text-2xl font-bold">Gerenciamento de Militares</h2>
           <button 
             onClick={onClose}
-            className="absolute right-6 top-6 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition-colors"
+            className="bg-gradient-to-r from-[#FF416C] to-[#FF4B2B] hover:shadow-lg text-white rounded-lg px-4 py-2 shadow-md transition-all duration-300 flex items-center"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
+            <span className="font-medium">Voltar ao Calendário</span>
           </button>
-          
+        </div>
+        
+        <div className="p-6 overflow-auto flex-1">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-[#1A3A5F] to-[#4A6741] bg-clip-text text-transparent mb-2">
             Gerenciar Militares
           </h1>
