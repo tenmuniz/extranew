@@ -49,20 +49,17 @@ export function CalendarDay({
             {dayOfMonth}
           </span>
           {/* Sempre mostrar a guarnição do dia, independente se é mês atual ou não */}
-          <div className="flex items-center mt-1">
-            <div 
-              className={cn(
-                "w-3 h-3 rounded-full mr-1",
-                !isCurrentMonth && "opacity-50"
-              )}
-              style={{ backgroundColor: getGarrisonColor(getActiveGuarnitionForDay(date)) }}
-            ></div>
-            <span className={cn(
-              "text-xs font-semibold",
-              !isCurrentMonth && "text-gray-400"
-            )}>
-              {getActiveGuarnitionForDay(date)}
-            </span>
+          <div 
+            className={cn(
+              "text-xs font-semibold text-white rounded-t-sm px-1 py-0.5 mt-1 w-fit",
+              !isCurrentMonth && "opacity-75"
+            )}
+            style={{ 
+              backgroundColor: getGarrisonColor(getActiveGuarnitionForDay(date)),
+              maxWidth: "calc(100% - 4px)",
+            }}
+          >
+            {getActiveGuarnitionForDay(date)}
           </div>
         </div>
         <span className={cn(
