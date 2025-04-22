@@ -5,6 +5,13 @@ import {
   type InsertAssignment,
   type OperationType
 } from "@shared/schema";
+import fs from 'fs';
+import path from 'path';
+
+// Caminhos para os arquivos de dados
+const DATA_DIR = path.join(process.cwd(), 'data');
+const PERSONNEL_FILE = path.join(DATA_DIR, 'personnel.json');
+const ASSIGNMENTS_FILE = path.join(DATA_DIR, 'assignments.json');
 
 // Interface for storage operations
 export interface IStorage {
@@ -24,8 +31,89 @@ export interface IStorage {
   getAssignmentsCountForDay(date: Date, operationType: OperationType): Promise<number>;
 }
 
-// Class for in-memory storage
+// Class for in-memory storage with file persistence
 export class MemStorage implements IStorage {
+  // Método privado para garantir que o diretório de dados existe
+  private ensureDataDirExists(): void {
+    if (!fs.existsSync(DATA_DIR)) {
+      try {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+        console.log(`[MemStorage] Diretório de dados criado: ${DATA_DIR}`);
+      } catch (err) {
+        console.error(`[MemStorage] Erro ao criar diretório de dados: ${err}`);
+      }
+    }
+  }
+  
+  // Método para salvar dados de pessoal em arquivo
+  private savePersonnelToFile(): void {
+    this.ensureDataDirExists();
+    try {
+      fs.writeFileSync(PERSONNEL_FILE, JSON.stringify(this.personnel, null, 2));
+      console.log(`[MemStorage] Dados de pessoal salvos em ${PERSONNEL_FILE}`);
+    } catch (err) {
+      console.error(`[MemStorage] Erro ao salvar dados de pessoal: ${err}`);
+    }
+  }
+  
+  // Método para salvar atribuições em arquivo
+  private saveAssignmentsToFile(): void {
+    this.ensureDataDirExists();
+    try {
+      fs.writeFileSync(ASSIGNMENTS_FILE, JSON.stringify(this.assignments, null, 2));
+      console.log(`[MemStorage] Atribuições salvas em ${ASSIGNMENTS_FILE}`);
+    } catch (err) {
+      console.error(`[MemStorage] Erro ao salvar atribuições: ${err}`);
+    }
+  }
+  
+  // Método para carregar dados de pessoal do arquivo
+  private loadPersonnelFromFile(): void {
+    try {
+      if (fs.existsSync(PERSONNEL_FILE)) {
+        const data = fs.readFileSync(PERSONNEL_FILE, 'utf8');
+        const loadedPersonnel = JSON.parse(data) as Personnel[];
+        
+        if (Array.isArray(loadedPersonnel) && loadedPersonnel.length > 0) {
+          this.personnel = loadedPersonnel;
+          
+          // Atualizar o último ID de pessoal
+          this.lastPersonnelId = Math.max(...this.personnel.map(p => p.id));
+          console.log(`[MemStorage] Dados de pessoal carregados de ${PERSONNEL_FILE}`);
+          console.log(`[MemStorage] Último ID de pessoal: ${this.lastPersonnelId}`);
+        }
+      }
+    } catch (err) {
+      console.error(`[MemStorage] Erro ao carregar dados de pessoal: ${err}`);
+    }
+  }
+  
+  // Método para carregar atribuições do arquivo
+  private loadAssignmentsFromFile(): void {
+    try {
+      if (fs.existsSync(ASSIGNMENTS_FILE)) {
+        const data = fs.readFileSync(ASSIGNMENTS_FILE, 'utf8');
+        const loadedAssignments = JSON.parse(data) as Assignment[];
+        
+        if (Array.isArray(loadedAssignments) && loadedAssignments.length > 0) {
+          this.assignments = loadedAssignments;
+          
+          // Atualizar o último ID de atribuição
+          this.lastAssignmentId = Math.max(...this.assignments.map(a => a.id));
+          console.log(`[MemStorage] Atribuições carregadas de ${ASSIGNMENTS_FILE}`);
+          console.log(`[MemStorage] Último ID de atribuição: ${this.lastAssignmentId}`);
+        }
+      }
+    } catch (err) {
+      console.error(`[MemStorage] Erro ao carregar atribuições: ${err}`);
+    }
+  }
+  
+  constructor() {
+    // Carregar dados dos arquivos quando a classe é inicializada
+    this.loadPersonnelFromFile();
+    this.loadAssignmentsFromFile();
+  }
   private personnel: Personnel[] = [
     // Capitão e oficiais primeiro (por ordem hierárquica - EXPEDIENTE)
     { id: 1, name: "CAP MUNIZ", rank: "CAP", extras: 0, platoon: "EXPEDIENTE" },
@@ -132,6 +220,10 @@ export class MemStorage implements IStorage {
     };
     this.personnel.push(newPerson);
     console.log(`[MemStorage] Funcionário criado com sucesso: ID=${newPerson.id}`);
+    
+    // Salvar dados atualizados
+    this.savePersonnelToFile();
+    
     return newPerson;
   }
   
@@ -149,6 +241,10 @@ export class MemStorage implements IStorage {
     
     this.personnel[index] = updatedPerson;
     console.log(`[MemStorage] Funcionário atualizado com sucesso: ID=${id}`);
+    
+    // Salvar dados atualizados
+    this.savePersonnelToFile();
+    
     return updatedPerson;
   }
   
@@ -157,11 +253,20 @@ export class MemStorage implements IStorage {
     this.personnel = this.personnel.filter(p => p.id !== id);
     
     // Remover também todas as atribuições relacionadas a este funcionário
+    const hadAssignments = this.assignments.some(a => a.personnelId === id);
     this.assignments = this.assignments.filter(a => a.personnelId !== id);
     
     const success = this.personnel.length < initialLength;
     if (success) {
       console.log(`[MemStorage] Funcionário excluído com sucesso: ID=${id}`);
+      
+      // Salvar dados atualizados
+      this.savePersonnelToFile();
+      
+      // Se havia atribuições para esse funcionário, salvar também as atribuições
+      if (hadAssignments) {
+        this.saveAssignmentsToFile();
+      }
     } else {
       console.warn(`[MemStorage] Nenhum funcionário encontrado com ID ${id}`);
     }
@@ -218,9 +323,9 @@ export class MemStorage implements IStorage {
     this.lastAssignmentId++;
     
     // Garantir formato correto da data (YYYY-MM-DD)
-    const dateStr = data.date instanceof Date ? 
-      data.date.toISOString().split('T')[0] : 
-      data.date;
+    const dateStr = typeof data.date === 'string' ? 
+      (data.date.includes('T') ? data.date.split('T')[0] : data.date) : 
+      new Date(data.date).toISOString().split('T')[0];
     
     // Criar objeto de atribuição
     const newAssignment: Assignment = {
@@ -228,11 +333,15 @@ export class MemStorage implements IStorage {
       personnelId: data.personnelId,
       operationType: data.operationType,
       date: dateStr,
-      createdAt: new Date()
+      createdAt: new Date().toISOString()
     };
     
     this.assignments.push(newAssignment);
     console.log(`[MemStorage] Atribuição criada com sucesso: ID=${newAssignment.id}`);
+    
+    // Salvar dados atualizados
+    this.saveAssignmentsToFile();
+    
     return newAssignment;
   }
   
@@ -243,6 +352,9 @@ export class MemStorage implements IStorage {
     const success = this.assignments.length < initialLength;
     if (success) {
       console.log(`[MemStorage] Atribuição excluída com sucesso: ID=${id}`);
+      
+      // Salvar dados atualizados
+      this.saveAssignmentsToFile();
     } else {
       console.warn(`[MemStorage] Nenhuma atribuição encontrada com ID ${id}`);
     }
