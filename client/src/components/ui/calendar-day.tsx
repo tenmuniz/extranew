@@ -51,7 +51,7 @@ export function CalendarDay({
   return (
     <div
       className={cn(
-        "calendar-day rounded-lg min-h-[90px] p-2 border transition-all duration-200",
+        "calendar-day rounded-lg min-h-[150px] p-2 border transition-all duration-200",
         getBackgroundColor(),
         isCurrentMonth 
           ? "shadow-sm border-[#E7EBF0] opacity-100" 
@@ -75,7 +75,7 @@ export function CalendarDay({
       >
         <span className="text-xs font-semibold">{getActiveGuarnitionForDay(date)}</span>
         <span className={cn(
-          "font-medium text-white",
+          "font-medium text-white text-xl",
           isToday && "font-bold"
         )}>
           {dayOfMonth}
@@ -92,7 +92,7 @@ export function CalendarDay({
       </div>
       <div className={cn(
         "assigned-personnel relative",
-        !isDisabled && "min-h-[50px]"
+        !isDisabled && "min-h-[80px]"
       )}>
         <div className="flex flex-col w-full">
           {children}

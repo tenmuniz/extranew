@@ -34,41 +34,14 @@ export function ScheduleCalendar({
   const { toast } = useToast();
   const [calendarDays, setCalendarDays] = useState<Date[]>([]);
 
-  // Generate calendar days for the current month
+  // Generate calendar days for the current month (apenas os dias do mês atual)
   useEffect(() => {
     const days: Date[] = [];
-    const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
     const lastDate = getLastDayOfMonth(currentYear, currentMonth);
     
-    // Add days from previous month to fill the first row
-    const prevMonthLastDate = getLastDayOfMonth(
-      currentMonth === 0 ? currentYear - 1 : currentYear,
-      currentMonth === 0 ? 11 : currentMonth - 1
-    );
-    
-    for (let i = firstDay - 1; i >= 0; i--) {
-      const day = new Date(
-        currentMonth === 0 ? currentYear - 1 : currentYear,
-        currentMonth === 0 ? 11 : currentMonth - 1,
-        prevMonthLastDate - i
-      );
-      days.push(day);
-    }
-    
-    // Add days from current month
+    // Adicionar apenas os dias do mês atual (do dia 1 até o último)
     for (let i = 1; i <= lastDate; i++) {
       const day = new Date(currentYear, currentMonth, i);
-      days.push(day);
-    }
-    
-    // Add days from next month to complete the grid
-    const remainingDays = 42 - days.length; // 6 rows x 7 columns = 42 cells
-    for (let i = 1; i <= remainingDays; i++) {
-      const day = new Date(
-        currentMonth === 11 ? currentYear + 1 : currentYear,
-        currentMonth === 11 ? 0 : currentMonth + 1,
-        i
-      );
       days.push(day);
     }
     
@@ -262,8 +235,14 @@ export function ScheduleCalendar({
           <div className="text-center font-bold text-[#1A3A5F] p-2 border-b-2 border-[#1A3A5F]/20">Sáb</div>
         </div>
         
-        {/* Calendar grid */}
-        <div id="calendar-grid" className="grid grid-cols-7 gap-2">
+        {/* Calendar grid - grid flow para organizar os dias sequencialmente */}
+        <div id="calendar-grid" className="grid grid-cols-7 auto-rows-fr gap-2">
+          {/* Adicionar espaços vazios para alinhar com os dias da semana corretos */}
+          {Array.from({ length: new Date(currentYear, currentMonth, 1).getDay() }).map((_, i) => (
+            <div key={`empty-${i}`} className="h-24 invisible"></div>
+          ))}
+          
+          {/* Dias do mês */}
           {calendarDays.map((day, index) => {
             const dayAssignments = getAssignmentsForDate(day);
             const disabled = isDayDisabled(day);
