@@ -275,7 +275,9 @@ export function setupOfflineInterceptor() {
   
   // Substituir a função fetch por nossa implementação
   window.fetch = async (input, init) => {
-    const url = typeof input === 'string' ? input : input.url;
+    const url = typeof input === 'string' ? input : 
+                input instanceof Request ? input.url : 
+                input.toString();
     const method = init?.method || 'GET';
     
     // Se estiver online, tente fazer a requisição normal
