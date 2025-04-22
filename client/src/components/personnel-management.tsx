@@ -204,8 +204,8 @@ export function PersonnelManagement({
   };
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] flex items-center justify-center z-50 overflow-auto">
-      <div className="bg-[#F8FAFC] rounded-xl shadow-2xl w-full max-w-7xl h-[95vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] z-50 overflow-auto">
+      <div className="bg-[#F8FAFC] min-h-screen w-full flex flex-col">
         <div className="bg-[#1A3A5F] text-white py-4 px-6 flex justify-between items-center shadow-md">
           <h2 className="text-xl md:text-2xl font-bold">Gerenciamento de Militares</h2>
           <button 
