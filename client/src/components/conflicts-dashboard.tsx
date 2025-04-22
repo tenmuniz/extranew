@@ -180,9 +180,9 @@ export function ConflictsDashboard({
 
   if (conflictsData.personnelWithConflicts.length === 0) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] flex items-center justify-center p-8 z-50">
-        <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden">
-          <div className="p-8 text-center">
+      <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl shadow-2xl w-[90%] max-w-lg overflow-hidden">
+          <div className="p-6 text-center">
             <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -205,9 +205,9 @@ export function ConflictsDashboard({
   }
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] flex items-center justify-center z-50 overflow-auto p-6">
-      <div className="bg-[#F8FAFC] rounded-xl shadow-2xl w-full max-w-7xl min-h-[80vh] overflow-hidden">
-        <div className="relative p-8">
+    <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] flex items-center justify-center z-50 overflow-auto">
+      <div className="bg-[#F8FAFC] rounded-xl shadow-2xl w-[90%] max-w-5xl max-h-[90vh] overflow-auto">
+        <div className="relative p-6">
           <button 
             onClick={onClose}
             className="absolute right-6 top-6 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition-colors"

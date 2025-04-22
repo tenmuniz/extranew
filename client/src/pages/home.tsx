@@ -5,7 +5,7 @@ import { MonthNavigation } from "@/components/month-navigation";
 import { PersonnelList } from "@/components/personnel-list";
 import { ScheduleCalendar } from "@/components/schedule-calendar";
 import { PersonnelModal } from "@/components/personnel-modal";
-import { ReportModal } from "@/components/report-modal";
+import { NewReportModal } from "@/components/new-report-modal";
 import { ConflictsDashboard } from "@/components/conflicts-dashboard";
 import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,7 @@ export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isPersonnelModalOpen, setIsPersonnelModalOpen] = useState(false);
   const [isConflictsDashboardOpen, setIsConflictsDashboardOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [activeOperation, setActiveOperation] = useState<OperationType>("PMF");
 
   // Calculate current month/year from the date
@@ -141,12 +142,15 @@ export default function Home() {
             Dashboard de Conflitos
           </Button>
           
-          <ReportModal
-            personnel={personnel}
-            assignments={assignments}
-            currentMonth={currentMonth}
-            currentYear={currentYear}
-          />
+          <Button
+            className="bg-gradient-to-r from-[#1A3A5F] to-[#3066BE] hover:from-[#3066BE] hover:to-[#1A3A5F] text-white shadow-lg"
+            onClick={() => setIsReportModalOpen(true)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Relatório de Operações
+          </Button>
           
           <Button
             className="bg-[#4A6741] hover:bg-[#4A6741]/90 text-white"
@@ -194,6 +198,17 @@ export default function Home() {
           currentMonth={currentMonth}
           currentYear={currentYear}
           onClose={() => setIsConflictsDashboardOpen(false)}
+        />
+      )}
+
+      {/* Relatório de Operações */}
+      {isReportModalOpen && (
+        <NewReportModal
+          personnel={sortedPersonnel}
+          assignments={assignments}
+          currentMonth={currentMonth}
+          currentYear={currentYear}
+          onClose={() => setIsReportModalOpen(false)}
         />
       )}
     </Layout>
