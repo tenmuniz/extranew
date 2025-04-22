@@ -17,17 +17,27 @@ Este guia apresenta os passos necessários para migrar a aplicação de agendame
 3. Faça commit de todas as alterações pendentes
 4. Conecte ao GitHub e faça push para um novo repositório
 
-### 2. Ajustar arquivos de configuração
+### 2. Preparar arquivos de configuração
 
-Após clonar o repositório em seu ambiente local, faça as seguintes alterações:
+Após clonar o repositório, antes de fazer o deploy no Railway:
 
-#### Substituir vite.config.ts
+#### Preparar package.json para o Railway
 
-Renomeie o arquivo `vite.config.railway.ts` para `vite.config.ts` para remover as dependências do Replit.
+Para garantir compatibilidade com o Railway, utilize o arquivo `package.railway.json` incluído no projeto:
 
-#### Preparar o .env
+```bash
+# No terminal do Railway ou localmente antes do push
+cp package.railway.json package.json
+```
 
-O arquivo `.env` já está criado com a variável `DATABASE_URL`. Certifique-se de que esse arquivo esteja listado no `.gitignore` para não expor credenciais.
+Este arquivo contém configurações específicas para o ambiente de produção, incluindo a configuração `"engines"` que define a versão do Node.js compatível.
+
+#### Configurar variáveis de ambiente
+
+O arquivo `.env.example` contém um modelo das variáveis de ambiente necessárias. No Railway, você precisará configurar:
+
+- `DATABASE_URL`: String de conexão com o PostgreSQL (definida automaticamente ao adicionar um banco de dados no Railway)
+- `NODE_ENV`: Defina como "production"
 
 ### 3. Configurar o Railway
 
@@ -38,56 +48,82 @@ O arquivo `.env` já está criado com a variável `DATABASE_URL`. Certifique-se 
    - Clique em "New" → "Database" → "PostgreSQL"
    - Aguarde a criação do banco de dados
 
-5. Configure as variáveis de ambiente:
+5. Configure o redirecionamento das variáveis de ambiente:
    - Vá para o serviço da aplicação
    - Clique em "Variables"
-   - Conecte a variável `DATABASE_URL` com a string de conexão do PostgreSQL criado:
+   - Railway criará automaticamente a variável `DATABASE_URL`, certifique-se de que esteja corretamente vinculada ao banco de dados.
+
+### 4. Deploy e Inicialização
+
+1. O Railway detectará automaticamente o `Procfile` e executará o script definido nele.
+2. O processo de build será executado automaticamente através do script `postinstall` no package.json.
+3. **IMPORTANTE**: Para inicializar o banco de dados após o primeiro deploy:
+   - Acesse o shell do serviço no Railway clicando em "Shell"
+   - Execute o script de configuração:
+     ```bash
+     ./railway-setup.sh
      ```
-     DATABASE_URL=postgresql://[usuario]:[senha]@[host]:[porta]/[nome-banco]
+   - Alternativamente, você pode executar diretamente:
+     ```bash
+     npm run db:push
      ```
 
-### 4. Deploy e Configuração
+4. Após a configuração inicial, a aplicação estará disponível no domínio fornecido pelo Railway.
 
-1. Railway detectará automaticamente o Procfile e executará o script de build e inicialização
-2. **IMPORTANTE**: Após o primeiro deploy ser concluído, é necessário aplicar as migrações manualmente:
-   - Acesse o shell do serviço no Railway
-   - Execute o script `./setup-railway.sh` (ou `npm run db:push` para criar as tabelas)
-   - Este passo só precisa ser executado uma vez após o deploy inicial
-3. Após o deploy e migração, a aplicação estará disponível no domínio fornecido pelo Railway
+### 5. Otimizações Implementadas
 
-### 5. Verificação
+Para garantir o funcionamento estável no Railway, implementamos:
 
-Após o deploy, verificar se:
+1. **Graceful Shutdown**: Gerenciamento adequado de encerramento da aplicação quando o Railway envia sinais SIGTERM.
+2. **Gestão de Portas**: A aplicação usa automaticamente a porta definida pela variável `PORT` do Railway.
+3. **Gestão de Erros**: Melhor tratamento de erros para evitar crashes inesperados.
+4. **Otimização de Build**: Configuração de build específica para ambiente de produção.
 
-1. O banco de dados foi criado corretamente (tabelas `personnel` e `assignments`)
-2. Os dados iniciais foram carregados
-3. A aplicação está acessível e funcionando como esperado
+### 6. Verificação
+
+Após o deploy, verifique:
+
+1. Se o banco de dados foi inicializado corretamente (tabelas `personnel` e `assignments`)
+2. Se os dados iniciais foram carregados
+3. Se a aplicação está acessível através da URL fornecida pelo Railway
+4. Se o calendário e a lista de pessoal estão carregando corretamente
 
 ## Solução de Problemas
 
-### Falha no Deploy
+### Aplicação não inicia ou crasha
 
-Se o deploy falhar, verifique:
+Se a aplicação não iniciar ou crashar frequentemente:
 
-1. **Problema de banco de dados**: Verifique se a variável `DATABASE_URL` está configurada corretamente
-2. **Problema de build**: Verifique os logs de construção no Railway
-3. **Migrações**: Se necessário, execute manualmente o comando de migração:
-   ```
+1. Verifique os logs do Railway para identificar o problema específico
+2. Execute o script `railway-setup.sh` que faz verificações adicionais
+3. Certifique-se de que todas as variáveis de ambiente estão configuradas corretamente
+4. Verifique se o banco de dados PostgreSQL está acessível
+
+### Erro de banco de dados
+
+Se encontrar erros relacionados ao banco de dados:
+
+1. Verifique se a variável `DATABASE_URL` está corretamente configurada
+2. Conecte-se ao banco através do shell do Railway e execute:
+   ```bash
    npm run db:push
    ```
-
-### Dados Não Carregados
-
-Se os dados iniciais não forem carregados:
-
-1. Acesse o console do Railway
-2. Execute manualmente:
+3. Verifique se as tabelas foram criadas corretamente:
+   ```sql
+   \dt
    ```
-   npm run db:push
-   ```
-3. Reinicie a aplicação
+
+### Erros de build
+
+Se o processo de build falhar:
+
+1. Verifique os logs de build no Railway
+2. Tente usar o `package.railway.json` como `package.json`
+3. Certifique-se de que o Node.js 18 ou superior está sendo usado
 
 ## Referências
 
 - [Documentação do Railway](https://docs.railway.app/)
+- [Guia de Deployment do Railway](https://docs.railway.app/guides/nodejs)
 - [Documentação do Drizzle ORM](https://orm.drizzle.team/docs/overview)
+- [Otimizações do Node.js em Produção](https://expressjs.com/en/advanced/best-practice-performance.html)
