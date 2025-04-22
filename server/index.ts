@@ -47,36 +47,55 @@ app.use((req, res, next) => {
 (async () => {
   try {
     console.log("[Sistema] Iniciando a aplicação...");
+    console.log(`[Sistema] Ambiente: ${process.env.NODE_ENV || 'não definido'}`);
     
-    // Tentativa #1: Inicializar o banco de dados
-    try {
-      // Verificar a conexão com o banco primeiro
-      const client = await pool.connect();
-      console.log("[DB] Conexão com o banco estabelecida");
-      client.release();
-      
-      // Executar push do schema e inicializar banco de dados
-      await initializeDatabase();
-      console.log("[DB] Banco de dados inicializado com sucesso");
-
-      // Verificar e corrigir a integridade dos dados
-      await validateDatabaseIntegrity();
-    } catch (dbError) {
-      console.error("[DB] Erro na inicialização do banco de dados:", dbError);
-      
-      // Tentativa #2: Se ocorrer um erro, tentar novamente após 2 segundos
-      // Isso ajuda quando o serviço do banco de dados pode estar iniciando
-      console.log("[DB] Tentando reconectar em 2 segundos...");
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+    // Número máximo de tentativas de conexão com o banco
+    const maxRetries = process.env.NODE_ENV === 'production' ? 5 : 2;
+    let retryCount = 0;
+    let dbInitialized = false;
+    
+    // Função para tentativa de inicialização do banco com retry
+    const tryInitDatabase = async () => {
       try {
+        // Verificar a conexão com o banco primeiro
+        const client = await pool.connect();
+        console.log("[DB] Conexão com o banco estabelecida");
+        client.release();
+        
+        // Executar push do schema e inicializar banco de dados
         await initializeDatabase();
+        console.log("[DB] Banco de dados inicializado com sucesso");
+
+        // Verificar e corrigir a integridade dos dados
         await validateDatabaseIntegrity();
-        console.log("[DB] Reconexão e inicialização bem-sucedidas");
-      } catch (retryError) {
-        console.error("[DB] Falha na tentativa de reconexão:", retryError);
-        // Continuaremos mesmo com falha, pois o usuário pode corrigir manualmente depois
+        
+        // Indicar sucesso
+        dbInitialized = true;
+      } catch (dbError) {
+        retryCount++;
+        console.error(`[DB] Tentativa ${retryCount}/${maxRetries} - Erro na inicialização do banco:`, dbError);
+        
+        if (retryCount < maxRetries) {
+          // Tempo de espera progressivo entre tentativas (1s, 2s, 4s, ...)
+          const waitTime = Math.min(1000 * Math.pow(2, retryCount - 1), 10000);
+          console.log(`[DB] Tentando reconectar em ${waitTime/1000} segundos...`);
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+          return tryInitDatabase(); // Tentativa recursiva
+        } else {
+          console.error("[DB] Todas as tentativas de conexão falharam");
+          // Em produção, podemos continuar mesmo com falha, já que o app pode reiniciar automaticamente
+          if (process.env.NODE_ENV === 'production') {
+            console.log("[DB] Continuando execução da aplicação, mas banco de dados pode não estar acessível");
+          }
+        }
       }
+    };
+    
+    // Iniciar processo de inicialização
+    await tryInitDatabase();
+    
+    if (!dbInitialized && process.env.NODE_ENV !== 'production') {
+      console.error("[Sistema] Não foi possível inicializar o banco de dados após múltiplas tentativas.");
     }
   } catch (startupError) {
     console.error("[Sistema] Erro crítico na inicialização:", startupError);
