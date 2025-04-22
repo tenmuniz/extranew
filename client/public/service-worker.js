@@ -7,6 +7,7 @@ const CACHE_NAME = 'escalas-20cipm-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
+  '/offline.html',
   '/manifest.json',
   '/icons/icon-72x72.png',
   '/icons/icon-192x192.png'
@@ -95,7 +96,7 @@ self.addEventListener('fetch', (event) => {
             // Se não conseguir buscar da rede e for a página principal,
             // retornar a página offline
             if (event.request.mode === 'navigate') {
-              return caches.match('/');
+              return caches.match('/offline.html');
             }
             
             // Caso contrário, propagar o erro

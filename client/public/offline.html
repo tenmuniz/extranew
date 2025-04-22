@@ -3,96 +3,142 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Offline - Sistema de Escalas 20ª CIPM</title>
+  <title>Modo Offline - Escalas 20ª CIPM</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+      color: white;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: center;
-      height: 100vh;
-      margin: 0;
-      padding: 20px;
+      align-items: center;
       text-align: center;
-      background-color: #f9f9f9;
-      color: #333;
     }
     
-    .offline-container {
-      max-width: 500px;
-      padding: 30px;
-      border-radius: 10px;
-      background-color: white;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    .container {
+      max-width: 90%;
+      width: 500px;
+      padding: 2rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     }
     
     h1 {
-      color: #1f2937;
-      margin-bottom: 20px;
-    }
-    
-    .icon {
-      font-size: 60px;
-      margin-bottom: 20px;
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+      color: white;
     }
     
     p {
-      line-height: 1.6;
-      margin-bottom: 20px;
+      font-size: 1rem;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
     }
     
-    .button {
-      display: inline-block;
-      background: linear-gradient(135deg, #3b82f6, #1e40af);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: 500;
-      transition: all 0.3s ease;
+    .icon {
+      font-size: 48px;
+      margin-bottom: 1rem;
+    }
+    
+    .retry-button {
+      background-color: white;
+      color: #1e3a8a;
       border: none;
+      padding: 12px 28px;
+      border-radius: 24px;
+      font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-size: 1rem;
     }
     
-    .button:hover {
-      background: linear-gradient(135deg, #2563eb, #1e3a8a);
+    .retry-button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+    
+    .status {
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      background-color: white;
+      border-radius: 20px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #1e3a8a;
     }
   </style>
 </head>
 <body>
-  <div class="offline-container">
-    <div class="icon">🌐</div>
+  <div class="container">
+    <div class="logo">20ª CIPM</div>
     <h1>Você está offline</h1>
-    <p>Não foi possível conectar ao servidor do Sistema de Escalas. Alguns recursos podem estar disponíveis no modo offline se você já acessou o aplicativo anteriormente.</p>
-    <p>O sistema continuará funcionando com os dados armazenados em cache e sincronizará automaticamente quando a conexão for restabelecida.</p>
-    <button class="button" onclick="tryReconnect()">Tentar novamente</button>
+    <p>
+      O sistema de Escalas da 20ª CIPM está funcionando no modo offline.
+      Os dados salvos localmente continuam disponíveis.
+    </p>
+    <p>
+      Suas mudanças serão sincronizadas automaticamente quando a conexão for restaurada.
+    </p>
+    
+    <button class="retry-button" onclick="tryToReconnect()">
+      Tentar conexão novamente
+    </button>
+    
+    <div class="status" id="status-message">
+      Último teste de conexão: Nunca
+    </div>
   </div>
-
+  
   <script>
-    function tryReconnect() {
-      window.location.reload();
-    }
-
-    // Verificar periodicamente se a conexão foi restabelecida
-    function checkConnection() {
-      fetch('/api/health')
+    function tryToReconnect() {
+      document.getElementById('status-message').innerText = 'Verificando conexão...';
+      
+      fetch('/api/health', { cache: 'no-cache' })
         .then(response => {
           if (response.ok) {
-            window.location.href = '/';
+            document.getElementById('status-message').innerText = 'Conexão restaurada! Redirecionando...';
+            setTimeout(() => {
+              window.location.reload();
+            }, 1500);
+          } else {
+            document.getElementById('status-message').innerText = 'Falha na conexão. Tente novamente.';
           }
         })
-        .catch(() => {
-          // Ainda offline, verificar novamente em 30 segundos
-          setTimeout(checkConnection, 30000);
+        .catch(error => {
+          document.getElementById('status-message').innerText = 'Ainda offline. Tente novamente mais tarde.';
         });
     }
-
-    // Iniciar verificação periódica após 10 segundos
-    setTimeout(checkConnection, 10000);
+    
+    // Verificar status a cada 30 segundos
+    setInterval(function() {
+      if (navigator.onLine) {
+        fetch('/api/health', { cache: 'no-cache' })
+          .then(response => {
+            if (response.ok) {
+              window.location.reload();
+            }
+          })
+          .catch(error => {
+            // Ainda offline, não fazer nada
+          });
+      }
+    }, 30000);
   </script>
 </body>
 </html>
