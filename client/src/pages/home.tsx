@@ -131,40 +131,62 @@ export default function Home() {
           activeOperation={activeOperation}
         />
         
-        <div className="flex justify-end gap-3 mt-4">
+        <div className="flex flex-wrap justify-center md:justify-end gap-4 mt-4">
           <Button
-            className="bg-gradient-to-r from-[#FF416C] to-[#FF4B2B] hover:from-[#FF4B2B] hover:to-[#FF416C] text-white shadow-lg"
+            className="bg-gradient-to-r from-[#FF416C] to-[#FF4B2B] shadow-lg group transition-all hover:shadow-xl py-6 border-0 text-base font-semibold flex-1 md:flex-none"
             onClick={() => setIsConflictsDashboardOpen(true)}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            Dashboard de Conflitos
+            <div className="flex items-center">
+              <div className="bg-white/20 p-2 rounded-lg mr-3 group-hover:bg-white/30 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div className="text-left">
+                <span className="opacity-80 text-sm block">Verificar</span>
+                <span className="font-bold">Dashboard de Conflitos</span>
+              </div>
+            </div>
           </Button>
           
           <Button
-            className="bg-gradient-to-r from-[#1A3A5F] to-[#3066BE] hover:from-[#3066BE] hover:to-[#1A3A5F] text-white shadow-lg"
+            className="bg-gradient-to-r from-[#1A3A5F] to-[#3066BE] shadow-lg group transition-all hover:shadow-xl py-6 border-0 text-base font-semibold flex-1 md:flex-none"
             onClick={() => setIsReportModalOpen(true)}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Relatório de Operações
+            <div className="flex items-center">
+              <div className="bg-white/20 p-2 rounded-lg mr-3 group-hover:bg-white/30 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div className="text-left">
+                <span className="opacity-80 text-sm block">Gerar</span>
+                <span className="font-bold">Relatório de Operações</span>
+              </div>
+            </div>
           </Button>
           
           <Button
-            className="bg-[#4A6741] hover:bg-[#4A6741]/90 text-white"
+            className="bg-gradient-to-r from-[#4A6741] to-[#6BA368] shadow-lg group transition-all hover:shadow-xl py-6 border-0 text-base font-semibold flex-1 md:flex-none"
             onClick={() => setIsPersonnelModalOpen(true)}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-2"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
-            </svg>
-            Gerenciar Militares
+            <div className="flex items-center">
+              <div className="bg-white/20 p-2 rounded-lg mr-3 group-hover:bg-white/30 transition-colors">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <div className="text-left">
+                <span className="opacity-80 text-sm block">Administrar</span>
+                <span className="font-bold">Gerenciar Militares</span>
+              </div>
+            </div>
           </Button>
         </div>
       </div>
