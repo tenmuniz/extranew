@@ -224,8 +224,14 @@ export class DatabaseStorage implements IStorage {
       console.log(`[Storage] Criando nova atribuição para funcionário ID=${data.personnelId}, tipo=${data.operationType}, data=${data.date}`);
       
       // Verificar se a data é válida
-      if (!(data.date instanceof Date) && isNaN(new Date(data.date).getTime())) {
-        throw new Error("Data inválida fornecida para a atribuição");
+      let dateToCheck;
+      try {
+        dateToCheck = new Date(data.date);
+        if (isNaN(dateToCheck.getTime())) {
+          throw new Error("Data inválida fornecida para a atribuição");
+        }
+      } catch (e) {
+        throw new Error("Erro ao processar data: formato inválido");
       }
       
       // Usar transação para garantir integridade
