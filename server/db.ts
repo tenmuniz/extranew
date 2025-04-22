@@ -1,17 +1,10 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import ws from "ws";
+import pkg from 'pg';
+const { Pool } = pkg;
+import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from "@shared/schema";
 
-// Definir a função personalizada do WebSocket para produção
-// Esta abordagem permite que a conexão funcione tanto em desenvolvimento quanto em produção
-const customWebSocketConstructor = (url: string) => {
-  console.log(`[DB] Criando WebSocket para: ${url}`);
-  return new ws(url);
-};
-
-// Configure WebSocket for Neon Database
-neonConfig.webSocketConstructor = customWebSocketConstructor;
+// Nota: Trocamos de @neondatabase/serverless para pg padrão
+// Evitando a dependência de WebSocket que estava causando problemas no deploy
 
 // Environment check
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -58,7 +51,10 @@ const poolConfig = {
   max: 20,                      // Número máximo de conexões no pool
   idleTimeoutMillis: 30000,     // Tempo em ms antes de encerrar conexões inativas
   connectionTimeoutMillis: 5000, // Tempo máximo de espera para novas conexões
-  allowExitOnIdle: false        // Não permitir que o processo saia quando o pool estiver ocioso
+  allowExitOnIdle: false,       // Não permitir que o processo saia quando o pool estiver ocioso
+  ssl: {
+    rejectUnauthorized: false  // Aceitar certificados SSL auto-assinados, importante para alguns ambientes
+  }
 };
 
 // Criar o pool de conexões

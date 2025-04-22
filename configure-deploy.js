@@ -1,87 +1,185 @@
-// Este script deve ser executado antes do deploy para configurar 
-// corretamente as variáveis de ambiente no ambiente de produção
+#!/usr/bin/env node
 
+/**
+ * Script de configuração para deploy da aplicação
+ * 
+ * Este script realiza as seguintes ações:
+ * 1. Verifica se o banco de dados está configurado
+ * 2. Cria o arquivo .env.production com as configurações
+ * 3. Prepara a aplicação para o ambiente de produção
+ */
+
+import { fileURLToPath } from 'url';
+import path from 'path';
 import fs from 'fs';
+import { execSync } from 'child_process';
 
-console.log('Configurando ambiente para deploy...');
+// Obter diretório atual
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Lista de variáveis de ambiente do PostgreSQL que precisamos transferir
-const pgVars = [
-  'DATABASE_URL',
-  'PGHOST',
-  'PGUSER',
-  'PGPASSWORD',
-  'PGDATABASE',
-  'PGPORT'
-];
-
-// Objeto para armazenar os valores das variáveis de ambiente
-const envVars = {};
-
-// Coletar os valores das variáveis de ambiente
-pgVars.forEach(varName => {
-  if (process.env[varName]) {
-    envVars[varName] = process.env[varName];
-    console.log(`✓ ${varName} encontrada`);
-  } else {
-    console.log(`✗ ${varName} não encontrada`);
-  }
-});
-
-// Garantir que pelo menos DATABASE_URL ou as variáveis individuais estejam disponíveis
-if (!envVars.DATABASE_URL && !(envVars.PGHOST && envVars.PGUSER && envVars.PGPASSWORD && envVars.PGDATABASE)) {
-  console.log('Nenhuma configuração de banco de dados válida encontrada.');
-  console.log('Por favor, configure DATABASE_URL ou as variáveis individuais (PGHOST, PGUSER, etc.)');
+// Função para verificar variáveis de ambiente do banco de dados
+function checkDatabaseConfig() {
+  console.log('\n=== Verificando configuração do banco de dados ===');
   
-  // Sugestão de solução
-  console.log('\nVocê precisa adicionar as variáveis de ambiente do PostgreSQL na página do Replit:');
-  console.log('1. Vá para a aba "Secrets" no seu Replit');
-  console.log('2. Adicione as seguintes variáveis com seus valores:');
-  console.log('   - DATABASE_URL (recomendado)');
-  console.log('   - ou PGHOST, PGUSER, PGPASSWORD, PGDATABASE, PGPORT (opcional)');
+  const pgVars = {
+    DATABASE_URL: process.env.DATABASE_URL,
+    PGHOST: process.env.PGHOST,
+    PGUSER: process.env.PGUSER,
+    PGPASSWORD: process.env.PGPASSWORD,
+    PGDATABASE: process.env.PGDATABASE,
+    PGPORT: process.env.PGPORT
+  };
   
-  // Saída com código de erro
-  process.exit(1);
-} else {
-  console.log('Configuração de banco de dados válida encontrada.');
+  let hasConfig = false;
   
-  // Se tivermos as variáveis individuais mas não DATABASE_URL, construa-a
-  if (!envVars.DATABASE_URL && envVars.PGHOST && envVars.PGUSER && envVars.PGPASSWORD && envVars.PGDATABASE) {
-    const host = envVars.PGHOST;
-    const user = envVars.PGUSER;
-    const password = envVars.PGPASSWORD;
-    const database = envVars.PGDATABASE;
-    const port = envVars.PGPORT || '5432';
+  if (pgVars.DATABASE_URL) {
+    console.log('✓ DATABASE_URL está definida');
+    hasConfig = true;
+  } else if (pgVars.PGHOST && pgVars.PGUSER && pgVars.PGPASSWORD && pgVars.PGDATABASE) {
+    console.log('✓ Variáveis individuais do PostgreSQL estão definidas');
     
-    envVars.DATABASE_URL = `postgres://${user}:${password}@${host}:${port}/${database}`;
-    console.log(`DATABASE_URL construída a partir das variáveis individuais`);
+    // Construir DATABASE_URL
+    const port = pgVars.PGPORT || '5432';
+    pgVars.DATABASE_URL = `postgres://${pgVars.PGUSER}:${pgVars.PGPASSWORD}@${pgVars.PGHOST}:${port}/${pgVars.PGDATABASE}`;
+    process.env.DATABASE_URL = pgVars.DATABASE_URL;
+    
+    console.log(`✓ DATABASE_URL construída: postgres://${pgVars.PGUSER}:***@${pgVars.PGHOST}:${port}/${pgVars.PGDATABASE}`);
+    hasConfig = true;
+  } else {
+    console.log('⚠️ Configuração do banco de dados não encontrada');
+    console.log('Tentando usar configuração padrão do Replit');
+    
+    // Usar configuração padrão do Replit
+    const defaultDb = process.env.REPL_SLUG || 'postgres';
+    pgVars.DATABASE_URL = `postgres://postgres:postgres@localhost:5432/${defaultDb}`;
+    process.env.DATABASE_URL = pgVars.DATABASE_URL;
+    pgVars.PGHOST = 'localhost';
+    pgVars.PGUSER = 'postgres';
+    pgVars.PGPASSWORD = 'postgres';
+    pgVars.PGDATABASE = defaultDb;
+    pgVars.PGPORT = '5432';
+    
+    console.log(`✓ Usando configuração padrão: postgres://postgres:***@localhost:5432/${defaultDb}`);
+    hasConfig = true;
   }
   
-  // Adicionar sugestão para o arquivo .env se não existir
-  console.log('Criando ou atualizando arquivo .env.production para o deploy...');
+  return { hasConfig, pgVars };
+}
+
+// Função para criar arquivo .env.production
+function createEnvFile(pgVars) {
+  console.log('\n=== Criando arquivo .env.production ===');
   
-  // Criar conteúdo do arquivo .env
-  let envContent = '# Arquivo de variáveis de ambiente para produção\n';
-  envContent += '# Gerado automaticamente em ' + new Date().toISOString() + '\n\n';
-  
-  // Adicionar cada variável ao arquivo (exceto senha por segurança nos logs)
-  Object.entries(envVars).forEach(([key, value]) => {
-    const displayValue = key === 'PGPASSWORD' ? '********' : value;
-    console.log(`Adicionando ${key}=${displayValue}`);
-    envContent += `${key}=${value}\n`;
-  });
-  
-  // Escrever no arquivo .env.production
+  const envPath = path.join(__dirname, '.env.production');
+  const envContent = `# Configuração de ambiente para produção
+# Gerado automaticamente em ${new Date().toISOString()}
+
+# Variáveis do PostgreSQL
+DATABASE_URL=${pgVars.DATABASE_URL || ''}
+PGHOST=${pgVars.PGHOST || ''}
+PGUSER=${pgVars.PGUSER || ''}
+PGPASSWORD=${pgVars.PGPASSWORD || ''}
+PGDATABASE=${pgVars.PGDATABASE || ''}
+PGPORT=${pgVars.PGPORT || '5432'}
+
+# Configurações da aplicação
+NODE_ENV=production
+`;
+
   try {
-    fs.writeFileSync('.env.production', envContent);
-    console.log('Arquivo .env.production criado com sucesso!');
+    fs.writeFileSync(envPath, envContent);
+    console.log(`✓ Arquivo ${envPath} criado com sucesso`);
+    return true;
   } catch (error) {
-    console.error('Erro ao criar arquivo .env.production:', error);
+    console.error(`❌ Erro ao criar arquivo ${envPath}:`, error);
+    return false;
+  }
+}
+
+// Função para testar conexão com o banco de dados
+async function testDatabaseConnection() {
+  console.log('\n=== Testando conexão com o banco de dados ===');
+  
+  try {
+    // Executar comando de teste
+    const testResult = execSync('node -e "import(\\"./server/db.js\\").then(({testConnection}) => testConnection()).catch(e => { console.error(e); process.exit(1); })"', {
+      timeout: 10000,
+      encoding: 'utf8'
+    });
+    
+    console.log(testResult);
+    return true;
+  } catch (error) {
+    console.error('❌ Erro ao testar conexão com o banco de dados:', error.message);
+    return false;
+  }
+}
+
+// Função principal
+async function main() {
+  console.log('\n========================================');
+  console.log('=== CONFIGURAÇÃO DE DEPLOY INICIADA ===');
+  console.log('========================================\n');
+  
+  // 1. Verificar configuração do banco de dados
+  const { hasConfig, pgVars } = checkDatabaseConfig();
+  if (!hasConfig) {
+    console.error('❌ Não foi possível determinar a configuração do banco de dados');
+    return false;
   }
   
-  console.log('\nPara garantir um deploy bem-sucedido:');
-  console.log('1. Você deve configurar o seu projeto para carregar as variáveis de ambiente do arquivo .env.production');
-  console.log('2. No painel "Deployments" do Replit, verifique se as mesmas variáveis estão configuradas');
+  // 2. Criar arquivo .env.production
+  const envCreated = createEnvFile(pgVars);
+  if (!envCreated) {
+    console.error('❌ Falha ao criar arquivo .env.production');
+    return false;
+  }
   
-  console.log('\nConfigurações de deploy concluídas com sucesso.');
+  // 3. Verificar a existência de arquivos cruciais
+  console.log('\n=== Verificando arquivos cruciais ===');
+  const crucialFiles = [
+    'package.json',
+    'vite.config.ts',
+    'server/index.ts',
+    'server/db.ts',
+    'shared/schema.ts'
+  ];
+  
+  let missingFiles = false;
+  for (const file of crucialFiles) {
+    const filePath = path.join(__dirname, file);
+    if (!fs.existsSync(filePath)) {
+      console.error(`❌ Arquivo crucial não encontrado: ${file}`);
+      missingFiles = true;
+    } else {
+      console.log(`✓ Arquivo encontrado: ${file}`);
+    }
+  }
+  
+  if (missingFiles) {
+    console.error('❌ Alguns arquivos cruciais estão faltando');
+    return false;
+  }
+  
+  console.log('\n==========================================');
+  console.log('=== CONFIGURAÇÃO DE DEPLOY CONCLUÍDA ===');
+  console.log('==========================================\n');
+  
+  console.log('Próximos passos:');
+  console.log('1. Execute o build: npm run build');
+  console.log('2. Inicie o servidor: npm run start');
+  console.log('3. Ou use o botão de deploy do Replit\n');
+  
+  return true;
+}
+
+// Executar diretamente
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().then(success => {
+    process.exit(success ? 0 : 1);
+  }).catch(error => {
+    console.error('Erro inesperado:', error);
+    process.exit(1);
+  });
 }

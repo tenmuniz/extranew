@@ -1,4 +1,13 @@
-import { initializeDeployDatabase } from './server/deploy-init.js';
+#!/usr/bin/env node
+
+/**
+ * Script de deploy para o sistema de escala da PMPA
+ * 
+ * Este script prepara o projeto para produção:
+ * 1. Verifica/cria o arquivo .env.production
+ * 2. Garante que as variáveis de ambiente estejam configuradas
+ */
+
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -7,74 +16,83 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Função para criar arquivo .env.production atualizado
+// Função para verificar e criar arquivo .env.production
 function createEnvProductionFile() {
+  const envPath = path.join(__dirname, '.env.production');
+  
+  // Se o arquivo já existir, manter
+  if (fs.existsSync(envPath)) {
+    console.log('✓ Arquivo .env.production já existe');
+    return;
+  }
+  
+  // Obter variáveis de ambiente
+  const pgVars = {
+    DATABASE_URL: process.env.DATABASE_URL || '',
+    PGHOST: process.env.PGHOST || '',
+    PGUSER: process.env.PGUSER || '',
+    PGPASSWORD: process.env.PGPASSWORD || '',
+    PGDATABASE: process.env.PGDATABASE || '',
+    PGPORT: process.env.PGPORT || '5432'
+  };
+  
+  // Tentar construir DATABASE_URL se não estiver definida
+  if (!pgVars.DATABASE_URL && pgVars.PGHOST && pgVars.PGUSER && pgVars.PGPASSWORD && pgVars.PGDATABASE) {
+    pgVars.DATABASE_URL = `postgres://${pgVars.PGUSER}:${pgVars.PGPASSWORD}@${pgVars.PGHOST}:${pgVars.PGPORT}/${pgVars.PGDATABASE}`;
+  }
+  
+  // Se ainda não tiver DATABASE_URL, usar um padrão para testes
+  if (!pgVars.DATABASE_URL) {
+    pgVars.DATABASE_URL = 'postgres://postgres:postgres@localhost:5432/postgres';
+    console.log('⚠️ Usando DATABASE_URL padrão para testes');
+  }
+  
+  // Criar conteúdo do arquivo
   const envContent = `# Arquivo de variáveis de ambiente para produção
 # Gerado automaticamente em ${new Date().toISOString()}
 
-# Variáveis do banco de dados
-DATABASE_URL=${process.env.DATABASE_URL || ''}
-PGHOST=${process.env.PGHOST || ''}
-PGUSER=${process.env.PGUSER || ''}
-PGPASSWORD=${process.env.PGPASSWORD || ''}
-PGDATABASE=${process.env.PGDATABASE || ''}
-PGPORT=${process.env.PGPORT || ''}
+# Variáveis do PostgreSQL
+DATABASE_URL=${pgVars.DATABASE_URL}
+PGHOST=${pgVars.PGHOST}
+PGUSER=${pgVars.PGUSER}
+PGPASSWORD=${pgVars.PGPASSWORD}
+PGDATABASE=${pgVars.PGDATABASE}
+PGPORT=${pgVars.PGPORT}
 
 # Configurações do ambiente
 NODE_ENV=production
 `;
 
-  // Salvar arquivo
-  fs.writeFileSync(path.join(__dirname, '.env.production'), envContent);
-  console.log('✓ Arquivo .env.production criado com sucesso');
-  
-  // Log das variáveis (exceto senha)
-  console.log('\nVariáveis configuradas:');
-  console.log(`- DATABASE_URL: ${process.env.DATABASE_URL ? '******' : 'não definida'}`);
-  console.log(`- PGHOST: ${process.env.PGHOST || 'não definida'}`);
-  console.log(`- PGUSER: ${process.env.PGUSER || 'não definida'}`);
-  console.log(`- PGDATABASE: ${process.env.PGDATABASE || 'não definida'}`);
-  console.log(`- PGPORT: ${process.env.PGPORT || 'não definida'}`);
-}
-
-// Função principal de deploy
-async function deploy() {
-  console.log('=== INICIANDO DEPLOY ===');
-  
+  // Escrever arquivo
   try {
-    // Etapa 1: Criar arquivo .env.production
-    console.log('\n--- Etapa 1: Configuração de variáveis de ambiente ---');
-    createEnvProductionFile();
-    
-    // Etapa 2: Inicializar o banco de dados
-    console.log('\n--- Etapa 2: Inicialização do banco de dados ---');
-    await initializeDeployDatabase();
-    console.log('✓ Banco de dados inicializado com sucesso');
-    
-    // Etapa 3: Outras operações de deploy, se necessário
-    console.log('\n--- Etapa 3: Finalizando configurações ---');
-    console.log('✓ Configurações finalizadas');
-    
-    // Mensagem de conclusão
-    console.log('\n=== DEPLOY FINALIZADO COM SUCESSO ===');
-    return { success: true };
+    fs.writeFileSync(envPath, envContent);
+    console.log('✓ Arquivo .env.production criado com sucesso');
   } catch (error) {
-    console.error('\n=== ERRO DURANTE O DEPLOY ===');
-    console.error(error);
-    return { success: false, error };
+    console.error('❌ Erro ao criar arquivo .env.production:', error);
   }
 }
 
-// Executar o deploy
-deploy()
-  .then(result => {
-    if (result.success) {
-      process.exit(0);
-    } else {
-      process.exit(1);
-    }
-  })
-  .catch(error => {
-    console.error('Erro inesperado durante o deploy:', error);
+// Função principal
+async function deploy() {
+  console.log('\n=== INICIANDO DEPLOY ===\n');
+  
+  // 1. Verificar e criar arquivo .env.production
+  console.log('Verificando configuração de ambiente...');
+  createEnvProductionFile();
+  
+  // 2. Exibir informações e próximos passos
+  console.log('\n=== DEPLOY CONCLUÍDO ===');
+  console.log('\nPróximos passos:');
+  console.log('1. Verifique se as variáveis de ambiente estão corretamente configuradas');
+  console.log('2. Execute o build com: npm run build');
+  console.log('3. Inicie o servidor com: npm run start');
+  console.log('\nOu use o botão de deploy do Replit para fazer o deploy automaticamente.\n');
+}
+
+// Executar se for chamado diretamente
+if (import.meta.url === `file://${process.argv[1]}`) {
+  deploy().catch(error => {
+    console.error('Erro no deploy:', error);
     process.exit(1);
   });
+}

@@ -1,24 +1,35 @@
 /**
- * Utilitários para criar conexões WebSocket que funcionam tanto em desenvolvimento quanto em produção
+ * Utilitários para conexões HTTP/API que funcionam tanto em desenvolvimento quanto em produção.
+ * 
+ * Nota: Substituímos os WebSockets por conexões HTTP diretas 
+ * para simplificar a arquitetura e evitar problemas de compatibilidade.
  */
 
-// Função para determinar o URL correto do WebSocket baseado no ambiente
-export function getWebSocketUrl(path: string): string {
-  const isProduction = process.env.NODE_ENV === 'production';
-  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  
-  // Em produção, usar o hostname atual para construir a URL relativa
-  if (isProduction) {
-    return `${protocol}//${window.location.host}${path}`;
-  }
-  
-  // Em desenvolvimento, usar localhost
-  return `ws://localhost${path}`;
+// Função para determinar a URL base da API
+export function getApiBaseUrl(): string {
+  // Em produção, a URL base é relativa ao host atual
+  // Em desenvolvimento, a API está servida pelo mesmo servidor Vite
+  return '';
 }
 
-// Função para criar um WebSocket que funcione em todos os ambientes
+// Função para obter URL completa para um endpoint da API
+export function getApiUrl(endpoint: string): string {
+  const baseUrl = getApiBaseUrl();
+  // Garantir que o endpoint comece com / caso não esteja já formatado
+  const formattedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  return `${baseUrl}${formattedEndpoint}`;
+}
+
+// Funções legadas para manter compatibilidade com código existente
+// Remover em versões futuras
+export function getWebSocketUrl(path: string): string {
+  console.warn('WebSockets não estão mais sendo utilizados. Considere atualizar o código.');
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  return `${protocol}//${window.location.host}${path}`;
+}
+
 export function createWebSocket(path: string): WebSocket {
+  console.warn('WebSockets não estão mais sendo utilizados. Considere atualizar o código.');
   const url = getWebSocketUrl(path);
-  console.log(`Criando WebSocket com URL: ${url}`);
   return new WebSocket(url);
 }

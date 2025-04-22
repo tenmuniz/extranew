@@ -8,9 +8,7 @@ import path from 'path';
 import * as dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 
-// Importações para migrações e schema
-import { drizzle } from "drizzle-orm/neon-serverless";
-import { migrate } from "drizzle-orm/neon-serverless/migrator";
+// Importações para schema
 import * as schema from "@shared/schema";
 import { sql } from "drizzle-orm";
 
