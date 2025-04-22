@@ -14,17 +14,17 @@ export function Layout({ children }: LayoutProps) {
         {/* Barra decorativa superior */}
         <div className="h-1.5 w-full bg-gradient-to-r from-yellow-400 via-red-800 to-[#4A6741]"></div>
         
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="mr-4 relative w-16 h-16">
+              <div className="mr-3 relative w-14 h-14 sm:w-16 sm:h-16">
                 <PMBrasao />
               </div>
               <div>
-                <h1 className="font-heading font-bold text-2xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-white" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.2)" }}>
+                <h1 className="font-heading font-bold text-xl sm:text-2xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-white" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.2)" }}>
                   Sistema de Escala
                 </h1>
-                <div className="text-sm font-medium text-blue-100 opacity-90">20ª Companhia Independente de Polícia Militar</div>
+                <div className="text-xs sm:text-sm font-medium text-blue-100 opacity-90">20ª Companhia Independente de Polícia Militar</div>
               </div>
             </div>
             
@@ -42,18 +42,27 @@ export function Layout({ children }: LayoutProps) {
       </header>
 
       {/* Main Content com sombra sutil */}
-      <main className="flex-grow container mx-auto px-4 py-6 relative z-10">
-        <div className="bg-white/40 backdrop-blur-sm shadow-sm rounded-lg p-6">
+      <main className="flex-grow container mx-auto px-2 sm:px-4 py-4 sm:py-6 relative z-10">
+        <div className="bg-white/40 backdrop-blur-sm shadow-sm rounded-lg p-3 sm:p-6">
           {children}
         </div>
       </main>
 
       {/* Footer modernizado */}
-      <footer className="bg-gradient-to-r from-[#0F2B4A] via-[#1A3A5F] to-[#2B517D] text-white py-4 mt-6 shadow-inner">
+      <footer className="bg-gradient-to-r from-[#0F2B4A] via-[#1A3A5F] to-[#2B517D] text-white py-3 mt-4 shadow-inner">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-sm opacity-80">© {new Date().getFullYear()} Sistema de Escala - 20ªCIPM. Todos os direitos reservados.</p>
+          <p className="text-xs sm:text-sm opacity-80">© {new Date().getFullYear()} Sistema de Escala - 20ªCIPM. Todos os direitos reservados.</p>
         </div>
       </footer>
+
+      {/* PWA Install Prompt - Visível apenas em Mobile */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200 p-3 text-center text-sm sm:hidden hidden" id="pwa-install-prompt">
+        <p className="font-medium mb-2">Instale este app no seu dispositivo</p>
+        <div className="flex justify-between items-center">
+          <button className="text-gray-500 px-3 py-1" id="dismiss-pwa">Não agora</button>
+          <button className="bg-[#1A3A5F] text-white px-4 py-1 rounded-md" id="install-pwa">Instalar</button>
+        </div>
+      </div>
 
       {/* Toast notification container */}
       <Toaster />

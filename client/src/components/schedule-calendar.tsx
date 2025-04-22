@@ -288,15 +288,15 @@ export function ScheduleCalendar({
 
 
   return (
-    <div className="lg:w-3/4">
-      <div className="bg-white rounded-lg shadow-md p-4">        
+    <div className="w-full lg:w-3/4">
+      <div className="bg-white rounded-lg shadow-md p-3 sm:p-4">        
         {/* Título do mês e ano */}
-        <div className="text-center font-bold text-xl text-[#1A3A5F] p-2 mb-4 border-b-2 border-[#1A3A5F]/20">
+        <div className="text-center font-bold text-lg sm:text-xl text-[#1A3A5F] p-2 mb-4 border-b-2 border-[#1A3A5F]/20">
           Escalas para {new Date(currentYear, currentMonth, 1).toLocaleDateString('pt-BR', {month: 'long', year: 'numeric'}).charAt(0).toUpperCase() + new Date(currentYear, currentMonth, 1).toLocaleDateString('pt-BR', {month: 'long', year: 'numeric'}).slice(1)}
         </div>
         
-        {/* Calendar grid - grid simples sem alinhamento com dias da semana */}
-        <div id="calendar-grid" className="grid grid-cols-7 auto-rows-fr gap-2">
+        {/* Calendar grid - responsivo para mobile e desktop */}
+        <div id="calendar-grid" className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 auto-rows-fr gap-2">
           {/* Dias do mês - começando sempre no primeiro card */}
           {calendarDays.map((day, index) => {
             const dayAssignments = getAssignmentsForDate(day);

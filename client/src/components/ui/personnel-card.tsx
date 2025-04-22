@@ -237,7 +237,8 @@ export function PersonnelCard({
     <div
       className={cn(
         "personnel-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 flex flex-col w-full",
-        isDraggable && "cursor-grab active:cursor-grabbing"
+        isDraggable && "cursor-grab active:cursor-grabbing",
+        "touch-manipulation" // Melhora interação em dispositivos touch
       )}
       draggable={isDraggable}
       onDragStart={handleDragStart}
@@ -254,13 +255,13 @@ export function PersonnelCard({
       
       {/* Conteúdo principal */}
       <div 
-        className="p-3 flex flex-col"
+        className="p-2 sm:p-3 flex flex-col"
         style={{ background: getGradientBackground() }}
       >
         {/* Informações principais - Patente e Nome */}
         <div className="flex items-center w-full mb-2">
           <div 
-            className="w-10 h-10 rounded-full flex items-center justify-center mr-3 flex-shrink-0 shadow-sm"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 shadow-sm"
             style={{ 
               background: `linear-gradient(135deg, #1A3A5F, #2c5a8c)` 
             }}
@@ -268,7 +269,7 @@ export function PersonnelCard({
             <div className="text-white">{getRankSymbols(personnel.rank)}</div>
           </div>
           <div className="w-full">
-            <p className="font-bold text-gray-900 text-sm leading-tight break-words">
+            <p className="font-bold text-gray-900 text-sm leading-tight break-words pr-1">
               {personnel.name}
             </p>
             <p className="text-xs text-gray-600 mt-0.5">
@@ -278,12 +279,12 @@ export function PersonnelCard({
         </div>
         
         {/* Barra inferior com detalhes e status */}
-        <div className="flex justify-between items-center mt-1 w-full">
+        <div className="flex flex-wrap justify-between items-center mt-1 w-full gap-y-2">
           <div className="flex items-center space-x-2">
             {/* Contador de Extras - Versão 3D com alerta quando chegar a 12 */}
             <div 
               className={cn(
-                "px-3 py-1.5 rounded-lg flex items-center shadow-md relative overflow-hidden transform hover:scale-105 transition-all duration-150",
+                "px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg flex items-center shadow-md relative overflow-hidden transform hover:scale-105 transition-all duration-150",
                 (personnel.extras || 0) >= 12 
                   ? "bg-gradient-to-r from-red-600 to-red-700 border border-red-800" 
                   : (personnel.extras || 0) >= 9
@@ -319,7 +320,7 @@ export function PersonnelCard({
             {(personnel.extras || 0) >= 12 ? (
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200">
                 <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-1"></span>
-                Limite atingido
+                Limite
               </span>
             ) : (
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">

@@ -40,12 +40,12 @@ export function PersonnelList({ personnel }: PersonnelListProps) {
   };
 
   return (
-    <div className="lg:w-1/4">
-      <div className="bg-white rounded-lg shadow-md p-4 border border-[#E7EBF0]">
-        <h3 className="font-heading font-bold text-xl text-[#1A3A5F] mb-3 flex items-center border-b pb-3">
+    <div className="w-full lg:w-1/4 mt-4 lg:mt-0">
+      <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 border border-[#E7EBF0]">
+        <h3 className="font-heading font-bold text-lg sm:text-xl text-[#1A3A5F] mb-3 flex items-center border-b pb-3">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 mr-2 text-[#4A6741]"
+            className="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-[#4A6741]"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -82,7 +82,7 @@ export function PersonnelList({ personnel }: PersonnelListProps) {
           {searchTerm && (
             <button
               onClick={clearSearch}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xl"
               aria-label="Limpar busca"
             >
               ×
@@ -97,9 +97,9 @@ export function PersonnelList({ personnel }: PersonnelListProps) {
               : "Nenhum militar disponível"}
           </div>
         ) : (
-          <div className="space-y-4 max-h-[calc(100vh-280px)] overflow-y-auto pr-1.5 pt-1 pl-0.5" id="personnel-list">
+          <div className="space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto pr-1.5 pt-1 pl-0.5" id="personnel-list">
             {filteredPersonnel.map((person) => (
-              <div key={person.id} className="transform transition-transform duration-200 hover:-translate-y-1">
+              <div key={person.id} className="transform transition-transform duration-200 hover:-translate-y-1 touch-manipulation">
                 <PersonnelCard personnel={person} />
               </div>
             ))}
