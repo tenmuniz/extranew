@@ -1,7 +1,8 @@
 import { Personnel } from "@shared/schema";
 import { PersonnelCard } from "@/components/ui/personnel-card";
 import { useState, useEffect, useRef } from 'react';
-import { Search } from "lucide-react"; 
+// Substituindo o ícone de pesquisa da biblioteca por um SVG inline para evitar problemas
+// import { Search } from "lucide-react"; 
 
 interface PersonnelListProps {
   personnel: Personnel[];
@@ -57,7 +58,19 @@ export function PersonnelList({ personnel }: PersonnelListProps) {
         
         {/* Campo de busca */}
         <div className="relative mb-3 flex items-center">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+          <svg 
+            className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+            xmlns="http://www.w3.org/2000/svg" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          >
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
           <input
             ref={searchInputRef}
             type="text"
