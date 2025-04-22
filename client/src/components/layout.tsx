@@ -19,11 +19,17 @@ export function Layout({ children }: LayoutProps) {
             <div className="flex items-center">
               <div className="mr-4 relative">
                 <div className="h-20 w-20 flex items-center justify-center">
-                  <img 
-                    src={brasaoPMPA} 
-                    alt="Brasão da Polícia Militar do Pará" 
-                    className="h-full w-full object-contain drop-shadow-lg"
-                  />
+                  <div className="relative h-full w-full">
+                    <img 
+                      src={brasaoPMPA} 
+                      alt="Brasão da Polícia Militar do Pará" 
+                      className="h-full w-full object-contain drop-shadow-lg"
+                      style={{ 
+                        mixBlendMode: 'multiply',
+                        filter: 'contrast(1.1) brightness(1.1)'
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
               <div>
