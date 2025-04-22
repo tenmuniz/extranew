@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
-import { cn, getDayColorClass, getDayOfWeekAbbr, getActiveGuarnitionForDay, getGarrisonColor } from "@/lib/utils";
+import { cn, getDayColorClass, getDayOfWeekAbbr, getActiveGuarnitionForDay, getGarrisonColor, isWeekday } from "@/lib/utils";
+import { OperationType } from "@shared/schema";
 
 interface CalendarDayProps {
   date: Date;
@@ -8,6 +9,8 @@ interface CalendarDayProps {
   children?: ReactNode;
   onDragOver?: React.DragEventHandler;
   onDrop?: React.DragEventHandler;
+  activeOperation: OperationType;
+  assignmentsCount?: number;
 }
 
 export function CalendarDay({
@@ -16,7 +19,9 @@ export function CalendarDay({
   isDisabled = false,
   children,
   onDragOver,
-  onDrop
+  onDrop,
+  activeOperation,
+  assignmentsCount = 0
 }: CalendarDayProps) {
   const dayOfMonth = date.getDate();
   const dayOfWeekAbbr = getDayOfWeekAbbr(date);
@@ -25,14 +30,33 @@ export function CalendarDay({
   // Verificar se é hoje
   const isToday = new Date().toDateString() === date.toDateString();
   
+  // Determinar a cor de fundo com base no status de preenchimento
+  const getBackgroundColor = () => {
+    if (!isCurrentMonth) return "bg-white";
+    if (isDisabled) return "bg-gray-100";
+    
+    // Determinar quantos militares são necessários para a operação
+    const requiredAssignments = activeOperation === "PMF" ? 3 : 
+                               (activeOperation === "ESCOLA" && isWeekday(date)) ? 2 : 0;
+    
+    if (requiredAssignments === 0) return "bg-white";
+    
+    if (assignmentsCount === 0) return "bg-white";
+    if (assignmentsCount < requiredAssignments) return "bg-yellow-50";
+    if (assignmentsCount >= requiredAssignments) return "bg-green-50";
+    
+    return "bg-white";
+  };
+  
   return (
     <div
       className={cn(
         "calendar-day rounded-lg min-h-[90px] p-2 border transition-all duration-200",
+        getBackgroundColor(),
         isCurrentMonth 
-          ? "bg-white shadow-sm border-[#E7EBF0] opacity-100" 
-          : "bg-white border-dashed border-gray-300 opacity-85",
-        isDisabled && "cursor-not-allowed bg-opacity-30 bg-gray-100",
+          ? "shadow-sm border-[#E7EBF0] opacity-100" 
+          : "border-dashed border-gray-300 opacity-85",
+        isDisabled && "cursor-not-allowed bg-opacity-30",
         isToday && "ring-2 ring-blue-400 ring-offset-1"
       )}
       data-date={date.toISOString().split('T')[0]}

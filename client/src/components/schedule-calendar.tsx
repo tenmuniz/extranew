@@ -268,6 +268,11 @@ export function ScheduleCalendar({
             const dayAssignments = getAssignmentsForDate(day);
             const disabled = isDayDisabled(day);
             
+            // Contar quantos militares estão na data atual para a operação ativa
+            const filteredAssignments = dayAssignments.filter(
+              assignment => assignment.operationType === activeOperation
+            );
+            
             return (
               <CalendarDay
                 key={index}
@@ -276,6 +281,8 @@ export function ScheduleCalendar({
                 isDisabled={disabled}
                 onDragOver={handleDragOver as React.DragEventHandler<HTMLDivElement>}
                 onDrop={(e: React.DragEvent<HTMLDivElement>) => handleDrop(e, day)}
+                activeOperation={activeOperation}
+                assignmentsCount={filteredAssignments.length}
               >
                 {dayAssignments.map((assignment) => {
                   const person = getPersonnelFromAssignment(assignment);
