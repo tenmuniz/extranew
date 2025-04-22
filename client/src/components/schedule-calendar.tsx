@@ -83,18 +83,84 @@ export function ScheduleCalendar({
         }
       }
       
-      // Verificar se o militar já está escalado neste dia e operação
+      // Verificar se o militar já atingiu o limite de 12 extras
+      if (militarSelecionado && (militarSelecionado.extras || 0) >= 12) {
+        // Criar um elemento de alerta personalizado para melhor visualização
+        const alertEl = document.createElement('div');
+        alertEl.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+        alertEl.innerHTML = `
+          <div class="bg-white rounded-lg shadow-xl max-w-md w-11/12 overflow-hidden animate-in zoom-in-90 duration-300 transform">
+            <div class="bg-red-600 p-4 flex items-center">
+              <svg class="w-8 h-8 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+              </svg>
+              <h2 class="text-white text-xl font-bold">Limite de Extras Atingido</h2>
+            </div>
+            <div class="p-5">
+              <p class="mb-4 text-gray-700">
+                <strong>${militarSelecionado.name}</strong> já atingiu o limite máximo de 12 extras e não pode ser escalado novamente.
+              </p>
+              <div class="flex justify-end">
+                <button id="close-alert" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors font-medium">Entendi</button>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(alertEl);
+        
+        document.getElementById('close-alert')?.addEventListener('click', () => {
+          alertEl.classList.add('fade-out');
+          setTimeout(() => {
+            if (document.body.contains(alertEl)) {
+              document.body.removeChild(alertEl);
+            }
+          }, 300);
+        });
+        
+        return;
+      }
+      
+      // Verificar se o militar já está escalado neste dia (em qualquer operação)
       const existingAssignments = getAssignmentsForDate(date);
       const alreadyAssigned = existingAssignments.some(
         assignment => assignment.personnelId === personnelData.id
       );
       
       if (alreadyAssigned) {
-        toast({
-          title: "Militar já escalado",
-          description: "Este militar já está escalado neste dia para esta operação",
-          variant: "destructive"
+        // Criar um elemento de alerta personalizado com animação
+        const alertEl = document.createElement('div');
+        alertEl.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+        alertEl.innerHTML = `
+          <div class="bg-white rounded-lg shadow-xl max-w-md w-11/12 overflow-hidden animate-in zoom-in-90 duration-300 transform">
+            <div class="bg-amber-500 p-4 flex items-center">
+              <svg class="w-8 h-8 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <h2 class="text-white text-xl font-bold">Militar Já Escalado</h2>
+            </div>
+            <div class="p-5">
+              <p class="mb-4 text-gray-700">
+                <strong>${militarSelecionado?.name}</strong> já está escalado neste dia. Cada militar só pode ser escalado uma vez por dia.
+              </p>
+              <div class="flex justify-end">
+                <button id="close-alert" class="px-4 py-2 bg-amber-500 text-white rounded hover:bg-amber-600 transition-colors font-medium">Entendi</button>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(alertEl);
+        
+        document.getElementById('close-alert')?.addEventListener('click', () => {
+          alertEl.classList.add('fade-out');
+          setTimeout(() => {
+            if (document.body.contains(alertEl)) {
+              document.body.removeChild(alertEl);
+            }
+          }, 300);
         });
+        
         return;
       }
       

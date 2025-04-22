@@ -106,8 +106,67 @@ export function PersonnelCard({
   isDraggable = true,
   onRemove
 }: PersonnelCardProps) {
+  // Função para verificar se o militar atingiu o limite de extras
+  const hasReachedMaxExtras = () => {
+    return (personnel.extras || 0) >= 12;
+  };
+
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     if (!isDraggable) return;
+    
+    // Impedir que militares com 12 ou mais extras sejam arrastados
+    if (hasReachedMaxExtras()) {
+      e.preventDefault();
+      
+      // Mostrar notificação de erro elegante
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded-lg shadow-xl z-50 border-l-4 border-red-500 animate-in fade-in duration-300';
+      notification.style.maxWidth = '400px';
+      notification.style.width = '90%';
+      
+      notification.innerHTML = `
+        <div class="flex items-center mb-2">
+          <svg class="w-6 h-6 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          <h3 class="text-lg font-semibold text-gray-900">Limite Atingido</h3>
+        </div>
+        <p class="text-sm text-gray-700">
+          ${personnel.name} já atingiu o limite máximo de 12 extras e não pode ser escalado novamente.
+        </p>
+        <div class="mt-3 flex justify-end">
+          <button class="px-3 py-1 bg-red-100 text-red-800 rounded hover:bg-red-200 text-sm">Entendi</button>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Adicionar eventos
+      const closeBtn = notification.querySelector('button');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          notification.classList.add('fade-out');
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 300);
+        });
+      }
+      
+      // Auto-fechar após 4 segundos
+      setTimeout(() => {
+        if (document.body.contains(notification)) {
+          notification.classList.add('fade-out');
+          setTimeout(() => {
+            if (document.body.contains(notification)) {
+              document.body.removeChild(notification);
+            }
+          }, 300);
+        }
+      }, 4000);
+      
+      return;
+    }
+    
     e.dataTransfer.setData('text/plain', JSON.stringify({
       id: personnel.id,
       name: personnel.name,
@@ -215,9 +274,29 @@ export function PersonnelCard({
         {/* Barra inferior com detalhes e status */}
         <div className="flex justify-between items-center mt-1 w-full">
           <div className="flex items-center space-x-2">
-            {/* Contador de Extras */}
-            <div className="rounded-md px-2 py-0.5 bg-blue-50 border border-blue-100">
-              <span className="text-xs font-medium text-blue-700">{personnel.extras || 0} extras</span>
+            {/* Contador de Extras - Versão 3D com alerta quando chegar a 12 */}
+            <div 
+              className={cn(
+                "px-3 py-1.5 rounded-lg flex items-center shadow-md relative overflow-hidden transform hover:scale-105 transition-all duration-150",
+                (personnel.extras || 0) >= 12 
+                  ? "bg-gradient-to-r from-red-600 to-red-700 border border-red-800" 
+                  : (personnel.extras || 0) >= 9
+                    ? "bg-gradient-to-r from-orange-500 to-orange-600 border border-orange-700"
+                    : "bg-gradient-to-r from-blue-500 to-blue-600 border border-blue-700"
+              )}
+              style={{ 
+                textShadow: "0px 1px 2px rgba(0,0,0,0.2)",
+                boxShadow: "0 2px 3px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.2)"
+              }}
+            >
+              <span className="absolute inset-0 bg-black opacity-5 rounded-lg"></span>
+              <span className="mr-1 font-bold text-white text-sm">
+                {personnel.extras || 0}
+              </span>
+              <span className="text-white/90 text-xs">extras</span>
+              {(personnel.extras || 0) >= 12 && (
+                <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full animate-ping"></span>
+              )}
             </div>
             
             {/* Badge de Guarnição */}
@@ -229,12 +308,19 @@ export function PersonnelCard({
             )}
           </div>
           
-          {/* Badge de status */}
+          {/* Badge de status - Muda com base na quantidade de extras */}
           <div className="flex items-center">
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1"></span>
-              Disponível
-            </span>
+            {(personnel.extras || 0) >= 12 ? (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200">
+                <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-1"></span>
+                Limite atingido
+              </span>
+            ) : (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1"></span>
+                Disponível
+              </span>
+            )}
           </div>
         </div>
       </div>
