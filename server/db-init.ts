@@ -1,26 +1,52 @@
-import { db } from "./db";
-import { personnel } from "@shared/schema";
+import { db, pool } from "./db";
+import { personnel, assignments } from "@shared/schema";
 import { eq, sql } from "drizzle-orm";
 
 // Função para inicializar o banco de dados com os dados iniciais de pessoal
 export async function initializeDatabase() {
-  // Verificar se já existem dados no banco
-  const existingPersonnel = await db.select({ count: sql`count(*)` }).from(personnel);
-  
-  if (parseInt(existingPersonnel[0].count as string) > 0) {
-    console.log("[DB] O banco de dados já está inicializado.");
-    return;
-  }
-  
-  console.log("[DB] Inicializando o banco de dados com dados de pessoal...");
-  
-  // Definindo explicitamente os tipos para garantir compatibilidade
-  const samplePersonnel: { 
-    name: string; 
-    rank: "SD" | "CB" | "3SGT" | "2SGT" | "1SGT" | "SUBTEN" | "TEN" | "1TEN" | "CAP"; 
-    extras: number;
-    platoon: "ALFA" | "BRAVO" | "CHARLIE" | "EXPEDIENTE";
-  }[] = [
+  try {
+    console.log("[DB] Verificando a conexão com o banco de dados...");
+    
+    // Testa a conexão explicitamente
+    const client = await pool.connect();
+    client.release();
+    console.log("[DB] Conexão com o banco de dados estabelecida com sucesso.");
+    
+    // Verificar se já existem dados no banco
+    console.log("[DB] Verificando se o banco já está inicializado...");
+    
+    // Verifica se a tabela personnel existe antes de fazer consultas
+    const tableExists = await db.execute(sql`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'personnel'
+      );
+    `);
+    
+    if (!tableExists || !tableExists.rows || !tableExists.rows[0] || !tableExists.rows[0].exists) {
+      console.log("[DB] A tabela 'personnel' não existe. Executando migração inicial...");
+      // As migrações são executadas automaticamente pelo drizzle-orm
+      // Isso será tratado na função main no arquivo index.ts
+      return;
+    }
+    
+    const existingPersonnel = await db.select({ count: sql`count(*)` }).from(personnel);
+    
+    if (existingPersonnel && existingPersonnel[0] && parseInt(existingPersonnel[0].count as string) > 0) {
+      console.log("[DB] O banco de dados já está inicializado com dados.");
+      return;
+    }
+    
+    console.log("[DB] Inicializando o banco de dados com dados de pessoal...");
+    
+    // Definindo explicitamente os tipos para garantir compatibilidade
+    const samplePersonnel: { 
+      name: string; 
+      rank: "SD" | "CB" | "3SGT" | "2SGT" | "1SGT" | "SUBTEN" | "TEN" | "1TEN" | "CAP"; 
+      extras: number;
+      platoon: "ALFA" | "BRAVO" | "CHARLIE" | "EXPEDIENTE";
+    }[] = [
     // Capitão e oficiais primeiro (por ordem hierárquica - EXPEDIENTE)
     { name: "CAP MUNIZ", rank: "CAP", extras: 0, platoon: "EXPEDIENTE" },
     { name: "1º TEN QOPM MONTEIRO", rank: "1TEN", extras: 0, platoon: "EXPEDIENTE" },
@@ -102,8 +128,54 @@ export async function initializeDatabase() {
     { name: "SD PM RODRIGUES", rank: "SD", extras: 0, platoon: "EXPEDIENTE" }
   ];
   
-  // Inserir todos os registros de uma vez
-  await db.insert(personnel).values(samplePersonnel);
-  
-  console.log("[DB] Inicialização concluída com sucesso.");
+    try {
+      // Inserir todos os registros de uma vez, com transação
+      await db.transaction(async (tx) => {
+        await tx.insert(personnel).values(samplePersonnel);
+      });
+      
+      console.log("[DB] Inicialização concluída com sucesso.");
+    } catch (error) {
+      console.error("[DB] Erro ao inserir dados iniciais:", error);
+      throw error;
+    }
+  } catch (error) {
+    console.error("[DB] Erro ao inicializar o banco de dados:", error);
+    throw error;
+  }
+}
+
+// Função para verificar e corrigir possíveis inconsistências no banco
+export async function validateDatabaseIntegrity() {
+  try {
+    console.log("[DB] Verificando integridade do banco de dados...");
+    
+    // Verificar se há registros de assignments referenciando personnel inexistentes
+    const invalidAssignments = await db.execute(sql`
+      SELECT a.id FROM assignments a 
+      LEFT JOIN personnel p ON a.personnel_id = p.id
+      WHERE p.id IS NULL
+    `);
+    
+    if (invalidAssignments.rows && invalidAssignments.rows.length > 0) {
+      console.log(`[DB] Encontrados ${invalidAssignments.rows.length} assignments inválidos. Corrigindo...`);
+      
+      // Recuperar IDs dos assignments inválidos
+      const invalidIds = invalidAssignments.rows.map(row => row.id);
+      
+      // Remover assignments inválidos
+      if (invalidIds.length > 0) {
+        await db.execute(sql`DELETE FROM assignments WHERE id IN (${sql.join(invalidIds, sql`, `)})`);
+        console.log(`[DB] ${invalidIds.length} assignments inválidos removidos com sucesso.`);
+      }
+    } else {
+      console.log("[DB] Nenhum problema de integridade encontrado nos assignments.");
+    }
+    
+    console.log("[DB] Verificação de integridade concluída.");
+    return true;
+  } catch (error) {
+    console.error("[DB] Erro ao verificar integridade do banco:", error);
+    return false;
+  }
 }
