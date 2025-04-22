@@ -39,12 +39,37 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Verificar se temos a variável DATABASE_URL no ambiente
+  const hasDbUrl = !!process.env.DATABASE_URL;
+  
   try {
     // Inicializar o banco de dados antes de tudo
-    await initializeDatabase();
-    console.log("Banco de dados inicializado com sucesso!");
+    if (hasDbUrl) {
+      try {
+        await initializeDatabase();
+        console.log("Banco de dados inicializado com sucesso!");
+      } catch (error) {
+        console.error("Erro ao inicializar banco de dados:", error);
+        
+        // Se estamos em produção, falhar rápido
+        if (process.env.NODE_ENV === 'production') {
+          console.error("Falha crítica na inicialização do banco de dados em produção. Encerrando aplicativo.");
+          process.exit(1);
+        } else {
+          console.warn("Falha na inicialização do banco de dados em ambiente de desenvolvimento. Continuando sem banco de dados.");
+        }
+      }
+    } else {
+      console.warn("DATABASE_URL não está definida. Pulando inicialização do banco de dados.");
+      console.warn("Para habilitar funcionalidades de banco de dados, defina a variável DATABASE_URL.");
+      
+      // Se estamos em produção, alertar que isso é um problema
+      if (process.env.NODE_ENV === 'production') {
+        console.error("Atenção: Aplicativo em produção está rodando sem DATABASE_URL configurada!");
+      }
+    }
   } catch (error) {
-    console.error("Erro ao inicializar banco de dados:", error);
+    console.error("Erro inesperado durante inicialização:", error);
   }
   
   const server = await registerRoutes(app);
