@@ -238,14 +238,17 @@ export function ConflictsDashboard({
     <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] flex items-center justify-center z-50 overflow-auto">
       <div className="bg-[#F8FAFC] rounded-xl shadow-2xl w-[90%] max-w-5xl max-h-[90vh] overflow-auto">
         <div className="relative p-6">
-          <button 
-            onClick={onClose}
-            className="absolute right-6 top-6 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition-colors"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          <div className="absolute right-6 top-6">
+            <button 
+              onClick={onClose}
+              className="bg-gradient-to-r from-[#FF416C] to-[#FF4B2B] hover:shadow-xl text-white rounded-lg px-4 py-3 shadow-md transition-all duration-300 flex items-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <span className="font-medium">Fechar Dashboard</span>
+            </button>
+          </div>
           
           <h1 className="text-4xl font-bold bg-gradient-to-r from-[#1A3A5F] to-[#4A6741] bg-clip-text text-transparent mb-2">
             Dashboard de Conflitos
