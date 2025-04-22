@@ -39,29 +39,25 @@ export function CalendarDay({
       onDragOver={isDisabled ? (e: React.DragEvent) => e.preventDefault() : onDragOver}
       onDrop={isDisabled ? (e: React.DragEvent) => e.preventDefault() : onDrop}
     >
-      <div className="flex justify-between items-center mb-2">
-        <div className="flex flex-col">
-          <span className={cn(
-            "font-medium text-lg", 
-            !isCurrentMonth && "text-gray-400",
-            isToday && "text-blue-600 font-bold"
-          )}>
-            {dayOfMonth}
-          </span>
-          {/* Sempre mostrar a guarnição do dia, independente se é mês atual ou não */}
-          <div 
-            className={cn(
-              "text-xs font-semibold text-white rounded-t-sm px-1 py-0.5 mt-1 w-fit",
-              !isCurrentMonth && "opacity-75"
-            )}
-            style={{ 
-              backgroundColor: getGarrisonColor(getActiveGuarnitionForDay(date)),
-              maxWidth: "calc(100% - 4px)",
-            }}
-          >
-            {getActiveGuarnitionForDay(date)}
-          </div>
-        </div>
+      {/* Barra superior com guarnição e data */}
+      <div 
+        className={cn(
+          "flex justify-between items-center px-2 py-1 text-white mb-2 rounded-t-sm",
+          !isCurrentMonth && "opacity-80"
+        )}
+        style={{ 
+          backgroundColor: getGarrisonColor(getActiveGuarnitionForDay(date)) 
+        }}
+      >
+        <span className="text-xs font-semibold">{getActiveGuarnitionForDay(date)}</span>
+        <span className={cn(
+          "font-medium text-white",
+          isToday && "font-bold"
+        )}>
+          {dayOfMonth}
+        </span>
+      </div>
+      <div className="flex justify-end mb-2">
         <span className={cn(
           "text-xs text-white px-2 py-1 rounded-full font-semibold", 
           dayColorClass,
