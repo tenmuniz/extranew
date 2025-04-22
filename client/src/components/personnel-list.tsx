@@ -97,9 +97,11 @@ export function PersonnelList({ personnel }: PersonnelListProps) {
               : "Nenhum militar disponível"}
           </div>
         ) : (
-          <div className="space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto pr-1" id="personnel-list">
+          <div className="space-y-4 max-h-[calc(100vh-280px)] overflow-y-auto pr-1.5 pt-1 pl-0.5" id="personnel-list">
             {filteredPersonnel.map((person) => (
-              <PersonnelCard key={person.id} personnel={person} />
+              <div key={person.id} className="transform transition-transform duration-200 hover:-translate-y-1">
+                <PersonnelCard personnel={person} />
+              </div>
             ))}
           </div>
         )}
