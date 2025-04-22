@@ -1,99 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <meta name="description" content="Sistema de Escalas da 20ª CIPM - Controle de operações PMF e Escola Segura">
-    <meta name="theme-color" content="#1e40af">
-    <title>Escalas 20ª CIPM</title>
-    
-    <!-- PWA Metadata -->
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.svg" />
-    
-    <!-- PWA fallbacks for Apple devices -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Escalas 20ª CIPM">
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
     <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
-    
-    <!-- Service Worker Registration -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/service-worker.js')
-            .then(registration => {
-              console.log('Service Worker registrado com sucesso:', registration.scope);
-            })
-            .catch(error => {
-              console.error('Falha ao registrar Service Worker:', error);
-            });
-        });
-      }
-    </script>
-    
-    <!-- Offline Support Notification -->
-    <div id="offline-notification" style="display: none; position: fixed; bottom: 20px; right: 20px; background-color: #1e40af; color: white; padding: 10px 15px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 1000;">
-      Você está offline. Usando dados em cache.
-    </div>
-    
-    <script>
-      // Monitor de conexão online/offline
-      function updateOnlineStatus() {
-        const offlineNotification = document.getElementById('offline-notification');
-        if (navigator.onLine) {
-          offlineNotification.style.display = 'none';
-          
-          // Tentar sincronizar quando ficar online
-          if ('serviceWorker' in navigator && 'SyncManager' in window) {
-            navigator.serviceWorker.ready
-              .then(registration => {
-                return registration.sync.register('sync-pending-changes');
-              })
-              .catch(err => console.log('Erro ao sincronizar:', err));
-          }
-        } else {
-          offlineNotification.style.display = 'block';
-        }
-      }
-
-      window.addEventListener('online', updateOnlineStatus);
-      window.addEventListener('offline', updateOnlineStatus);
-      
-      // Verificar status inicial
-      updateOnlineStatus();
-      
-      // Sincronizar dados com IndexedDB
-      window.addEventListener('load', async () => {
-        if ('serviceWorker' in navigator) {
-          try {
-            // Buscar dados atuais para armazenar no IndexedDB
-            const [personnelResponse, assignmentsResponse] = await Promise.all([
-              fetch('/api/personnel'),
-              fetch('/api/assignments')
-            ]);
-            
-            if (personnelResponse.ok && assignmentsResponse.ok) {
-              const personnel = await personnelResponse.json();
-              const assignments = await assignmentsResponse.json();
-              
-              // Enviar dados para o Service Worker
-              const registration = await navigator.serviceWorker.ready;
-              registration.active.postMessage({
-                type: 'SYNC_DATA',
-                payload: { personnel, assignments }
-              });
-            }
-          } catch (error) {
-            console.error('Erro ao sincronizar dados com IndexedDB:', error);
-          }
-        }
-      });
-    </script>
   </body>
 </html>
