@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Toaster } from "@/components/ui/toaster";
-import pmpaLogo from "../assets/pmpa-logo.jpg";
+import PMBrasao from "@/components/ui/LogoComponent";
 
 interface LayoutProps {
   children: ReactNode;
@@ -18,16 +18,8 @@ export function Layout({ children }: LayoutProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <div className="mr-4 relative">
-                <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-white/50 shadow-lg">
-                  <img 
-                    src={pmpaLogo} 
-                    alt="Logo da Polícia Militar do Pará" 
-                    className="h-full w-full object-contain"
-                    style={{ 
-                      background: 'transparent',
-                      imageRendering: 'crisp-edges'
-                    }}
-                  />
+                <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-white/50 shadow-lg bg-white">
+                  <PMBrasao />
                 </div>
               </div>
               <div>
