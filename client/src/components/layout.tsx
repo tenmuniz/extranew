@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Toaster } from "@/components/ui/toaster";
+import brasaoPMPA from "../assets/images/pmpa-brasao.jpg";
 
 interface LayoutProps {
   children: ReactNode;
@@ -8,19 +9,28 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-[#F5F7FA] font-body">
-      {/* Header com gradiente e visual moderno */}
-      <header className="relative bg-gradient-to-r from-[#0F2B4A] via-[#1A3A5F] to-[#2B517D] text-white shadow-lg">
+      {/* Header com visual moderno e mais claro */}
+      <header className="relative bg-gradient-to-r from-white via-gray-50 to-gray-100 text-gray-800 shadow-lg">
         {/* Barra decorativa superior */}
         <div className="h-1.5 w-full bg-gradient-to-r from-yellow-400 via-red-800 to-[#4A6741]"></div>
         
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
+              <div className="mr-4 relative">
+                <div className="h-20 w-20 flex items-center justify-center">
+                  <img 
+                    src={brasaoPMPA} 
+                    alt="Brasão da Polícia Militar do Pará" 
+                    className="h-full w-full object-contain drop-shadow-lg"
+                  />
+                </div>
+              </div>
               <div>
-                <h1 className="font-heading font-bold text-2xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-white" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.2)" }}>
+                <h1 className="font-heading font-bold text-2xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-800 to-blue-600">
                   Sistema de Escala
                 </h1>
-                <div className="text-sm font-medium text-blue-100 opacity-90">20ª Companhia Independente de Polícia Militar</div>
+                <div className="text-sm font-medium text-gray-700">20ª Companhia Independente de Polícia Militar</div>
               </div>
             </div>
             
@@ -45,7 +55,7 @@ export function Layout({ children }: LayoutProps) {
       </main>
 
       {/* Footer modernizado */}
-      <footer className="bg-gradient-to-r from-[#0F2B4A] via-[#1A3A5F] to-[#2B517D] text-white py-4 mt-6 shadow-inner">
+      <footer className="bg-gradient-to-r from-white via-gray-50 to-gray-100 text-gray-700 py-4 mt-6 shadow-inner">
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm opacity-80">© {new Date().getFullYear()} Sistema de Escala - 20ªCIPM. Todos os direitos reservados.</p>
         </div>
