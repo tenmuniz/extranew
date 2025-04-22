@@ -6,6 +6,7 @@ import { PersonnelList } from "@/components/personnel-list";
 import { ScheduleCalendar } from "@/components/schedule-calendar";
 import { PersonnelModal } from "@/components/personnel-modal";
 import { ReportModal } from "@/components/report-modal";
+import { ConflictsDashboard } from "@/components/conflicts-dashboard";
 import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { getMonthDateRange, formatDateToISO } from "@/lib/utils";
@@ -28,6 +29,7 @@ export default function Home() {
   const queryClient = useQueryClient();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isPersonnelModalOpen, setIsPersonnelModalOpen] = useState(false);
+  const [isConflictsDashboardOpen, setIsConflictsDashboardOpen] = useState(false);
   const [activeOperation, setActiveOperation] = useState<OperationType>("PMF");
 
   // Calculate current month/year from the date
@@ -129,6 +131,16 @@ export default function Home() {
         />
         
         <div className="flex justify-end gap-3 mt-4">
+          <Button
+            className="bg-gradient-to-r from-[#FF416C] to-[#FF4B2B] hover:from-[#FF4B2B] hover:to-[#FF416C] text-white shadow-lg"
+            onClick={() => setIsConflictsDashboardOpen(true)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            Dashboard de Conflitos
+          </Button>
+          
           <ReportModal
             personnel={personnel}
             assignments={assignments}
@@ -173,6 +185,17 @@ export default function Home() {
         personnel={sortedPersonnel}
         onPersonnelChange={handlePersonnelChange}
       />
+
+      {/* Dashboard de Conflitos */}
+      {isConflictsDashboardOpen && (
+        <ConflictsDashboard
+          personnel={sortedPersonnel}
+          assignments={assignments}
+          currentMonth={currentMonth}
+          currentYear={currentYear}
+          onClose={() => setIsConflictsDashboardOpen(false)}
+        />
+      )}
     </Layout>
   );
 }
