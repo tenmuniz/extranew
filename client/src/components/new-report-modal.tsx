@@ -89,9 +89,15 @@ export function NewReportModal({
         // Converter a data para objeto Date para ordenação posterior
         const dateObj = new Date(assignment.date);
         
+        // Formatar a data para o padrão brasileiro (DD/MM/YYYY)
+        const day = dateObj.getDate().toString().padStart(2, '0');
+        const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+        const year = dateObj.getFullYear();
+        const formattedDate = `${day}/${month}/${year}`;
+        
         // Adicionar detalhes da operação
         personData.details.push({
-          date: dateObj.toLocaleDateString('pt-BR'),
+          date: formattedDate,
           dateObj,
           operation: assignment.operationType
         });

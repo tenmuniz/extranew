@@ -116,9 +116,15 @@ export function ConflictsDashboard({
       // Converter a data para objeto Date para ordenação posterior
       const dateObj = new Date(op.date);
       
+      // Formatar a data para o padrão brasileiro (DD/MM/YYYY)
+      const day = dateObj.getDate().toString().padStart(2, '0');
+      const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+      const year = dateObj.getFullYear();
+      const formattedDate = `${day}/${month}/${year}`;
+      
       // Adicionar detalhes do conflito incluindo a guarnição em serviço
       conflictDetailsMap[op.personnelId].details.push({
-        date: dateObj.toLocaleDateString('pt-BR'),
+        date: formattedDate,
         dateObj, // Guardar o objeto Date para ordenação
         operation: op.operationType,
         guarnition: personWithConflict?.platoon || "Desconhecida"
