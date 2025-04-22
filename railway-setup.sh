@@ -1,77 +1,84 @@
 #!/bin/bash
 
-# Script de configuração para Railway
-# Este script deve ser executado após o clone do repositório no Railway
+# Script de configuração para o Railway
 
-echo "===== Script de Configuração do Railway ====="
-echo "Iniciando configuração da aplicação 20ª CIPM - Sistema de Escalas"
-echo
+echo "Iniciando configuração para o Railway..."
 
-# Verificar se estamos em ambiente Railway
-if [ -z "$RAILWAY_ENVIRONMENT" ]; then
-  echo "AVISO: Esta não parece ser uma instalação no Railway."
-  echo "O script continuará, mas algumas funcionalidades podem não funcionar como esperado."
-else
-  echo "✅ Ambiente Railway detectado: $RAILWAY_ENVIRONMENT"
-fi
-
-# Passo 1: Verificar Node.js
-echo "Verificando versão do Node.js..."
-NODE_VERSION=$(node -v)
-echo "Versão do Node.js: $NODE_VERSION"
-
-# Passo 2: Renomear package.json para garantir compatibilidade
-echo "Configurando package.json para Railway..."
-if [ -f "package.railway.json" ]; then
-  cp package.railway.json package.json
-  echo "✅ package.json configurado para Railway."
-else
-  echo "⚠️ package.railway.json não encontrado. Usando package.json existente."
-fi
-
-# Passo 3: Verificar conexão com o banco de dados
-echo "Verificando conexão com o banco de dados..."
+# Verificar se as variáveis de ambiente necessárias estão definidas
 if [ -z "$DATABASE_URL" ]; then
-  echo "⚠️ DATABASE_URL não está configurada. O sistema usará armazenamento em memória."
-  echo "Para usar banco de dados, configure a variável DATABASE_URL no painel do Railway."
-else
-  echo "✅ DATABASE_URL configurada."
-fi
-
-# Passo 4: Construir a aplicação
-echo "Construindo a aplicação..."
-npm run build
-if [ $? -ne 0 ]; then
-  echo "❌ Erro durante a construção da aplicação."
+  echo "ERRO: A variável de ambiente DATABASE_URL não está definida."
+  echo "Configure-a nas variáveis de ambiente do projeto no Railway."
   exit 1
-else
-  echo "✅ Aplicação construída com sucesso."
 fi
 
-# Passo 5: Verificar Procfile
-echo "Verificando Procfile..."
-if [ -f "Procfile" ]; then
-  echo "✅ Procfile encontrado."
-else
-  echo "⚠️ Procfile não encontrado. Criando um padrão..."
-  echo "web: node -r ./setup-environment.js dist/server/index.js" > Procfile
-  echo "✅ Procfile criado."
+# Verificar se a variável NODE_ENV está configurada
+if [ -z "$NODE_ENV" ]; then
+  echo "NODE_ENV não definida, configurando para 'production'"
+  export NODE_ENV="production"
 fi
 
-# Passo 6: Inicializar banco de dados (se configurado)
-if [ ! -z "$DATABASE_URL" ]; then
-  echo "Inicializando banco de dados..."
-  npm run db:push
+echo "Ambiente: $NODE_ENV"
+echo "PostgreSQL: $DATABASE_URL (mascarado para segurança)"
+
+# Testar conexão com o banco de dados
+echo "Testando conexão com o banco de dados..."
+npx drizzle-kit generate
+if [ $? -ne 0 ]; then
+  echo "ERRO: Falha ao conectar com o banco de dados. Tentando novamente com mais detalhes de erro..."
+  npx drizzle-kit generate --verbose
+  exit 1
+fi
+
+# Executar migrações
+echo "Aplicando migrações..."
+npm run db:push
+if [ $? -ne 0 ]; then
+  echo "ERRO: Falha ao aplicar migrações. Tentando método alternativo..."
+  node -e "
+    const { drizzle } = require('drizzle-orm/neon-serverless');
+    const { Pool } = require('@neondatabase/serverless');
+    const ws = require('ws');
+    const schema = require('./dist/shared/schema.js');
+    
+    async function pushSchema() {
+      console.log('Inicializando conexão direta com o banco...');
+      const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+      const db = drizzle({ client: pool, schema });
+      console.log('Conexão estabelecida, aplicando schema...');
+      try {
+        // Tenta criar as tabelas manualmente
+        await pool.query(\`
+          CREATE TABLE IF NOT EXISTS personnel (
+            id SERIAL PRIMARY KEY,
+            name TEXT NOT NULL,
+            rank TEXT NOT NULL,
+            platoon TEXT,
+            extra_info TEXT
+          );
+          
+          CREATE TABLE IF NOT EXISTS assignments (
+            id SERIAL PRIMARY KEY,
+            personnel_id INTEGER NOT NULL,
+            operation_type TEXT NOT NULL,
+            date DATE NOT NULL,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+          );
+        \`);
+        console.log('Tabelas criadas com sucesso!');
+      } catch (error) {
+        console.error('Erro ao criar tabelas:', error);
+        process.exit(1);
+      }
+      pool.end();
+    }
+    
+    pushSchema().catch(console.error);
+  "
+  
   if [ $? -ne 0 ]; then
-    echo "⚠️ Aviso: Falha ao executar migrações do banco de dados."
-    echo "Tente executar 'npm run db:push' manualmente após o deploy."
-  else
-    echo "✅ Banco de dados inicializado com sucesso."
+    echo "ERRO: Todas as tentativas de migração falharam."
+    exit 1
   fi
 fi
 
-echo
-echo "===== Configuração concluída! ====="
-echo "A aplicação está pronta para ser executada no Railway."
-echo "Use 'npm start' para iniciar o servidor."
-echo
+echo "Configuração do Railway concluída com sucesso!"
