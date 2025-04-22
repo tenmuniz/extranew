@@ -190,19 +190,125 @@ export function NewReportModal({
   
   // Gerar PDF do relatório
   const handleGeneratePDF = () => {
-    const reportElement = document.getElementById('report-content');
-    if (!reportElement) return;
+    // Construir um HTML estruturado para o PDF
+    const pdfContainer = document.createElement('div');
+    pdfContainer.style.padding = '20px';
+    pdfContainer.style.fontFamily = 'Arial, sans-serif';
     
-    const opt = {
+    // Cabeçalho
+    const header = document.createElement('div');
+    header.innerHTML = `
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h1 style="color: #1A3A5F; margin-bottom: 5px; font-size: 24px;">RELATÓRIO DE EXTRAS - 20ª CIPM</h1>
+        <h2 style="color: #4A6741; margin-top: 0; font-size: 18px;">${
+          currentMonth !== undefined && currentYear !== undefined 
+            ? `${getMonthName(currentMonth)} / ${currentYear}`
+            : "Todos os Períodos"
+        }</h2>
+        <div style="border-bottom: 2px solid #1A3A5F; margin: 10px 0;"></div>
+      </div>
+    `;
+    pdfContainer.appendChild(header);
+    
+    // Resumo estatístico
+    const statsSection = document.createElement('div');
+    statsSection.innerHTML = `
+      <div style="margin-bottom: 25px;">
+        <h2 style="color: #1A3A5F; border-bottom: 1px solid #ccc; padding-bottom: 5px; font-size: 18px;">RESUMO ESTATÍSTICO</h2>
+        <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+          <div style="text-align: center; background-color: #f0f7ff; padding: 10px; border-radius: 8px; width: 23%;">
+            <span style="display: block; font-size: 24px; font-weight: bold; color: #1A3A5F;">${stats.totalOperations}</span>
+            <span style="color: #666; font-size: 14px;">Total de Extras</span>
+          </div>
+          <div style="text-align: center; background-color: #f0faf0; padding: 10px; border-radius: 8px; width: 23%;">
+            <span style="display: block; font-size: 24px; font-weight: bold; color: #4A6741;">${stats.pmfOperations}</span>
+            <span style="color: #666; font-size: 14px;">PMF</span>
+          </div>
+          <div style="text-align: center; background-color: #f5f0ff; padding: 10px; border-radius: 8px; width: 23%;">
+            <span style="display: block; font-size: 24px; font-weight: bold; color: #6441A5;">${stats.escolaOperations}</span>
+            <span style="color: #666; font-size: 14px;">Escola Segura</span>
+          </div>
+          <div style="text-align: center; background-color: #fff0f3; padding: 10px; border-radius: 8px; width: 23%;">
+            <span style="display: block; font-size: 24px; font-weight: bold; color: #FF416C;">${stats.personnelInvolved}</span>
+            <span style="color: #666; font-size: 14px;">Militares Envolvidos</span>
+          </div>
+        </div>
+      </div>
+    `;
+    pdfContainer.appendChild(statsSection);
+    
+    // Destaque
+    const highlightSection = document.createElement('div');
+    highlightSection.innerHTML = `
+      <div style="margin-bottom: 25px;">
+        <h2 style="color: #1A3A5F; border-bottom: 1px solid #ccc; padding-bottom: 5px; font-size: 18px;">DESTAQUES</h2>
+        <div style="display: flex; margin-top: 15px;">
+          <div style="background-color: #fff0f3; padding: 15px; border-radius: 8px; width: 100%;">
+            <h3 style="margin-top: 0; color: #FF416C; font-size: 16px;">Maior Participação em Extras</h3>
+            <p style="margin-bottom: 5px; font-size: 14px;"><strong>Militar:</strong> ${stats.maxOperations.person?.name || "Nenhum"}</p>
+            <p style="margin-bottom: 5px; font-size: 14px;"><strong>Quantidade:</strong> ${stats.maxOperations.count} extras</p>
+            <p style="margin-bottom: 5px; font-size: 14px;"><strong>Média por Militar:</strong> ${stats.avgOperationsPerPerson} extras</p>
+          </div>
+        </div>
+      </div>
+    `;
+    pdfContainer.appendChild(highlightSection);
+    
+    // Lista de militares com extras
+    const personnelSection = document.createElement('div');
+    personnelSection.innerHTML = `
+      <div style="margin-bottom: 25px;">
+        <h2 style="color: #1A3A5F; border-bottom: 1px solid #ccc; padding-bottom: 5px; font-size: 18px;">MILITARES COM EXTRAS</h2>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+          <thead>
+            <tr style="background-color: #1A3A5F; color: white;">
+              <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Militar</th>
+              <th style="padding: 8px; text-align: center; border: 1px solid #ddd;">Posto/Grad</th>
+              <th style="padding: 8px; text-align: center; border: 1px solid #ddd;">Guarnição</th>
+              <th style="padding: 8px; text-align: center; border: 1px solid #ddd;">PMF</th>
+              <th style="padding: 8px; text-align: center; border: 1px solid #ddd;">Escola</th>
+              <th style="padding: 8px; text-align: center; border: 1px solid #ddd;">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${personnelWithExtras.map((person, index) => `
+              <tr style="background-color: ${index % 2 === 0 ? '#f9f9f9' : 'white'};">
+                <td style="padding: 8px; border: 1px solid #ddd;">${person.name}</td>
+                <td style="padding: 8px; text-align: center; border: 1px solid #ddd;">${person.rank}</td>
+                <td style="padding: 8px; text-align: center; border: 1px solid #ddd;">${person.platoon || "N/A"}</td>
+                <td style="padding: 8px; text-align: center; border: 1px solid #ddd;">${person.pmfCount}</td>
+                <td style="padding: 8px; text-align: center; border: 1px solid #ddd;">${person.escolaCount}</td>
+                <td style="padding: 8px; text-align: center; border: 1px solid #ddd; font-weight: bold;">${person.operationsCount}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+    pdfContainer.appendChild(personnelSection);
+    
+    // Rodapé
+    const footer = document.createElement('div');
+    footer.innerHTML = `
+      <div style="margin-top: 30px; text-align: center; font-size: 12px; color: #666;">
+        <p>Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
+        <p>Sistema de Escalas - 20ª CIPM</p>
+      </div>
+    `;
+    pdfContainer.appendChild(footer);
+    
+    // Gerar o PDF
+    const options = {
       margin: 10,
-      filename: `relatorio-operacoes-${currentMonth !== undefined && currentYear !== undefined ? 
-        `${currentMonth + 1}-${currentYear}` : 'completo'}.pdf`,
+      filename: `relatorio-extras-${currentMonth !== undefined && currentYear !== undefined 
+        ? `${getMonthName(currentMonth)}-${currentYear}`
+        : 'completo'}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
-    
-    html2pdf().set(opt).from(reportElement).save();
+
+    html2pdf().from(pdfContainer).set(options).save();
   };
   
   // Função para obter o nome do mês
@@ -264,9 +370,9 @@ export function NewReportModal({
           <div className="absolute right-6 top-6 flex flex-col items-end gap-3">
             <button 
               onClick={onClose}
-              className="bg-gradient-to-r from-[#1A3A5F] to-[#3066BE] hover:shadow-xl text-white rounded-lg px-4 py-3 shadow-md transition-all duration-300 flex items-center"
+              className="bg-gradient-to-r from-[#1A3A5F] to-[#3066BE] hover:shadow-xl text-white rounded-lg px-3 py-2 shadow-md transition-all duration-300 flex items-center text-sm"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
               <span className="font-medium">Fechar Relatório</span>
@@ -274,9 +380,9 @@ export function NewReportModal({
             
             <button 
               onClick={handleGeneratePDF}
-              className="bg-gradient-to-r from-[#4A6741] to-[#6BA368] hover:shadow-xl text-white rounded-lg px-4 py-3 shadow-md transition-all duration-300 flex items-center"
+              className="bg-gradient-to-r from-[#4A6741] to-[#6BA368] hover:shadow-xl text-white rounded-lg px-3 py-2 shadow-md transition-all duration-300 flex items-center text-sm"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
               <span className="font-medium">Exportar PDF</span>
