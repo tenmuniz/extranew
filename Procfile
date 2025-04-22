@@ -1,2 +1,2 @@
-release: npm run db:push
-web: npm start
+# Nenhuma etapa de release, pois será gerenciada após o deploy inicial
+web: npm run build && npm start

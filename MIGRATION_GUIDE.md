@@ -48,9 +48,12 @@ O arquivo `.env` já está criado com a variável `DATABASE_URL`. Certifique-se 
 
 ### 4. Deploy e Configuração
 
-1. Railway detectará automaticamente o Procfile e executará os scripts de construção e migração
-2. Durante o primeiro deploy, as tabelas serão criadas e os dados iniciais de exemplo serão carregados
-3. Após o deploy bem-sucedido, a aplicação estará disponível no domínio fornecido pelo Railway
+1. Railway detectará automaticamente o Procfile e executará o script de build e inicialização
+2. **IMPORTANTE**: Após o primeiro deploy ser concluído, é necessário aplicar as migrações manualmente:
+   - Acesse o shell do serviço no Railway
+   - Execute o script `./setup-railway.sh` (ou `npm run db:push` para criar as tabelas)
+   - Este passo só precisa ser executado uma vez após o deploy inicial
+3. Após o deploy e migração, a aplicação estará disponível no domínio fornecido pelo Railway
 
 ### 5. Verificação
 

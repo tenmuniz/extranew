@@ -1,22 +1,21 @@
 import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
+import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import ws from "ws";
 import * as schema from "@shared/schema";
 
 neonConfig.webSocketConstructor = ws;
 
-const useInMemoryStorage = !process.env.DATABASE_URL;
-let pool;
-let db;
+export const isDatabaseEnabled = Boolean(process.env.DATABASE_URL);
 
-if (useInMemoryStorage) {
+if (!isDatabaseEnabled) {
   console.log('DATABASE_URL not set, using in-memory storage');
-  // Set up in-memory SQLite or similar fallback
-  // This is temporary until you set up the real database
-  db = new Map();
-} else {
-  pool = new Pool({ connectionString: process.env.DATABASE_URL });
-  db = drizzle({ client: pool, schema });
 }
 
-export { db };
+export const pool = isDatabaseEnabled 
+  ? new Pool({ connectionString: process.env.DATABASE_URL }) 
+  : undefined;
+
+export const db: NodePgDatabase<typeof schema> | undefined = pool
+  ? drizzle(pool, { schema })
+  : undefined;
