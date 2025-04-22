@@ -7,6 +7,8 @@ import {
   type InsertAssignment,
   type OperationType
 } from "@shared/schema";
+import { db } from "./db";
+import { and, eq, gte, lte, sql } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -26,176 +28,51 @@ export interface IStorage {
   getAssignmentsCountForDay(date: Date, operationType: OperationType): Promise<number>;
 }
 
-export class MemStorage implements IStorage {
-  private personnelData: Map<number, Personnel>;
-  private assignmentsData: Map<number, Assignment>;
-  private personnelCurrentId: number;
-  private assignmentsCurrentId: number;
-
-  constructor() {
-    this.personnelData = new Map();
-    this.assignmentsData = new Map();
-    this.personnelCurrentId = 1;
-    this.assignmentsCurrentId = 1;
-    
-    // Initialize with sample data
-    this.initializeSampleData();
-  }
-
-  private initializeSampleData() {
-    const samplePersonnel: InsertPersonnel[] = [
-      // Capitão e oficiais primeiro (por ordem hierárquica - EXPEDIENTE)
-      { name: "CAP MUNIZ", rank: "CAP", extras: 0, platoon: "EXPEDIENTE" },
-      { name: "1º TEN QOPM MONTEIRO", rank: "1TEN", extras: 0, platoon: "EXPEDIENTE" },
-      { name: "TEN VANILSON", rank: "TEN", extras: 0, platoon: "EXPEDIENTE" },
-      { name: "SUB TEN ANDRÉ", rank: "SUBTEN", extras: 0, platoon: "EXPEDIENTE" },
-      
-      // Sargentos - Guarnição BRAVO 
-      { name: "1º SGT PM OLIMAR", rank: "1SGT", extras: 0, platoon: "BRAVO" },
-      
-      // Sargentos - Guarnição ALFA
-      { name: "2º SGT PM PEIXOTO", rank: "2SGT", extras: 0, platoon: "ALFA" },
-      
-      // Sargentos - Guarnição BRAVO
-      { name: "2º SGT PM FÁBIO", rank: "2SGT", extras: 0, platoon: "BRAVO" },
-      
-      // Sargentos - Guarnição CHARLIE
-      { name: "2º SGT PM PINHEIRO", rank: "2SGT", extras: 0, platoon: "CHARLIE" },
-      
-      // Sargentos - EXPEDIENTE
-      { name: "2º SGT PM A. TAVARES", rank: "2SGT", extras: 0, platoon: "EXPEDIENTE" },
-      
-      // Sargentos - Guarnição ALFA
-      { name: "3º SGT PM RODRIGO", rank: "3SGT", extras: 0, platoon: "ALFA" },
-      { name: "3º SGT PM LEDO", rank: "3SGT", extras: 0, platoon: "ALFA" },
-      { name: "3º SGT PM NUNES", rank: "3SGT", extras: 0, platoon: "ALFA" },
-      { name: "3º SGT PM AMARAL", rank: "3SGT", extras: 0, platoon: "ALFA" },
-      
-      // Sargentos - Guarnição BRAVO
-      { name: "3º SGT PM ANA CLEIDE", rank: "3SGT", extras: 0, platoon: "BRAVO" },
-      { name: "3º SGT PM GLEIDSON", rank: "3SGT", extras: 0, platoon: "BRAVO" },
-      { name: "3º SGT PM CARLOS EDUARDO", rank: "3SGT", extras: 0, platoon: "BRAVO" },
-      { name: "3º SGT PM NEGRÃO", rank: "3SGT", extras: 0, platoon: "BRAVO" },
-      
-      // Sargentos - Guarnição CHARLIE
-      { name: "3º SGT PM RAFAEL", rank: "3SGT", extras: 0, platoon: "CHARLIE" },
-      
-      // Sargentos - EXPEDIENTE
-      { name: "3º SGT PM CUNHA", rank: "3SGT", extras: 0, platoon: "EXPEDIENTE" },
-      { name: "3º SGT PM CARAVELAS", rank: "3SGT", extras: 0, platoon: "EXPEDIENTE" },
-      
-      // Cabos - Guarnição ALFA
-      { name: "CB PM CARLA", rank: "CB", extras: 0, platoon: "ALFA" },
-      { name: "CB PM FELIPE", rank: "CB", extras: 0, platoon: "ALFA" },
-      { name: "CB PM BARROS", rank: "CB", extras: 0, platoon: "ALFA" },
-      { name: "CB PM A. SILVA", rank: "CB", extras: 0, platoon: "ALFA" },
-      
-      // Cabos - Guarnição BRAVO
-      { name: "CB PM BRASIL", rank: "CB", extras: 0, platoon: "BRAVO" },
-      
-      // Cabos - Guarnição CHARLIE
-      { name: "CB PM MIQUEIAS", rank: "CB", extras: 0, platoon: "CHARLIE" },
-      { name: "CB PM M. PAIXÃO", rank: "CB", extras: 0, platoon: "CHARLIE" },
-      
-      // Cabos - FÉRIAS (mantendo no sistema como BRAVO)
-      { name: "CB PM ALAX", rank: "CB", extras: 0, platoon: "BRAVO" },
-      { name: "CB PM VELOSO", rank: "CB", extras: 0, platoon: "BRAVO" },
-      
-      // Cabos - EXPEDIENTE
-      { name: "CB PM TONI", rank: "CB", extras: 0, platoon: "EXPEDIENTE" },
-      
-      // Soldados - Guarnição ALFA
-      { name: "SD PM LUAN", rank: "SD", extras: 0, platoon: "ALFA" },
-      { name: "SD PM NAVARRO", rank: "SD", extras: 0, platoon: "ALFA" },
-      
-      // Soldados - Guarnição BRAVO
-      { name: "SD PM MARVÃO", rank: "SD", extras: 0, platoon: "BRAVO" },
-      { name: "SD PM IDELVAN", rank: "SD", extras: 0, platoon: "BRAVO" },
-      
-      // Soldados - Guarnição CHARLIE
-      { name: "SD PM CHAGAS", rank: "SD", extras: 0, platoon: "CHARLIE" },
-      { name: "SD PM CARVALHO", rank: "SD", extras: 0, platoon: "CHARLIE" },
-      { name: "SD PM GOVEIA", rank: "SD", extras: 0, platoon: "CHARLIE" },
-      { name: "SD PM ALMEIDA", rank: "SD", extras: 0, platoon: "CHARLIE" },
-      { name: "SD PM PATRIK", rank: "SD", extras: 0, platoon: "CHARLIE" },
-      { name: "SD PM GUIMARÃES", rank: "SD", extras: 0, platoon: "CHARLIE" },
-      
-      // Soldados - EXPEDIENTE
-      { name: "SD PM S. CORREA", rank: "SD", extras: 0, platoon: "EXPEDIENTE" },
-      { name: "SD PM RODRIGUES", rank: "SD", extras: 0, platoon: "EXPEDIENTE" }
-    ];
-
-    samplePersonnel.forEach(person => {
-      this.createPersonnel(person);
-    });
-  }
-
+// Class to use PostgreSQL database storage
+export class DatabaseStorage implements IStorage {
   // Personnel methods
   async getAllPersonnel(): Promise<Personnel[]> {
-    return Array.from(this.personnelData.values());
+    return await db.select().from(personnel);
   }
 
   async getPersonnel(id: number): Promise<Personnel | undefined> {
-    return this.personnelData.get(id);
+    const result = await db.select().from(personnel).where(eq(personnel.id, id));
+    return result.length > 0 ? result[0] : undefined;
   }
 
   async createPersonnel(data: InsertPersonnel): Promise<Personnel> {
-    const id = this.personnelCurrentId++;
-    // Garantir que extras sempre tenha um valor numérico
-    const extras = data.extras !== undefined ? data.extras : 0;
-    // Garantir que platoon sempre tenha um valor da enum
-    const platoon = data.platoon || "EXPEDIENTE";
+    const [result] = await db.insert(personnel).values({
+      name: data.name,
+      rank: data.rank,
+      extras: data.extras !== undefined ? data.extras : 0,
+      platoon: data.platoon || "EXPEDIENTE"
+    }).returning();
     
-    const newPersonnel: Personnel = { 
-      ...data, 
-      id,
-      extras,
-      platoon 
-    };
-    this.personnelData.set(id, newPersonnel);
-    return newPersonnel;
+    return result;
   }
 
   async updatePersonnel(id: number, data: Partial<InsertPersonnel>): Promise<Personnel | undefined> {
-    const personnel = this.personnelData.get(id);
-    if (!personnel) return undefined;
-
-    // Garantir que extras sempre tenha um valor numérico
-    let updatedData = { ...data };
-    if (updatedData.extras === undefined && data.extras !== 0) {
-      updatedData.extras = personnel.extras;
-    }
+    const [result] = await db.update(personnel)
+      .set(data)
+      .where(eq(personnel.id, id))
+      .returning();
     
-    // Garantir que platoon mantenha um valor válido
-    if (updatedData.platoon === undefined) {
-      updatedData.platoon = personnel.platoon;
-    }
-
-    const updatedPersonnel: Personnel = {
-      ...personnel,
-      ...updatedData
-    };
-
-    this.personnelData.set(id, updatedPersonnel);
-    return updatedPersonnel;
+    return result;
   }
 
   async deletePersonnel(id: number): Promise<boolean> {
-    // Delete related assignments first
-    const assignments = Array.from(this.assignmentsData.values()).filter(
-      assignment => assignment.personnelId === id
-    );
+    // As a cascading delete is defined on the table, we don't need to 
+    // manually delete related assignments
+    const result = await db.delete(personnel)
+      .where(eq(personnel.id, id))
+      .returning({ id: personnel.id });
     
-    for (const assignment of assignments) {
-      await this.deleteAssignment(assignment.id);
-    }
-    
-    return this.personnelData.delete(id);
+    return result.length > 0;
   }
 
   // Assignment methods
   async getAllAssignments(): Promise<Assignment[]> {
-    return Array.from(this.assignmentsData.values());
+    return await db.select().from(assignments);
   }
   
   async getAssignmentsByDateRange(startDate: Date, endDate: Date): Promise<Assignment[]> {
@@ -205,43 +82,75 @@ export class MemStorage implements IStorage {
     const end = new Date(endDate);
     end.setHours(23, 59, 59, 999);
     
-    return Array.from(this.assignmentsData.values()).filter(assignment => {
-      const assignmentDate = new Date(assignment.date);
-      return assignmentDate >= start && assignmentDate <= end;
-    });
+    return await db.select()
+      .from(assignments)
+      .where(
+        and(
+          sql`${assignments.date} >= ${start.toISOString()}`,
+          sql`${assignments.date} <= ${end.toISOString()}`
+        )
+      );
   }
 
   async getAssignmentsByDate(date: Date): Promise<Assignment[]> {
     const targetDate = new Date(date);
     targetDate.setHours(0, 0, 0, 0);
     
-    return Array.from(this.assignmentsData.values()).filter(assignment => {
-      const assignmentDate = new Date(assignment.date);
-      assignmentDate.setHours(0, 0, 0, 0);
-      return assignmentDate.getTime() === targetDate.getTime();
-    });
+    // Set end of day for the same date
+    const endDate = new Date(targetDate);
+    endDate.setHours(23, 59, 59, 999);
+    
+    return await db.select()
+      .from(assignments)
+      .where(
+        and(
+          sql`${assignments.date} >= ${targetDate.toISOString()}`,
+          sql`${assignments.date} <= ${endDate.toISOString()}`
+        )
+      );
   }
 
   async createAssignment(data: InsertAssignment): Promise<Assignment> {
-    const id = this.assignmentsCurrentId++;
-    const newAssignment: Assignment = { 
-      ...data, 
-      id, 
-      createdAt: new Date() 
-    };
+    const [result] = await db.insert(assignments)
+      .values({
+        personnelId: data.personnelId,
+        operationType: data.operationType,
+        date: data.date
+      })
+      .returning();
     
-    this.assignmentsData.set(id, newAssignment);
-    return newAssignment;
+    return result;
   }
 
   async deleteAssignment(id: number): Promise<boolean> {
-    return this.assignmentsData.delete(id);
+    const result = await db.delete(assignments)
+      .where(eq(assignments.id, id))
+      .returning({ id: assignments.id });
+    
+    return result.length > 0;
   }
 
   async getAssignmentsCountForDay(date: Date, operationType: OperationType): Promise<number> {
-    const assignments = await this.getAssignmentsByDate(date);
-    return assignments.filter(a => a.operationType === operationType).length;
+    const targetDate = new Date(date);
+    targetDate.setHours(0, 0, 0, 0);
+    
+    // Set end of day for the same date
+    const endDate = new Date(targetDate);
+    endDate.setHours(23, 59, 59, 999);
+    
+    const result = await db.select()
+      .from(assignments)
+      .where(
+        and(
+          sql`${assignments.date} >= ${targetDate.toISOString()}`,
+          sql`${assignments.date} <= ${endDate.toISOString()}`,
+          eq(assignments.operationType, operationType)
+        )
+      );
+    
+    return result.length;
   }
 }
 
-export const storage = new MemStorage();
+// Export an instance of the database storage
+export const storage = new DatabaseStorage();
