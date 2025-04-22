@@ -8,9 +8,70 @@ interface PersonnelCardProps {
   onRemove?: () => void;
 }
 
-// Get rank initials display name
-const getRankDisplay = (rank: string) => {
-  return rank;
+// Função para gerar elementos de símbolos de patentes e graduações
+const getRankSymbols = (rank: string) => {
+  switch(rank) {
+    case "CAP":
+      return (
+        <div className="flex">
+          <span className="text-yellow-400 text-xs">★★★</span>
+        </div>
+      );
+    case "1TEN":
+      return (
+        <div className="flex">
+          <span className="text-yellow-400 text-xs">★★</span>
+        </div>
+      );
+    case "TEN":
+    case "2TEN":
+      return (
+        <div className="flex">
+          <span className="text-yellow-400 text-xs">★</span>
+        </div>
+      );
+    case "SUBTEN":
+      return (
+        <div className="flex flex-col items-center">
+          <span className="text-yellow-300 text-xs">≡≡≡</span>
+        </div>
+      );
+    case "1SGT":
+      return (
+        <div className="flex flex-col items-center">
+          <span className="text-yellow-300 text-xs">≡≡≡</span>
+          <span className="text-yellow-300 text-[8px]">v</span>
+        </div>
+      );
+    case "2SGT":
+      return (
+        <div className="flex flex-col items-center">
+          <span className="text-yellow-300 text-xs">≡≡</span>
+          <span className="text-yellow-300 text-[8px]">v</span>
+        </div>
+      );
+    case "3SGT":
+      return (
+        <div className="flex flex-col items-center">
+          <span className="text-yellow-300 text-xs">≡</span>
+          <span className="text-yellow-300 text-[8px]">v</span>
+        </div>
+      );
+    case "CB":
+      return (
+        <div className="flex flex-col items-center">
+          <span className="text-yellow-300 text-xs">^^</span>
+        </div>
+      );
+    case "SD":
+      return (
+        <div className="flex flex-col items-center">
+          <span className="text-yellow-300 text-xs">^</span>
+        </div>
+      );
+    default:
+      return rank;
+  }
 };
 
 // Get rank full name
@@ -50,9 +111,12 @@ export function PersonnelCard({
     return (
       <div className="assigned-person bg-white p-1.5 px-2 rounded text-xs shadow w-full mb-1 border border-gray-100">
         <div className="flex flex-col w-full">
-          {/* Nome do militar com o rank como prefixo */}
-          <div className="font-medium text-xs leading-tight w-full mb-0.5 whitespace-normal break-words hyphens-auto">
-            <span className="font-bold">{personnel.rank}</span> {personnel.name}
+          {/* Nome do militar com o rank como prefixo e símbolo */}
+          <div className="font-medium text-xs leading-tight w-full mb-0.5 whitespace-normal break-words hyphens-auto flex items-center">
+            <span className="inline-flex items-center mr-1 bg-[#1A3A5F] text-white rounded-full w-5 h-5 justify-center">
+              {getRankSymbols(personnel.rank)}
+            </span>
+            <span>{personnel.name}</span>
           </div>
           
           {/* Botão de remover em linha separada */}
@@ -87,7 +151,7 @@ export function PersonnelCard({
       {/* Cabeçalho com nome e rank */}
       <div className="flex items-center mb-2 w-full">
         <div className="bg-[#1A3A5F] text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-          <span className="font-bold text-xs">{getRankDisplay(personnel.rank)}</span>
+          {getRankSymbols(personnel.rank)}
         </div>
         <div className="w-full overflow-hidden">
           <p className="font-semibold text-gray-800 text-sm break-words">{personnel.name}</p>
