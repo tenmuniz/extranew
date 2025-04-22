@@ -1,52 +1,148 @@
 import React from 'react';
 
-// Componente React que renderiza o brasão da PM como um SVG inline
+// Componente React que renderiza o brasão da PMPA como um SVG inline
+// Baseado na imagem fornecida do brasão oficial da PMPA
 export function PMBrasao() {
   return (
-    <div className="flex items-center justify-center h-16 w-16">
+    <div className="flex items-center justify-center h-16 w-16 relative">
+      {/* Container circular para o brasão */}
+      <div className="absolute inset-0 rounded-full bg-gradient-to-b from-blue-50 to-white shadow-lg border-2 border-blue-100"></div>
+      
       <svg 
-        viewBox="0 0 150 175" 
+        viewBox="0 0 300 340" 
         xmlns="http://www.w3.org/2000/svg" 
-        className="h-full w-full drop-shadow-md"
+        className="h-full w-full drop-shadow-sm relative z-10 p-1"
       >
-        {/* Borda do escudo */}
-        <path d="M75,5 L10,30 L10,100 C10,140 75,170 75,170 C75,170 140,140 140,100 L140,30 Z" 
-              fill="white" stroke="#8a2942" strokeWidth="3" />
+        {/* Escudo principal - forma externa */}
+        <path 
+          d="M150,10 L30,60 L30,200 Q30,280 150,330 Q270,280 270,200 L270,60 Z" 
+          fill="white" 
+          stroke="#8c194c" 
+          strokeWidth="6" 
+        />
+          
+        {/* Área vermelha com PM */}
+        <path 
+          d="M50,40 H150 V80 H50 Z" 
+          fill="#d81e27" 
+          stroke="#8c194c" 
+          strokeWidth="2" 
+        />
+        <text x="70" y="67" fontFamily="Arial" fontSize="28" fontWeight="bold" fill="white">PM</text>
+          
+        {/* Área azul com PA */}
+        <path 
+          d="M150,40 H250 V80 H150 Z" 
+          fill="#223991" 
+          stroke="#8c194c" 
+          strokeWidth="2" 
+        />
+        <text x="180" y="67" fontFamily="Arial" fontSize="28" fontWeight="bold" fill="white">PA</text>
+          
+        {/* Armas cruzadas douradas */}
+        <path 
+          d="M137,60 L163,60 M150,48 L150,72" 
+          stroke="#ffd700" 
+          strokeWidth="3" 
+          strokeLinecap="round" 
+        />
+        <path 
+          d="M138,50 L162,70 M138,70 L162,50" 
+          stroke="#ffd700" 
+          strokeWidth="5" 
+          strokeLinecap="round" 
+        />
+          
+        {/* Coroa no topo */}
+        <path 
+          d="M110,95 H190 M120,90 L125,100 M135,90 L140,100 M150,90 L155,100 M165,90 L170,100 M180,90 L185,100" 
+          stroke="#7d7d7d" 
+          strokeWidth="4" 
+          strokeLinecap="round" 
+          fill="none" 
+        />
+          
+        {/* Círculo dourado com roda */}
+        <circle cx="150" cy="170" r="60" stroke="#ffd700" strokeWidth="5" fill="none" />
+        <circle cx="150" cy="170" r="50" stroke="#ffd700" strokeWidth="2" fill="none" />
         
-        {/* Topo vermelho e azul */}
-        <rect x="20" y="20" width="50" height="25" fill="#d52b1e" />
-        <rect x="80" y="20" width="50" height="25" fill="#2c3e92" />
-        
-        {/* Letras PM PA */}
-        <text x="30" y="40" fontSize="20" fontWeight="bold" fill="white">PM</text>
-        <text x="95" y="40" fontSize="20" fontWeight="bold" fill="white">PA</text>
-        
-        {/* Armas cruzadas */}
-        <path d="M70,30 L80,20 M70,20 L80,30" 
-              stroke="#ffd700" strokeWidth="3" strokeLinecap="round" />
-        <path d="M71,25 L79,25 M75,21 L75,29" 
-              stroke="#ffd700" strokeWidth="1.5" />
-        
-        {/* Flor de lis central */}
-        <path d="M75,75 L85,95 L75,105 L65,95 Z" fill="#2c3e92" />
-        <circle cx="75" cy="85" r="10" fill="#d52b1e" />
-        
-        {/* Elementos decorativos */}
-        <circle cx="75" cy="85" r="30" stroke="#ffd700" strokeWidth="2" fill="none" />
-        
-        {/* Coroa */}
-        <path d="M55,60 L95,60 
-                M60,55 L65,65 M70,55 L75,65 M80,55 L85,65 M90,55 L95,65" 
-              stroke="#7d7d7d" strokeWidth="2" fill="none" />
-        
-        {/* Palmeiras */}
-        <path d="M35,95 C45,80 50,95 50,75" stroke="#4a8c43" strokeWidth="1.5" fill="none" />
-        <path d="M115,95 C105,80 100,95 100,75" stroke="#4a8c43" strokeWidth="1.5" fill="none" />
-        
-        {/* Faixa com data */}
-        <path d="M40,130 C60,120 90,120 110,130" stroke="#ffd700" strokeWidth="2" fill="none" />
-        <text x="71" y="145" fontSize="10" fontWeight="bold" fill="#2c3e92">2014</text>
+        {/* Raios da roda */}
+        {Array.from({ length: 12 }).map((_, i) => (
+          <line 
+            key={i}
+            x1="150" 
+            y1="170" 
+            x2={150 + 50 * Math.cos(i * Math.PI / 6)} 
+            y2={170 + 50 * Math.sin(i * Math.PI / 6)} 
+            stroke="#ffd700" 
+            strokeWidth="2" 
+          />
+        ))}
+          
+        {/* Flor de lis */}
+        <path 
+          d="M150,150 L162,172 L150,195 L138,172 Z" 
+          fill="#223991" 
+          strokeWidth="1" 
+          stroke="#223991" 
+        />
+        <circle cx="150" cy="170" r="12" fill="#d81e27" />
+          
+        {/* Palmeiras laterais */}
+        <path 
+          d="M75,170 C85,160 95,175 100,145 M75,170 C90,155 85,180 105,155"
+          stroke="#4a8c43" 
+          strokeWidth="4" 
+          strokeLinecap="round" 
+          fill="none" 
+        />
+        <path 
+          d="M225,170 C215,160 205,175 200,145 M225,170 C210,155 215,180 195,155"
+          stroke="#4a8c43" 
+          strokeWidth="4" 
+          strokeLinecap="round" 
+          fill="none" 
+        />
+          
+        {/* Animais (representação simplificada) */}
+        <path 
+          d="M110,170 C100,180 90,185 80,200 C90,190 110,190 110,210"
+          stroke="#555" 
+          strokeWidth="4" 
+          fill="none" 
+        />
+        <path 
+          d="M190,170 C200,180 210,185 220,200 C210,190 190,190 190,210"
+          stroke="#555" 
+          strokeWidth="4" 
+          fill="none" 
+        />
+          
+        {/* Faixa dourada inferior com lema */}
+        <path 
+          d="M90,240 C120,230 180,230 210,240" 
+          stroke="#ffd700" 
+          strokeWidth="4" 
+          fill="none" 
+        />
+          
+        {/* Data de fundação */}
+        <text x="142" y="290" fontFamily="Arial" fontSize="16" fontWeight="bold" fill="#223991">2014</text>
       </svg>
+    </div>
+  );
+}
+
+// Versão maior do brasão para uso em cabeçalhos/destaques
+export function PMBrasaoLarge() {
+  return (
+    <div className="relative">
+      {/* Círculo decorativo ao redor do brasão */}
+      <div className="absolute inset-0 rounded-full bg-gradient-to-b from-blue-100 to-white shadow-lg border-2 border-blue-200"></div>
+      
+      <div className="relative z-10 p-1">
+        <PMBrasao />
+      </div>
     </div>
   );
 }

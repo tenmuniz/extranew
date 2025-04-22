@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Toaster } from "@/components/ui/toaster";
-import { PMBrasao } from "@/components/ui/pm-logo";
+import { PMBrasao, PMBrasaoLarge } from "@/components/ui/pm-logo";
 
 interface LayoutProps {
   children: ReactNode;
@@ -17,7 +17,7 @@ export function Layout({ children }: LayoutProps) {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="mr-4 relative">
+              <div className="mr-4 relative w-16 h-16">
                 <PMBrasao />
               </div>
               <div>
