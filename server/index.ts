@@ -3,6 +3,10 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { db, pool } from "./db";
 import { initializeDatabase, validateDatabaseIntegrity } from "./db-init";
+import fs from 'fs';
+import path from 'path';
+import * as dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
 
 // Importações para migrações e schema
 import { drizzle } from "drizzle-orm/neon-serverless";
@@ -48,6 +52,28 @@ app.use((req, res, next) => {
   try {
     console.log("[Sistema] Iniciando a aplicação...");
     console.log(`[Sistema] Ambiente: ${process.env.NODE_ENV || 'não definido'}`);
+    
+    // Carregar variáveis de ambiente do arquivo .env.production em ambiente de produção
+    if (process.env.NODE_ENV === 'production') {
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      const envPath = path.resolve(__dirname, '..', '.env.production');
+      
+      if (fs.existsSync(envPath)) {
+        console.log(`[Sistema] Carregando variáveis de ambiente de ${envPath}`);
+        try {
+          const envConfig = dotenv.parse(fs.readFileSync(envPath));
+          for (const key in envConfig) {
+            process.env[key] = envConfig[key];
+          }
+          console.log('[Sistema] Variáveis de ambiente carregadas com sucesso');
+        } catch (error) {
+          console.error('[Sistema] Erro ao carregar variáveis de ambiente:', error);
+        }
+      } else {
+        console.log('[Sistema] Arquivo .env.production não encontrado, usando variáveis existentes');
+      }
+    }
     
     // Número máximo de tentativas de conexão com o banco
     const maxRetries = process.env.NODE_ENV === 'production' ? 5 : 2;
