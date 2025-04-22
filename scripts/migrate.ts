@@ -1,9 +1,15 @@
-import { db } from '../server/db';
+import { db, isDatabaseEnabled } from '../server/db';
 import { personnel } from '../shared/schema';
 
 // Script para migrar o banco de dados
 async function runMigrations() {
   console.log('🔄 Verificando e aplicando migrações...');
+  
+  // Verifica se temos uma conexão de banco de dados disponível
+  if (!isDatabaseEnabled || !db) {
+    console.error('❌ Não há conexão com banco de dados disponível. Verifique a variável DATABASE_URL.');
+    process.exit(1);
+  }
   
   try {
     // Verifica se o banco existe consultando uma tabela

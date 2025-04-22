@@ -9,6 +9,7 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, between, and, gte, lte } from "drizzle-orm";
+import { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 // Interface for storage operations
 export interface IStorage {
@@ -249,22 +250,33 @@ export class MemStorage implements IStorage {
 // Database implementation
 
 export class DatabaseStorage implements IStorage {
+  // Verifica se o db está disponível
+  private verifyDb(): void {
+    if (!db) {
+      throw new Error('Database connection not available. Make sure DATABASE_URL is set.');
+    }
+  }
+
   async getAllPersonnel(): Promise<Personnel[]> {
-    return await db.select().from(personnel);
+    this.verifyDb();
+    return await db!.select().from(personnel);
   }
 
   async getPersonnel(id: number): Promise<Personnel | undefined> {
-    const [result] = await db.select().from(personnel).where(eq(personnel.id, id));
+    this.verifyDb();
+    const [result] = await db!.select().from(personnel).where(eq(personnel.id, id));
     return result;
   }
 
   async createPersonnel(data: InsertPersonnel): Promise<Personnel> {
-    const [result] = await db.insert(personnel).values(data).returning();
+    this.verifyDb();
+    const [result] = await db!.insert(personnel).values(data).returning();
     return result;
   }
 
   async updatePersonnel(id: number, data: Partial<InsertPersonnel>): Promise<Personnel | undefined> {
-    const [result] = await db
+    this.verifyDb();
+    const [result] = await db!
       .update(personnel)
       .set(data)
       .where(eq(personnel.id, id))
@@ -273,8 +285,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deletePersonnel(id: number): Promise<boolean> {
+    this.verifyDb();
     // Due to cascade delete in the schema, assignments will be automatically deleted
-    const [result] = await db
+    const [result] = await db!
       .delete(personnel)
       .where(eq(personnel.id, id))
       .returning();
@@ -282,10 +295,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllAssignments(): Promise<Assignment[]> {
-    return await db.select().from(assignments);
+    this.verifyDb();
+    return await db!.select().from(assignments);
   }
 
   async getAssignmentsByDateRange(startDate: Date, endDate: Date): Promise<Assignment[]> {
+    this.verifyDb();
     const start = new Date(startDate);
     start.setHours(0, 0, 0, 0);
     
@@ -293,7 +308,7 @@ export class DatabaseStorage implements IStorage {
     end.setHours(23, 59, 59, 999);
 
     // Use string for date comparison for PostgreSQL
-    return await db
+    return await db!
       .select()
       .from(assignments)
       .where(
@@ -305,20 +320,22 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAssignmentsByDate(date: Date): Promise<Assignment[]> {
+    this.verifyDb();
     const targetDate = new Date(date);
     targetDate.setHours(0, 0, 0, 0);
     
     // For PostgreSQL, compare date as string
     const dateString = targetDate.toISOString().split('T')[0]; // YYYY-MM-DD
     
-    return await db
+    return await db!
       .select()
       .from(assignments)
       .where(eq(assignments.date, dateString));
   }
 
   async createAssignment(data: InsertAssignment): Promise<Assignment> {
-    const [result] = await db
+    this.verifyDb();
+    const [result] = await db!
       .insert(assignments)
       .values(data)
       .returning();
@@ -326,7 +343,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteAssignment(id: number): Promise<boolean> {
-    const [result] = await db
+    this.verifyDb();
+    const [result] = await db!
       .delete(assignments)
       .where(eq(assignments.id, id))
       .returning();
@@ -334,13 +352,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAssignmentsCountForDay(date: Date, operationType: OperationType): Promise<number> {
+    this.verifyDb();
     const targetDate = new Date(date);
     targetDate.setHours(0, 0, 0, 0);
     
     // For PostgreSQL, compare date as string
     const dateString = targetDate.toISOString().split('T')[0]; // YYYY-MM-DD
     
-    const result = await db
+    const result = await db!
       .select()
       .from(assignments)
       .where(
@@ -356,6 +375,11 @@ export class DatabaseStorage implements IStorage {
 
 // Create a function to initialize the database with sample data if empty
 export async function initializeDatabaseWithSampleData() {
+  if (!db) {
+    console.log('Database connection not available. Cannot initialize sample data.');
+    return;
+  }
+
   const existingPersonnel = await db.select().from(personnel);
   
   if (existingPersonnel.length === 0) {
@@ -452,8 +476,8 @@ export async function initializeDatabaseWithSampleData() {
   }
 }
 
-// Determine which storage to use based on environment
-const isDatabaseEnabled = !!process.env.DATABASE_URL;
+// Import DB configuration
+import { isDatabaseEnabled } from "./db";
 
 export const storage = isDatabaseEnabled 
   ? new DatabaseStorage() 
