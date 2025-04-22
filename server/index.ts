@@ -1,6 +1,13 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { db } from "./db";
+import { initializeDatabase } from "./db-init";
+
+// Executar push do schema para o banco de dados na inicialização
+import { drizzle } from "drizzle-orm/neon-serverless";
+import { migrate } from "drizzle-orm/neon-serverless/migrator";
+import * as schema from "@shared/schema";
 
 const app = express();
 app.use(express.json());
@@ -37,6 +44,14 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  try {
+    // Executar push do schema e inicializar banco de dados
+    await initializeDatabase();
+    console.log("[DB] Banco de dados inicializado com sucesso");
+  } catch (error) {
+    console.error("[DB] Erro ao inicializar o banco de dados:", error);
+  }
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

@@ -1,11 +1,11 @@
 import { db } from "./db";
 import { personnel } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 // Função para inicializar o banco de dados com os dados iniciais de pessoal
 export async function initializeDatabase() {
   // Verificar se já existem dados no banco
-  const existingPersonnel = await db.select({ count: db.fn.count() }).from(personnel);
+  const existingPersonnel = await db.select({ count: sql`count(*)` }).from(personnel);
   
   if (parseInt(existingPersonnel[0].count as string) > 0) {
     console.log("[DB] O banco de dados já está inicializado.");
@@ -14,7 +14,13 @@ export async function initializeDatabase() {
   
   console.log("[DB] Inicializando o banco de dados com dados de pessoal...");
   
-  const samplePersonnel = [
+  // Definindo explicitamente os tipos para garantir compatibilidade
+  const samplePersonnel: { 
+    name: string; 
+    rank: "SD" | "CB" | "3SGT" | "2SGT" | "1SGT" | "SUBTEN" | "TEN" | "1TEN" | "CAP"; 
+    extras: number;
+    platoon: "ALFA" | "BRAVO" | "CHARLIE" | "EXPEDIENTE";
+  }[] = [
     // Capitão e oficiais primeiro (por ordem hierárquica - EXPEDIENTE)
     { name: "CAP MUNIZ", rank: "CAP", extras: 0, platoon: "EXPEDIENTE" },
     { name: "1º TEN QOPM MONTEIRO", rank: "1TEN", extras: 0, platoon: "EXPEDIENTE" },
