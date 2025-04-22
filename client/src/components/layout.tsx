@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { Toaster } from "@/components/ui/toaster";
-import { PMBrasao } from "@/components/ui/pm-logo";
 
 interface LayoutProps {
   children: ReactNode;
@@ -17,9 +16,6 @@ export function Layout({ children }: LayoutProps) {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="mr-4 relative">
-                <PMBrasao />
-              </div>
               <div>
                 <h1 className="font-heading font-bold text-2xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-white" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.2)" }}>
                   Sistema de Escala
