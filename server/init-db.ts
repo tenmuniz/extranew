@@ -1,7 +1,12 @@
-import { db } from "./db";
+import { db, pool } from "./db";
 import { personnel, assignments } from "@shared/schema";
 import { sql } from "drizzle-orm";
 import { DatabaseStorage } from "./database-storage";
+
+// Flag para controlar tentativas de inicialização
+let initializationAttempts = 0;
+const MAX_ATTEMPTS = 5;
+const RETRY_DELAY_MS = 3000;
 
 // Função para inicializar o banco de dados
 export async function initializeDatabase(): Promise<void> {

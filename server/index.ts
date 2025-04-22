@@ -65,33 +65,25 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Attempt to serve the app on port 5000, but fallback to other ports if needed
-  const tryListen = (initialPort: number, maxAttempts: number = 3) => {
-    let attempts = 0;
-    
-    const attemptListen = (currentPort: number) => {
-      attempts++;
-      server.listen({
-        port: currentPort,
-        host: "0.0.0.0",
-        reusePort: true,
-      }, () => {
-        log(`serving on port ${currentPort}`);
-      }).on('error', (err: any) => {
-        if (err.code === 'EADDRINUSE' && attempts < maxAttempts) {
-          const nextPort = currentPort + 1;
-          log(`Port ${currentPort} is in use, trying port ${nextPort}...`);
-          // Try the next port
-          attemptListen(nextPort);
-        } else {
-          log(`Failed to start server: ${err.message}`);
-          throw err;
-        }
-      });
-    };
-    
-    attemptListen(initialPort);
+  // Attempt to serve the app on the PORT environment variable or default to 5000
+  const PORT = process.env.PORT || 5000;
+  
+  const startServer = () => {
+    server.listen({
+      port: PORT,
+      host: "0.0.0.0",
+      reusePort: true,
+    }, () => {
+      log(`Servidor rodando na porta ${PORT}`);
+      log(`Modo: ${process.env.NODE_ENV || 'development'}`);
+      if (process.env.DATABASE_URL) {
+        log('Banco de dados PostgreSQL conectado');
+      }
+    }).on('error', (err: any) => {
+      log(`Falha ao iniciar o servidor: ${err.message}`);
+      throw err;
+    });
   };
   
-  tryListen(5000);
+  startServer();
 })();
