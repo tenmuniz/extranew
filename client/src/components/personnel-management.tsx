@@ -68,7 +68,7 @@ export function PersonnelManagement({
     try {
       if (isAdding) {
         // Creating new personnel
-        await apiRequest('/api/personnel', 'POST', {
+        await apiRequest('POST', '/api/personnel', {
           name,
           platoon: platoon || null,
           rank: determineBestRank(name) // Derive rank from name automatically
@@ -80,7 +80,7 @@ export function PersonnelManagement({
         });
       } else if (isEditing && selectedPerson?.id) {
         // Updating existing personnel
-        await apiRequest(`/api/personnel/${selectedPerson.id}`, 'PUT', {
+        await apiRequest('PUT', `/api/personnel/${selectedPerson.id}`, {
           name,
           platoon: platoon || null,
           // Keep the existing rank
@@ -116,7 +116,7 @@ export function PersonnelManagement({
 
     if (window.confirm(`Tem certeza que deseja excluir ${selectedPerson.name}?`)) {
       try {
-        await apiRequest(`/api/personnel/${selectedPerson.id}`, 'DELETE');
+        await apiRequest('DELETE', `/api/personnel/${selectedPerson.id}`);
 
         toast({
           title: "Sucesso",
