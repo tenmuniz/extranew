@@ -51,8 +51,13 @@ export function ConflictsDashboard({
     const currentMonthFilter = (assignment: Assignment) => {
       if (currentMonth === undefined || currentYear === undefined) return true;
       
-      const date = new Date(assignment.date);
-      return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+      // Extrair e processar a data corretamente para evitar problemas de fuso horário
+      const dateStr = assignment.date.split('T')[0]; // Extrai apenas a parte da data (YYYY-MM-DD)
+      const [yearStr, monthStr, dayStr] = dateStr.split('-');
+      const year = parseInt(yearStr);
+      const month = parseInt(monthStr) - 1; // Mês em JavaScript é 0-indexado
+      
+      return month === currentMonth && year === currentYear;
     };
 
     // Array para armazenar as atribuições que representam conflitos
@@ -63,7 +68,15 @@ export function ConflictsDashboard({
       const person = personnel.find(p => p.id === assignment.personnelId);
       if (!person || !person.id) return;
       
-      const assignmentDate = new Date(assignment.date);
+      // Extrair e processar a data corretamente para evitar problemas de fuso horário
+      const dateStr = assignment.date.split('T')[0]; // Extrai apenas a parte da data (YYYY-MM-DD)
+      const [yearStr, monthStr, dayStr] = dateStr.split('-');
+      const year = parseInt(yearStr);
+      const month = parseInt(monthStr) - 1; // Mês em JavaScript é 0-indexado
+      const day = parseInt(dayStr);
+      
+      // Criar data sem ajustes de fuso horário
+      const assignmentDate = new Date(year, month, day);
       
       // Verificar qual guarnição está de serviço no dia da operação
       const activeGuarnition = getActiveGuarnitionForDay(assignmentDate);
@@ -114,13 +127,20 @@ export function ConflictsDashboard({
       const personWithConflict = personnel.find(p => p.id === op.personnelId);
       
       // Converter a data para objeto Date para ordenação posterior
-      const dateObj = new Date(op.date);
+      // Ajuste para garantir que use a data correta sem problemas de fuso horário
+      const dateStr = op.date.split('T')[0]; // Extrai apenas a parte da data (YYYY-MM-DD)
+      const [yearStr, monthStr, dayStr] = dateStr.split('-');
+      const year = parseInt(yearStr);
+      const month = parseInt(monthStr) - 1; // Mês em JavaScript é 0-indexado
+      const day = parseInt(dayStr);
+      
+      // Criar a data com os componentes individuais para evitar problemas de fuso horário
+      const dateObj = new Date(year, month, day);
       
       // Formatar a data para o padrão brasileiro (DD/MM/YYYY)
-      const day = dateObj.getDate().toString().padStart(2, '0');
-      const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-      const year = dateObj.getFullYear();
-      const formattedDate = `${day}/${month}/${year}`;
+      const formattedDay = day.toString().padStart(2, '0');
+      const formattedMonth = (month + 1).toString().padStart(2, '0');
+      const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
       
       // Adicionar detalhes do conflito incluindo a guarnição em serviço
       conflictDetailsMap[op.personnelId].details.push({

@@ -87,13 +87,20 @@ export function NewReportModal({
         }
         
         // Converter a data para objeto Date para ordenação posterior
-        const dateObj = new Date(assignment.date);
+        // Ajuste para garantir que use a data correta sem problemas de fuso horário
+        const dateStr = assignment.date.split('T')[0]; // Extrai apenas a parte da data (YYYY-MM-DD)
+        const [yearStr, monthStr, dayStr] = dateStr.split('-');
+        const year = parseInt(yearStr);
+        const month = parseInt(monthStr) - 1; // Mês em JavaScript é 0-indexado
+        const day = parseInt(dayStr);
+        
+        // Criar a data com os componentes individuais para evitar problemas de fuso horário
+        const dateObj = new Date(year, month, day);
         
         // Formatar a data para o padrão brasileiro (DD/MM/YYYY)
-        const day = dateObj.getDate().toString().padStart(2, '0');
-        const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-        const year = dateObj.getFullYear();
-        const formattedDate = `${day}/${month}/${year}`;
+        const formattedDay = day.toString().padStart(2, '0');
+        const formattedMonth = (month + 1).toString().padStart(2, '0');
+        const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
         
         // Adicionar detalhes da operação
         personData.details.push({
