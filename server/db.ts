@@ -3,8 +3,15 @@ import { drizzle } from 'drizzle-orm/neon-serverless';
 import ws from "ws";
 import * as schema from "@shared/schema";
 
+// Definir a função personalizada do WebSocket para produção
+// Esta abordagem permite que a conexão funcione tanto em desenvolvimento quanto em produção
+const customWebSocketConstructor = (url: string) => {
+  console.log(`[DB] Criando WebSocket para: ${url}`);
+  return new ws(url);
+};
+
 // Configure WebSocket for Neon Database
-neonConfig.webSocketConstructor = ws;
+neonConfig.webSocketConstructor = customWebSocketConstructor;
 
 // Environment check
 const isDevelopment = process.env.NODE_ENV === 'development';
