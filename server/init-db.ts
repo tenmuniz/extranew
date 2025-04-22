@@ -39,7 +39,7 @@ async function checkTablesExist(): Promise<boolean> {
       );
     `);
     
-    return result.rows[0].exists;
+    return result.rows[0]?.exists === true;
   } catch (error) {
     console.error("Erro ao verificar tabelas:", error);
     return false;
@@ -83,8 +83,13 @@ async function seedInitialData(): Promise<void> {
   try {
     const dbStorage = new DatabaseStorage();
     
-    // Inserir pessoal militar
-    const samplePersonnel = [
+    // Inserir pessoal militar com tipagem explícita para garantir conformidade
+    const samplePersonnel: {
+      name: string; 
+      rank: "SD" | "CB" | "3SGT" | "2SGT" | "1SGT" | "SUBTEN" | "TEN" | "1TEN" | "CAP"; 
+      extras: number; 
+      platoon: "ALFA" | "BRAVO" | "CHARLIE" | "EXPEDIENTE";
+    }[] = [
       // Capitão e oficiais primeiro (por ordem hierárquica - EXPEDIENTE)
       { name: "CAP MUNIZ", rank: "CAP", extras: 0, platoon: "EXPEDIENTE" },
       { name: "1º TEN QOPM MONTEIRO", rank: "1TEN", extras: 0, platoon: "EXPEDIENTE" },

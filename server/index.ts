@@ -38,6 +38,14 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  try {
+    // Inicializar o banco de dados antes de tudo
+    await initializeDatabase();
+    console.log("Banco de dados inicializado com sucesso!");
+  } catch (error) {
+    console.error("Erro ao inicializar banco de dados:", error);
+  }
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
