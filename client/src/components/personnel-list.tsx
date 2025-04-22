@@ -1,15 +1,47 @@
 import { Personnel } from "@shared/schema";
 import { PersonnelCard } from "@/components/ui/personnel-card";
+import { useState, useEffect, useRef } from 'react';
+import { Search } from "lucide-react"; 
 
 interface PersonnelListProps {
   personnel: Personnel[];
 }
 
 export function PersonnelList({ personnel }: PersonnelListProps) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredPersonnel, setFilteredPersonnel] = useState<Personnel[]>(personnel);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Atualizar lista filtrada quando o termo de busca mudar
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setFilteredPersonnel(personnel);
+    } else {
+      const normalized = searchTerm.trim().toLowerCase();
+      const filtered = personnel.filter((person) => {
+        // Buscar por nome, posto/graduação ou pelotão
+        return (
+          person.name.toLowerCase().includes(normalized) ||
+          person.rank.toLowerCase().includes(normalized) ||
+          person.platoon.toLowerCase().includes(normalized)
+        );
+      });
+      setFilteredPersonnel(filtered);
+    }
+  }, [searchTerm, personnel]);
+
+  // Limpar campo de busca
+  const clearSearch = () => {
+    setSearchTerm('');
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  };
+
   return (
     <div className="lg:w-1/4">
       <div className="bg-white rounded-lg shadow-md p-4 border border-[#E7EBF0]">
-        <h3 className="font-heading font-bold text-xl text-[#1A3A5F] mb-4 flex items-center border-b pb-3">
+        <h3 className="font-heading font-bold text-xl text-[#1A3A5F] mb-3 flex items-center border-b pb-3">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6 mr-2 text-[#4A6741]"
@@ -23,17 +55,47 @@ export function PersonnelList({ personnel }: PersonnelListProps) {
           </span>
         </h3>
         
-        {personnel.length === 0 ? (
+        {/* Campo de busca */}
+        <div className="relative mb-3 flex items-center">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+          <input
+            ref={searchInputRef}
+            type="text"
+            placeholder="Buscar militar..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 pr-8 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A6741] focus:border-transparent"
+          />
+          {searchTerm && (
+            <button
+              onClick={clearSearch}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              aria-label="Limpar busca"
+            >
+              ×
+            </button>
+          )}
+        </div>
+        
+        {filteredPersonnel.length === 0 ? (
           <div className="p-4 text-center text-gray-500 border border-dashed rounded-lg">
-            Nenhum militar disponível
+            {searchTerm 
+              ? `Nenhum militar encontrado para "${searchTerm}"` 
+              : "Nenhum militar disponível"}
           </div>
         ) : (
-          <div className="space-y-3 max-h-[calc(100vh-240px)] overflow-y-auto pr-1" id="personnel-list">
-            {personnel.map((person) => (
+          <div className="space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto pr-1" id="personnel-list">
+            {filteredPersonnel.map((person) => (
               <PersonnelCard key={person.id} personnel={person} />
             ))}
           </div>
         )}
+        
+        {/* Contador de resultados */}
+        <div className="mt-2 text-xs text-gray-500 text-right">
+          {filteredPersonnel.length} {filteredPersonnel.length === 1 ? 'militar' : 'militares'} 
+          {searchTerm && ` encontrado${filteredPersonnel.length !== 1 ? 's' : ''}`}
+        </div>
       </div>
     </div>
   );
