@@ -18,7 +18,8 @@ export function Layout({ children }: LayoutProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <div className="mr-4 relative">
-                <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-white/50 shadow-lg bg-white">
+                <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-white/50 shadow-lg flex items-center justify-center" 
+                     style={{background: 'radial-gradient(circle, #f0f9ff 0%, #ffffff 100%)'}}>
                   <PMBrasao />
                 </div>
               </div>
