@@ -1,16 +1,10 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { db, pool } from "./db";
-import { initializeDatabase, validateDatabaseIntegrity } from "./db-init";
 import fs from 'fs';
 import path from 'path';
 import * as dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
-
-// Importações para schema
-import * as schema from "@shared/schema";
-import { sql } from "drizzle-orm";
 
 const app = express();
 app.use(express.json());
@@ -73,54 +67,8 @@ app.use((req, res, next) => {
       }
     }
     
-    // Número máximo de tentativas de conexão com o banco
-    const maxRetries = process.env.NODE_ENV === 'production' ? 5 : 2;
-    let retryCount = 0;
-    let dbInitialized = false;
-    
-    // Função para tentativa de inicialização do banco com retry
-    const tryInitDatabase = async () => {
-      try {
-        // Verificar a conexão com o banco primeiro
-        const client = await pool.connect();
-        console.log("[DB] Conexão com o banco estabelecida");
-        client.release();
-        
-        // Executar push do schema e inicializar banco de dados
-        await initializeDatabase();
-        console.log("[DB] Banco de dados inicializado com sucesso");
-
-        // Verificar e corrigir a integridade dos dados
-        await validateDatabaseIntegrity();
-        
-        // Indicar sucesso
-        dbInitialized = true;
-      } catch (dbError) {
-        retryCount++;
-        console.error(`[DB] Tentativa ${retryCount}/${maxRetries} - Erro na inicialização do banco:`, dbError);
-        
-        if (retryCount < maxRetries) {
-          // Tempo de espera progressivo entre tentativas (1s, 2s, 4s, ...)
-          const waitTime = Math.min(1000 * Math.pow(2, retryCount - 1), 10000);
-          console.log(`[DB] Tentando reconectar em ${waitTime/1000} segundos...`);
-          await new Promise(resolve => setTimeout(resolve, waitTime));
-          return tryInitDatabase(); // Tentativa recursiva
-        } else {
-          console.error("[DB] Todas as tentativas de conexão falharam");
-          // Em produção, podemos continuar mesmo com falha, já que o app pode reiniciar automaticamente
-          if (process.env.NODE_ENV === 'production') {
-            console.log("[DB] Continuando execução da aplicação, mas banco de dados pode não estar acessível");
-          }
-        }
-      }
-    };
-    
-    // Iniciar processo de inicialização
-    await tryInitDatabase();
-    
-    if (!dbInitialized && process.env.NODE_ENV !== 'production') {
-      console.error("[Sistema] Não foi possível inicializar o banco de dados após múltiplas tentativas.");
-    }
+    // Usando armazenamento em memória, não é necessário inicializar banco de dados
+    console.log("[Sistema] Usando armazenamento em memória");
   } catch (startupError) {
     console.error("[Sistema] Erro crítico na inicialização:", startupError);
   }
