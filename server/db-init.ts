@@ -1,6 +1,7 @@
 import { db, pool } from "./db";
 import { personnel, assignments, Rank, Platoon } from "@shared/schema";
 import { eq, sql } from "drizzle-orm";
+import { runMigration } from "./migrate";
 
 // Função para inicializar o banco de dados com dados iniciais
 export async function initializeDatabase() {
@@ -11,6 +12,10 @@ export async function initializeDatabase() {
     const client = await pool.connect();
     client.release();
     console.log("[DB] Conexão com o banco de dados estabelecida com sucesso.");
+    
+    // Executar as migrações para criar as tabelas
+    console.log("[DB] Executando migrações para criar as tabelas...");
+    await runMigration();
     
     // Verificar se a tabela personnel existe
     console.log("[DB] Verificando se o banco já está inicializado...");
