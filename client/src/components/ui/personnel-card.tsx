@@ -193,28 +193,32 @@ export function PersonnelCard({
           borderLeft: `3px solid ${personnel.platoon ? getGarrisonColor(personnel.platoon) : "#1A3A5F"}`,
         }}
       >
-        <div className="flex items-center justify-between w-full">
+        <div className="flex flex-col w-full">
           {/* Nome do militar com o rank como prefixo e símbolo */}
-          <div className="flex items-center space-x-1.5 overflow-hidden">
-            <div className="flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center">
+          <div className="flex items-center mb-1">
+            <div className="flex-shrink-0 w-5 h-5 mr-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center">
               <div className="text-white text-[9px]">{getRankSymbols(personnel.rank)}</div>
             </div>
-            <div className="truncate">
-              <span className="font-medium text-gray-800">{personnel.name}</span>
+            <div className="flex-1">
+              <p className="font-medium text-gray-800 text-xs leading-tight break-words">
+                {personnel.name}
+              </p>
             </div>
           </div>
           
           {/* Botão de remover */}
           {onRemove && (
-            <button 
-              className="ml-1 flex-shrink-0 w-5 h-5 rounded-full bg-white/80 flex items-center justify-center text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors duration-150 shadow-sm"
-              onClick={onRemove}
-              aria-label="Remover"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-            </button>
+            <div className="flex justify-end mt-0.5">
+              <button 
+                className="flex-shrink-0 w-5 h-5 rounded-full bg-white/80 flex items-center justify-center text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors duration-150 shadow-sm"
+                onClick={onRemove}
+                aria-label="Remover"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -264,7 +268,9 @@ export function PersonnelCard({
             <div className="text-white">{getRankSymbols(personnel.rank)}</div>
           </div>
           <div className="w-full">
-            <p className="font-bold text-gray-900 text-sm leading-tight">{personnel.name}</p>
+            <p className="font-bold text-gray-900 text-sm leading-tight break-words">
+              {personnel.name}
+            </p>
             <p className="text-xs text-gray-600 mt-0.5">
               {getRankFullName(personnel.rank)}
             </p>

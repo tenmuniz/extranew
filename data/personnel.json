@@ -10,28 +10,28 @@
     "id": 2,
     "name": "1º TEN QOPM MONTEIRO",
     "rank": "1TEN",
-    "extras": 0,
+    "extras": 1,
     "platoon": "EXPEDIENTE"
   },
   {
     "id": 3,
     "name": "TEN VANILSON",
     "rank": "TEN",
-    "extras": 0,
+    "extras": 2,
     "platoon": "EXPEDIENTE"
   },
   {
     "id": 4,
     "name": "SUB TEN ANDRÉ",
     "rank": "SUBTEN",
-    "extras": 0,
+    "extras": 2,
     "platoon": "EXPEDIENTE"
   },
   {
     "id": 5,
     "name": "1º SGT PM OLIMAR",
     "rank": "1SGT",
-    "extras": 0,
+    "extras": 1,
     "platoon": "BRAVO"
   },
   {
