@@ -597,19 +597,10 @@ export function NewReportModal({
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] flex items-center justify-center z-50 overflow-auto">
-      <div id="report-content" className="bg-[#F8FAFC] rounded-xl shadow-2xl w-[90%] max-w-5xl max-h-[90vh] overflow-auto">
-        <div className="relative p-6">
-          <div className="absolute right-6 top-6 flex flex-col items-end gap-3">
-            <button 
-              onClick={onClose}
-              className="bg-gradient-to-r from-[#1A3A5F] to-[#3066BE] hover:shadow-xl text-white rounded-lg px-3 py-2 shadow-md transition-all duration-300 flex items-center text-sm"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              <span className="font-medium">Fechar Relatório</span>
-            </button>
-            
+      <div id="report-content" className="bg-[#F8FAFC] rounded-xl shadow-2xl w-full max-w-7xl h-[95vh] overflow-hidden flex flex-col">
+        <div className="bg-[#1A3A5F] text-white py-4 px-6 flex justify-between items-center shadow-md">
+          <h2 className="text-xl md:text-2xl font-bold">Relatório de Operações</h2>
+          <div className="flex items-center gap-3">
             <button 
               onClick={() => handleGeneratePDF(activeTab !== 'geral' ? activeTab : undefined)}
               className="bg-gradient-to-r from-[#4A6741] to-[#6BA368] hover:shadow-xl text-white rounded-lg px-3 py-2 shadow-md transition-all duration-300 flex items-center text-sm"
@@ -619,7 +610,20 @@ export function NewReportModal({
               </svg>
               <span className="font-medium">Exportar PDF</span>
             </button>
+            
+            <button 
+              onClick={onClose}
+              className="bg-gradient-to-r from-[#FF416C] to-[#FF4B2B] hover:shadow-lg text-white rounded-lg px-4 py-2 shadow-md transition-all duration-300 flex items-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <span className="font-medium">Voltar ao Calendário</span>
+            </button>
           </div>
+        </div>
+        
+        <div className="relative p-6 overflow-auto flex-1">
           <div className="flex justify-between items-start mb-6">
             <div>
               <h1 className="text-4xl font-bold bg-gradient-to-r from-[#1A3A5F] to-[#4A6741] bg-clip-text text-transparent mb-2">

@@ -17,14 +17,14 @@
     "id": 3,
     "name": "TEN VANILSON",
     "rank": "TEN",
-    "extras": 2,
+    "extras": 3,
     "platoon": "EXPEDIENTE"
   },
   {
     "id": 4,
     "name": "SUB TEN ANDRÉ",
     "rank": "SUBTEN",
-    "extras": 2,
+    "extras": 1,
     "platoon": "EXPEDIENTE"
   },
   {
