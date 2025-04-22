@@ -224,25 +224,14 @@ export function ScheduleCalendar({
   return (
     <div className="lg:w-3/4">
       <div className="bg-white rounded-lg shadow-md p-4">        
-        {/* Day of week headers */}
-        <div className="grid grid-cols-7 gap-2 mb-4">
-          <div className="text-center font-bold text-[#1A3A5F] p-2 border-b-2 border-[#1A3A5F]/20">Dom</div>
-          <div className="text-center font-bold text-[#1A3A5F] p-2 border-b-2 border-[#1A3A5F]/20">Seg</div>
-          <div className="text-center font-bold text-[#1A3A5F] p-2 border-b-2 border-[#1A3A5F]/20">Ter</div>
-          <div className="text-center font-bold text-[#1A3A5F] p-2 border-b-2 border-[#1A3A5F]/20">Qua</div>
-          <div className="text-center font-bold text-[#1A3A5F] p-2 border-b-2 border-[#1A3A5F]/20">Qui</div>
-          <div className="text-center font-bold text-[#1A3A5F] p-2 border-b-2 border-[#1A3A5F]/20">Sex</div>
-          <div className="text-center font-bold text-[#1A3A5F] p-2 border-b-2 border-[#1A3A5F]/20">Sáb</div>
+        {/* Título do mês e ano */}
+        <div className="text-center font-bold text-xl text-[#1A3A5F] p-2 mb-4 border-b-2 border-[#1A3A5F]/20">
+          Escalas para {new Date(currentYear, currentMonth, 1).toLocaleDateString('pt-BR', {month: 'long', year: 'numeric'}).charAt(0).toUpperCase() + new Date(currentYear, currentMonth, 1).toLocaleDateString('pt-BR', {month: 'long', year: 'numeric'}).slice(1)}
         </div>
         
-        {/* Calendar grid - grid flow para organizar os dias sequencialmente */}
+        {/* Calendar grid - grid simples sem alinhamento com dias da semana */}
         <div id="calendar-grid" className="grid grid-cols-7 auto-rows-fr gap-2">
-          {/* Adicionar espaços vazios para alinhar com os dias da semana corretos */}
-          {Array.from({ length: new Date(currentYear, currentMonth, 1).getDay() }).map((_, i) => (
-            <div key={`empty-${i}`} className="h-24 invisible"></div>
-          ))}
-          
-          {/* Dias do mês */}
+          {/* Dias do mês - começando sempre no primeiro card */}
           {calendarDays.map((day, index) => {
             const dayAssignments = getAssignmentsForDate(day);
             const disabled = isDayDisabled(day);
