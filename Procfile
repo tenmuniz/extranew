@@ -1,2 +1,2 @@
-# Nenhuma etapa de release, pois será gerenciada após o deploy inicial
-web: npm run build && npm start
+# Formato específico para o Railway
+web: node -r ./setup-environment.js dist/server/index.js
