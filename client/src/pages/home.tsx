@@ -192,7 +192,7 @@ export default function Home() {
       </div>
 
       {/* Calendar and Personnel List */}
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col-reverse lg:flex-row gap-4 sm:gap-6">
         <PersonnelList personnel={sortedPersonnel} />
         <ScheduleCalendar
           currentYear={currentYear}
