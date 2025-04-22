@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Toaster } from "@/components/ui/toaster";
-import brasaoPMPA from "../assets/images/pmpa-brasao.jpg";
+import { PMPABrasao } from "@/components/ui/pmpa-brasao";
 
 interface LayoutProps {
   children: ReactNode;
@@ -18,19 +18,7 @@ export function Layout({ children }: LayoutProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <div className="mr-4 relative">
-                <div className="h-20 w-20 flex items-center justify-center">
-                  <div className="relative h-full w-full">
-                    <img 
-                      src={brasaoPMPA} 
-                      alt="Brasão da Polícia Militar do Pará" 
-                      className="h-full w-full object-contain drop-shadow-lg"
-                      style={{ 
-                        mixBlendMode: 'multiply',
-                        filter: 'contrast(1.1) brightness(1.1)'
-                      }}
-                    />
-                  </div>
-                </div>
+                <PMPABrasao />
               </div>
               <div>
                 <h1 className="font-heading font-bold text-2xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-800 to-blue-600">
