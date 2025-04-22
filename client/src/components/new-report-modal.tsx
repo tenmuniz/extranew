@@ -16,7 +16,7 @@ type PersonnelWithExtras = Personnel & {
   operationsCount: number;
   pmfCount: number;
   escolaCount: number;
-  details: {date: string, operation: OperationType}[];
+  details: {date: string, dateObj: Date, operation: OperationType}[];
 }
 
 export function NewReportModal({
@@ -57,7 +57,7 @@ export function NewReportModal({
       operationsCount: number,
       pmfCount: number,
       escolaCount: number,
-      details: {date: string, operation: OperationType}[]
+      details: {date: string, dateObj: Date, operation: OperationType}[]
     }>();
     
     // Inicializar contador para cada pessoa
@@ -86,9 +86,13 @@ export function NewReportModal({
           personData.escolaCount += 1;
         }
         
+        // Converter a data para objeto Date para ordenação posterior
+        const dateObj = new Date(assignment.date);
+        
         // Adicionar detalhes da operação
         personData.details.push({
-          date: new Date(assignment.date).toLocaleDateString('pt-BR'),
+          date: dateObj.toLocaleDateString('pt-BR'),
+          dateObj,
           operation: assignment.operationType
         });
         
@@ -382,7 +386,11 @@ export function NewReportModal({
                   
                   <div className="max-h-[240px] overflow-y-auto pr-2">
                     <div className="space-y-4">
-                      {selectedPerson.details.map((detail, index) => (
+                      {[...selectedPerson.details]
+                        .sort((a, b) => (a.dateObj instanceof Date && b.dateObj instanceof Date) 
+                          ? a.dateObj.getTime() - b.dateObj.getTime() 
+                          : 0)
+                        .map((detail, index) => (
                         <div key={index} className="border rounded-lg overflow-hidden shadow-sm">
                           <div className={`py-3 px-4 text-white font-medium ${
                             detail.operation === 'PMF' 

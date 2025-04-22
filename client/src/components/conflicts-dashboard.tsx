@@ -17,7 +17,7 @@ type PersonnelWithConflicts = Personnel & {
   extras: number;
   pmfConflicts: number;
   escolaConflicts: number;
-  conflictDetails: {date: string, operation: OperationType, guarnition: string}[];
+  conflictDetails: {date: string, dateObj: Date, operation: OperationType, guarnition: string}[];
 };
 
 export function ConflictsDashboard({ 
@@ -84,7 +84,7 @@ export function ConflictsDashboard({
       count: number;
       pmfConflicts: number;
       escolaConflicts: number;
-      details: {date: string, operation: OperationType, guarnition: string}[];
+      details: {date: string, dateObj: Date, operation: OperationType, guarnition: string}[];
     };
     
     const conflictDetailsMap: Record<number, ConflictDetail> = {};
@@ -113,9 +113,13 @@ export function ConflictsDashboard({
       // Buscar o militar associado ao conflito
       const personWithConflict = personnel.find(p => p.id === op.personnelId);
       
+      // Converter a data para objeto Date para ordenação posterior
+      const dateObj = new Date(op.date);
+      
       // Adicionar detalhes do conflito incluindo a guarnição em serviço
       conflictDetailsMap[op.personnelId].details.push({
-        date: new Date(op.date).toLocaleDateString('pt-BR'),
+        date: dateObj.toLocaleDateString('pt-BR'),
+        dateObj, // Guardar o objeto Date para ordenação
         operation: op.operationType,
         guarnition: personWithConflict?.platoon || "Desconhecida"
       });
@@ -334,7 +338,11 @@ export function ConflictsDashboard({
                   </h3>
                   
                   <div className="space-y-4">
-                    {selectedPerson.conflictDetails.map((conflict, index) => (
+                    {[...selectedPerson.conflictDetails]
+                      .sort((a, b) => (a.dateObj instanceof Date && b.dateObj instanceof Date) 
+                        ? a.dateObj.getTime() - b.dateObj.getTime() 
+                        : 0)
+                      .map((conflict, index) => (
                       <div key={index} className="border rounded-lg overflow-hidden shadow-sm">
                         <div className={`py-3 px-4 text-white font-medium ${
                           conflict.operation === 'PMF' 
