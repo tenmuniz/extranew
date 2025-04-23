@@ -346,13 +346,17 @@ export function ScheduleCalendar({
                   if (!person) return null;
                   
                   return (
-                    <PersonnelCard
-                      key={assignment.id}
-                      personnel={person}
-                      isAssigned={true}
-                      isDraggable={false}
-                      onRemove={() => handleRemoveAssignment(assignment.id, person.name)}
-                    />
+                    <div key={assignment.id} className="touch-manipulation">
+                      <PersonnelCard
+                        personnel={person}
+                        isAssigned={true}
+                        isDraggable={false}
+                        onRemove={() => {
+                          console.log(`Iniciando remoção da designação: ${assignment.id} - ${person.name}`);
+                          handleRemoveAssignment(assignment.id, person.name);
+                        }}
+                      />
+                    </div>
                   );
                 })}
               </CalendarDay>
