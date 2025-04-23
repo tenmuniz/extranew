@@ -79,9 +79,9 @@ export function CalendarDay({
   return (
     <div
       className={cn(
-        "calendar-day rounded-xl min-h-[210px] p-0 overflow-hidden border transition-all duration-200 hover:shadow-lg relative",
+        "calendar-day aspect-square rounded-lg p-0 overflow-hidden border transition-all duration-200 hover:shadow-lg relative",
         isCurrentMonth 
-          ? "shadow-md border-[#E7EBF0] opacity-100" 
+          ? "shadow border-[#E7EBF0] opacity-100" 
           : "border-dashed border-gray-300 opacity-80",
         isDisabled && "cursor-not-allowed bg-opacity-30",
         isToday && "ring-2 ring-blue-500 ring-offset-2"
@@ -104,7 +104,7 @@ export function CalendarDay({
       
       {/* Header do card com dia e guarnição */}
       <div 
-        className="flex justify-between items-center px-3 py-2.5 text-white"
+        className="flex justify-between items-center px-2 py-1.5 text-white"
         style={{ 
           backgroundColor: guarnitionColor,
           boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
@@ -132,7 +132,7 @@ export function CalendarDay({
       {/* Container para os militares designados */}
       <div className={cn(
         "assigned-personnel px-2 pt-2 pb-1 relative",
-        !isDisabled && "min-h-[170px]"
+        !isDisabled && "flex-grow"
       )}>
         <div className="flex flex-col w-full gap-3 touch-manipulation">
           {children}

@@ -252,7 +252,7 @@ export function PersonnelCard({
   return (
     <div
       className={cn(
-        "personnel-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 flex flex-col w-full transform hover:-translate-y-1",
+        "personnel-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 flex flex-col w-full",
         isDraggable && "cursor-grab active:cursor-grabbing",
         "touch-manipulation" // Melhora interação em dispositivos touch
       )}
