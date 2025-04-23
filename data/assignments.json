@@ -63,13 +63,6 @@
     "createdAt": "2025-04-22T21:02:34.959Z"
   },
   {
-    "id": 18,
-    "personnelId": 3,
-    "operationType": "PMF",
-    "date": "2025-04-02",
-    "createdAt": "2025-04-22T21:06:24.249Z"
-  },
-  {
     "id": 20,
     "personnelId": 3,
     "operationType": "PMF",
