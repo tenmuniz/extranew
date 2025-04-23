@@ -315,36 +315,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   const originalUpdatePersonnel = storage.updatePersonnel;
   storage.updatePersonnel = async (id, data) => {
-    const result = await originalUpdatePersonnel(id, data);
-    const personnel = await storage.getAllPersonnel();
-    broadcastUpdate('PERSONNEL_UPDATED', { personnel });
-    return result;
+    try {
+      const result = await originalUpdatePersonnel(id, data);
+      if (result) {
+        const personnel = await storage.getAllPersonnel();
+        broadcastUpdate('PERSONNEL_UPDATED', { personnel });
+      }
+      return result;
+    } catch (error) {
+      console.error('[WebSocket] Erro ao atualizar militar:', error);
+      throw error;
+    }
   };
   
   const originalDeletePersonnel = storage.deletePersonnel;
   storage.deletePersonnel = async (id) => {
-    const result = await originalDeletePersonnel(id);
-    const personnel = await storage.getAllPersonnel();
-    broadcastUpdate('PERSONNEL_UPDATED', { personnel });
-    return result;
+    try {
+      const result = await originalDeletePersonnel(id);
+      if (result) {
+        const personnel = await storage.getAllPersonnel();
+        broadcastUpdate('PERSONNEL_UPDATED', { personnel });
+      }
+      return result;
+    } catch (error) {
+      console.error('[WebSocket] Erro ao excluir militar:', error);
+      throw error;
+    }
   };
   
   const originalCreateAssignment = storage.createAssignment;
   storage.createAssignment = async (data) => {
-    const result = await originalCreateAssignment(data);
-    const assignments = await storage.getAllAssignments();
-    const personnel = await storage.getAllPersonnel();
-    broadcastUpdate('DATA_UPDATED', { assignments, personnel });
-    return result;
+    try {
+      const result = await originalCreateAssignment(data);
+      const assignments = await storage.getAllAssignments();
+      const personnel = await storage.getAllPersonnel();
+      broadcastUpdate('DATA_UPDATED', { assignments, personnel });
+      return result;
+    } catch (error) {
+      console.error('[WebSocket] Erro ao criar atribuição:', error);
+      throw error;
+    }
   };
   
   const originalDeleteAssignment = storage.deleteAssignment;
   storage.deleteAssignment = async (id) => {
-    const result = await originalDeleteAssignment(id);
-    const assignments = await storage.getAllAssignments();
-    const personnel = await storage.getAllPersonnel();
-    broadcastUpdate('DATA_UPDATED', { assignments, personnel });
-    return result;
+    try {
+      const result = await originalDeleteAssignment(id);
+      if (result) {
+        const assignments = await storage.getAllAssignments();
+        const personnel = await storage.getAllPersonnel();
+        broadcastUpdate('DATA_UPDATED', { assignments, personnel });
+      }
+      return result;
+    } catch (error) {
+      console.error('[WebSocket] Erro ao excluir atribuição:', error);
+      throw error;
+    }
   };
   
   return httpServer;

@@ -234,7 +234,8 @@ export class MemStorage implements IStorage {
       return undefined;
     }
     
-    const updatedPerson = {
+    // Criar um objeto atualizado com os dados existentes e os novos dados
+    const updatedPerson: Personnel = {
       ...this.personnel[index],
       ...data
     };
@@ -333,7 +334,7 @@ export class MemStorage implements IStorage {
       personnelId: data.personnelId,
       operationType: data.operationType,
       date: dateStr,
-      createdAt: new Date().toISOString()
+      createdAt: new Date()
     };
     
     this.assignments.push(newAssignment);
