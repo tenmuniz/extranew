@@ -10,14 +10,14 @@
     "id": 2,
     "name": "1º TEN QOPM MONTEIRO",
     "rank": "1TEN",
-    "extras": 1,
+    "extras": 0,
     "platoon": "EXPEDIENTE"
   },
   {
     "id": 3,
     "name": "TEN VANILSON",
     "rank": "TEN",
-    "extras": 3,
+    "extras": 2,
     "platoon": "EXPEDIENTE"
   },
   {

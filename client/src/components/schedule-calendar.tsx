@@ -359,18 +359,69 @@ export function ScheduleCalendar({
                 activeOperation={activeOperation}
                 assignmentsCount={filteredAssignments.length}
               >
+                {/* Visualização otimizada e simplificada dos militares designados */}
                 {dayAssignments.map((assignment) => {
                   const person = getPersonnelFromAssignment(assignment);
                   if (!person) return null;
                   
                   return (
-                    <PersonnelCard
+                    <div 
                       key={assignment.id}
-                      personnel={person}
-                      isAssigned={true}
-                      isDraggable={false}
-                      onRemove={() => handleRemoveAssignment(assignment.id, person.name)}
-                    />
+                      className="assigned-person relative p-2 rounded-md text-xs shadow-sm w-full mb-1 overflow-hidden"
+                      style={{
+                        background: `linear-gradient(135deg, ${getGarrisonColor(person.platoon || 'EXPEDIENTE')}10 0%, ${getGarrisonColor(person.platoon || 'EXPEDIENTE')}05 100%)`,
+                        borderLeft: `3px solid ${getGarrisonColor(person.platoon || 'EXPEDIENTE')}`,
+                      }}
+                    >
+                      <div className="flex justify-between items-center w-full">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 w-5 h-5 mr-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center">
+                            <span className="text-white text-[8px] font-bold">{person.rank}</span>
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-800 text-xs leading-tight truncate max-w-[110px]">
+                              {person.name}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        {/* Botão de remover simplificado */}
+                        <button 
+                          className="flex-shrink-0 w-5 h-5 rounded-full bg-white/80 flex items-center justify-center text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors duration-150 shadow-sm"
+                          onClick={() => {
+                            // Remover diretamente com um clique
+                            apiRequest("DELETE", `/api/assignments/${assignment.id}`)
+                              .then(() => {
+                                // Atualizar extras do militar
+                                if (person.extras && person.extras > 0) {
+                                  return apiRequest("PUT", `/api/personnel/${person.id}`, {
+                                    ...person,
+                                    extras: person.extras - 1
+                                  });
+                                }
+                              })
+                              .then(() => {
+                                // Sempre atualizar a UI
+                                onAssignmentChange();
+                                toast({
+                                  title: "Militar removido",
+                                  description: `${person.name} removido da escala com sucesso`,
+                                });
+                              })
+                              .catch(error => {
+                                console.error("Erro ao remover militar:", error);
+                                // Mesmo com erro, atualizar a UI
+                                onAssignmentChange();
+                              });
+                          }}
+                          aria-label="Remover"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                   );
                 })}
               </CalendarDay>
