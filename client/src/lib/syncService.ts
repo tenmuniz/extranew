@@ -47,6 +47,17 @@ class SyncService {
         this.isConnecting = false;
         this.connectionAttempts = 0;
         this.cancelReconnect();
+        
+        // Enviar ping a cada 30 segundos para manter a conexão ativa
+        setInterval(() => {
+          if (this.isConnected()) {
+            try {
+              this.socket?.send(JSON.stringify({ type: 'PING' }));
+            } catch (e) {
+              console.warn('Erro enviando PING:', e);
+            }
+          }
+        }, 30000);
       };
 
       this.socket.onmessage = (event) => {
@@ -65,8 +76,8 @@ class SyncService {
         }
       };
 
-      this.socket.onclose = () => {
-        console.log('WebSocket desconectado');
+      this.socket.onclose = (event) => {
+        console.log(`WebSocket desconectado. Código: ${event.code}, Razão: ${event.reason}`);
         this.socket = null;
         this.isConnecting = false;
         

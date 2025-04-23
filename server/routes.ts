@@ -70,6 +70,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid ID format" });
       }
 
+      // Verificar primeiro se existem atribuições para este militar
+      const allAssignments = await storage.getAllAssignments();
+      const hasAssignments = allAssignments.some(a => a.personnelId === id);
+      
+      if (hasAssignments) {
+        // Não permitir excluir militar com atribuições
+        return res.status(400).json({ 
+          message: "Não é possível excluir um militar com escalas atribuídas. Remova todas as escalas antes de excluir o militar." 
+        });
+      }
+
       const success = await storage.deletePersonnel(id);
       
       if (!success) {
@@ -78,6 +89,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(204).end();
     } catch (error) {
+      console.error("Erro ao excluir militar:", error);
       handleError(res, error);
     }
   });
@@ -276,6 +288,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Processar mensagens específicas se necessário
         if (data.type === 'REQUEST_REFRESH') {
           sendInitialData();
+        } else if (data.type === 'PING') {
+          // Responder ao ping para manter a conexão viva
+          if (ws.readyState === 1) { // OPEN = 1
+            ws.send(JSON.stringify({ type: 'PONG' }));
+          }
         }
       } catch (error) {
         console.error('Erro processando mensagem do cliente:', error);

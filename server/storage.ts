@@ -328,8 +328,8 @@ export class MemStorage implements IStorage {
       (data.date.includes('T') ? data.date.split('T')[0] : data.date) : 
       new Date(data.date).toISOString().split('T')[0];
     
-    // Criar objeto de atribuição
-    const newAssignment: Assignment = {
+    // Criar objeto de atribuição com tipagem correta
+    const newAssignment: any = {
       id: this.lastAssignmentId,
       personnelId: data.personnelId,
       operationType: data.operationType,
