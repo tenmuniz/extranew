@@ -8,11 +8,11 @@ interface OperationTabsProps {
 
 export function OperationTabs({ activeOperation, onOperationChange }: OperationTabsProps) {
   return (
-    <div className="mb-4 sm:mb-6">
-      <div className="flex flex-col md:flex-row bg-gradient-to-r from-gray-50 to-white shadow-lg sm:shadow-xl rounded-xl overflow-hidden border border-gray-200">
+    <div className="mb-6">
+      <div className="flex flex-col md:flex-row bg-gradient-to-r from-gray-50 to-white shadow-xl rounded-xl overflow-hidden border border-gray-200">
         <button
           className={cn(
-            "relative group py-3 sm:py-5 px-4 sm:px-8 font-bold text-base sm:text-lg flex-1 flex items-center justify-center transition-all duration-300",
+            "relative group py-5 px-8 font-bold text-lg flex-1 flex items-center justify-center transition-all duration-300",
             activeOperation === "PMF"
               ? "bg-gradient-to-r from-[#1A3A5F] to-[#3066BE] text-white"
               : "text-gray-700 hover:bg-blue-50/60 hover:text-[#1A3A5F]"
@@ -33,14 +33,14 @@ export function OperationTabs({ activeOperation, onOperationChange }: OperationT
           
           <div className="flex items-center justify-center">
             <div className={cn(
-              "mr-2 sm:mr-3 p-1.5 sm:p-2 rounded-lg transition-all duration-300",
+              "mr-3 p-2 rounded-lg transition-all duration-300",
               activeOperation === "PMF" 
                 ? "bg-white/20" 
                 : "bg-blue-100/50 group-hover:bg-blue-100"
             )}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className={cn("h-5 w-5 sm:h-6 sm:w-6", 
+                className={cn("h-6 w-6", 
                   activeOperation === "PMF" 
                     ? "text-white drop-shadow-lg" 
                     : "text-[#1A3A5F]"
@@ -57,13 +57,13 @@ export function OperationTabs({ activeOperation, onOperationChange }: OperationT
             </div>
             <div className="flex flex-col items-start">
               <span className={cn(
-                "text-[10px] sm:text-xs uppercase tracking-wide font-medium", 
+                "text-xs uppercase tracking-wide font-medium", 
                 activeOperation === "PMF" ? "text-blue-100" : "text-blue-700"
               )}>
                 Operação
               </span>
               <span className={cn(
-                "font-bold text-sm sm:text-base", 
+                "font-bold", 
                 activeOperation === "PMF" && "drop-shadow-md"
               )}>
                 Polícia Mais Forte
@@ -78,7 +78,7 @@ export function OperationTabs({ activeOperation, onOperationChange }: OperationT
         
         <button
           className={cn(
-            "relative group py-3 sm:py-5 px-4 sm:px-8 font-bold text-base sm:text-lg flex-1 flex items-center justify-center transition-all duration-300",
+            "relative group py-5 px-8 font-bold text-lg flex-1 flex items-center justify-center transition-all duration-300",
             activeOperation === "ESCOLA"
               ? "bg-gradient-to-r from-[#4A6741] to-[#6BA368] text-white"
               : "text-gray-700 hover:bg-green-50/60 hover:text-[#4A6741]"
@@ -99,14 +99,14 @@ export function OperationTabs({ activeOperation, onOperationChange }: OperationT
           
           <div className="flex items-center justify-center">
             <div className={cn(
-              "mr-2 sm:mr-3 p-1.5 sm:p-2 rounded-lg transition-all duration-300",
+              "mr-3 p-2 rounded-lg transition-all duration-300",
               activeOperation === "ESCOLA" 
                 ? "bg-white/20" 
                 : "bg-green-100/50 group-hover:bg-green-100"
             )}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className={cn("h-5 w-5 sm:h-6 sm:w-6", 
+                className={cn("h-6 w-6", 
                   activeOperation === "ESCOLA" 
                     ? "text-white drop-shadow-lg" 
                     : "text-[#4A6741]"
@@ -121,13 +121,13 @@ export function OperationTabs({ activeOperation, onOperationChange }: OperationT
             </div>
             <div className="flex flex-col items-start">
               <span className={cn(
-                "text-[10px] sm:text-xs uppercase tracking-wide font-medium", 
+                "text-xs uppercase tracking-wide font-medium", 
                 activeOperation === "ESCOLA" ? "text-green-100" : "text-green-700"
               )}>
                 Operação
               </span>
               <span className={cn(
-                "font-bold text-sm sm:text-base", 
+                "font-bold", 
                 activeOperation === "ESCOLA" && "drop-shadow-md"
               )}>
                 Escola Segura
