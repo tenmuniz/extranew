@@ -100,7 +100,7 @@ export function PersonnelList({ personnel }: PersonnelListProps) {
           <div className="space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto pr-1.5 pt-1 pl-0.5" id="personnel-list">
             {filteredPersonnel.map((person) => (
               <div key={person.id} className="transform transition-transform duration-200 hover:-translate-y-1 touch-manipulation">
-                <PersonnelCard personnel={person} />
+                <PersonnelCard personnel={person} isDraggable={true} />
               </div>
             ))}
           </div>

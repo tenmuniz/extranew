@@ -195,22 +195,22 @@ export function PersonnelCard({
       >
         <div className="flex flex-col w-full">
           {/* Nome do militar com o rank como prefixo e símbolo */}
-          <div className="flex items-center mb-1">
-            <div className="flex-shrink-0 w-5 h-5 mr-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center">
-              <div className="text-white text-[9px]">{getRankSymbols(personnel.rank)}</div>
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center flex-1 overflow-hidden">
+              <div className="flex-shrink-0 w-5 h-5 mr-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center">
+                <div className="text-white text-[9px]">{getRankSymbols(personnel.rank)}</div>
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <p className="font-medium text-gray-800 text-xs leading-tight truncate">
+                  {personnel.name}
+                </p>
+              </div>
             </div>
-            <div className="flex-1">
-              <p className="font-medium text-gray-800 text-xs leading-tight break-words">
-                {personnel.name}
-              </p>
-            </div>
-          </div>
-          
-          {/* Botão de remover - Melhorado com tamanho maior e comportamento de clique mais eficiente */}
-          {onRemove && (
-            <div className="flex justify-end mt-0.5">
+            
+            {/* Botão de remover ao lado do nome */}
+            {onRemove && (
               <button 
-                className="flex-shrink-0 w-7 h-7 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 hover:text-white transition-colors duration-150 shadow-sm remove-button touch-manipulation prevent-select"
+                className="flex-shrink-0 w-6 h-6 ml-1 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 hover:text-white transition-colors duration-150 shadow-sm remove-button touch-manipulation prevent-select"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -226,13 +226,13 @@ export function PersonnelCard({
                 aria-label="Remover"
                 type="button"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
                 <span className="touch-target-helper"></span>
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     );
@@ -271,24 +271,51 @@ export function PersonnelCard({
         className="p-2 sm:p-3 flex flex-col"
         style={{ background: getGradientBackground() }}
       >
-        {/* Informações principais - Patente e Nome */}
-        <div className="flex items-center w-full mb-2">
-          <div 
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 shadow-sm"
-            style={{ 
-              background: `linear-gradient(135deg, #1A3A5F, #2c5a8c)` 
-            }}
-          >
-            <div className="text-white">{getRankSymbols(personnel.rank)}</div>
+        {/* Informações principais - Patente e Nome com botão de excluir ao lado */}
+        <div className="flex items-center justify-between w-full mb-2">
+          <div className="flex items-center flex-grow max-w-[85%]">
+            <div 
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 shadow-sm"
+              style={{ 
+                background: `linear-gradient(135deg, #1A3A5F, #2c5a8c)` 
+              }}
+            >
+              <div className="text-white">{getRankSymbols(personnel.rank)}</div>
+            </div>
+            <div className="overflow-hidden">
+              <p className="font-bold text-gray-900 text-sm leading-tight break-words">
+                {personnel.name}
+              </p>
+              <p className="text-xs text-gray-600 mt-0.5">
+                {getRankFullName(personnel.rank)}
+              </p>
+            </div>
           </div>
-          <div className="w-full">
-            <p className="font-bold text-gray-900 text-sm leading-tight break-words pr-1">
-              {personnel.name}
-            </p>
-            <p className="text-xs text-gray-600 mt-0.5">
-              {getRankFullName(personnel.rank)}
-            </p>
-          </div>
+          
+          {onRemove && (
+            <button 
+              className="flex-shrink-0 w-7 h-7 ml-1 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 hover:text-white transition-colors duration-150 shadow-sm remove-button touch-manipulation prevent-select"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("Botão de remover clicado");
+                if (typeof onRemove === 'function') {
+                  try {
+                    onRemove();
+                  } catch (error) {
+                    console.error("Erro ao executar a função onRemove:", error);
+                  }
+                }
+              }}
+              aria-label="Remover"
+              type="button"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+              <span className="touch-target-helper"></span>
+            </button>
+          )}
         </div>
         
         {/* Barra inferior com detalhes e status */}
