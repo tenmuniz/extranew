@@ -41,13 +41,14 @@ export const getQueryFn: <T>(options: {
     return await res.json();
   };
 
-export const queryClient = new QueryClient({
+// Cria uma instância do QueryClient
+const qClient = new QueryClient({
   defaultOptions: {
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
-      refetchOnWindowFocus: false,
-      staleTime: Infinity,
+      refetchOnWindowFocus: true, // Atualiza ao focar na janela
+      staleTime: 5000, // Diminuir o tempo para considerar os dados desatualizados
       retry: false,
     },
     mutations: {
@@ -55,3 +56,29 @@ export const queryClient = new QueryClient({
     },
   },
 });
+
+// Função para atualizar o estado entre abas usando localStorage
+function synchronizeTabs() {
+  // Quando o usuário altera uma atribuição, marca para outras abas que devem atualizar
+  localStorage.setItem('lastUpdate', Date.now().toString());
+}
+
+// Event listener para o storage event (detecta mudanças entre abas)
+window.addEventListener('storage', (event) => {
+  if (event.key === 'lastUpdate') {
+    // Sempre que outra aba modificar o sistema, invalidar queries
+    qClient.invalidateQueries({ queryKey: ['/api/assignments'] });
+    qClient.invalidateQueries({ queryKey: ['/api/personnel'] });
+  }
+});
+
+// Quando modificamos algo, notifica as outras abas
+const originalInvalidateQueries = qClient.invalidateQueries.bind(qClient);
+qClient.invalidateQueries = function(...args: any[]) {
+  const result = originalInvalidateQueries(...args);
+  // Notifica outras abas sobre a alteração
+  synchronizeTabs();
+  return result;
+};
+
+export const queryClient = qClient;
