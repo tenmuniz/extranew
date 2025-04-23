@@ -40,7 +40,7 @@ export function PersonnelList({ personnel }: PersonnelListProps) {
   };
 
   return (
-    <div className="w-full lg:w-1/4 mt-4 lg:mt-0">
+    <div className="w-full lg:w-1/5 mt-4 lg:mt-0">
       <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 border border-[#E7EBF0]">
         <h3 className="font-heading font-bold text-lg sm:text-xl text-[#1A3A5F] mb-3 flex items-center border-b pb-3">
           <svg

@@ -69,9 +69,9 @@ export function CalendarDay({
     
     if (requiredAssignments === 0) return "bg-gray-200";
     
-    if (assignmentsCount === 0) return "bg-red-400";
-    if (assignmentsCount < requiredAssignments) return "bg-yellow-400";
-    if (assignmentsCount >= requiredAssignments) return "bg-green-400";
+    if (assignmentsCount === 0) return "bg-red-500";
+    if (assignmentsCount < requiredAssignments) return "bg-yellow-500";
+    if (assignmentsCount >= requiredAssignments) return "bg-green-500";
     
     return "bg-gray-200";
   };
@@ -97,7 +97,7 @@ export function CalendarDay({
       {/* Indicador de ocupação na lateral */}
       <div 
         className={cn(
-          "absolute left-0 top-0 bottom-0 w-1",
+          "absolute left-0 top-0 bottom-0 w-1.5 rounded-l",
           getOccupationIndicator()
         )}
       />
@@ -142,10 +142,10 @@ export function CalendarDay({
         {!children && !isDisabled && (
           <div className="flex items-center justify-center h-full py-6 opacity-60 hover:opacity-100 transition-opacity">
             <div className="text-gray-500 text-xs text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mx-auto mb-1 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mx-auto mb-2 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
               </svg>
-              <span className="block">Arraste um militar</span>
+              <span className="block font-medium">Arraste um militar</span>
             </div>
           </div>
         )}
@@ -163,10 +163,10 @@ export function CalendarDay({
         {!isDisabled && activeOperation && (
           <div className="absolute bottom-1 right-2 text-xs font-medium">
             <span className={cn(
-              "px-1.5 py-0.5 rounded-md", 
-              assignmentsCount === 0 ? "bg-red-100 text-red-800" :
-              assignmentsCount < requiredAssignments ? "bg-yellow-100 text-yellow-800" :
-              "bg-green-100 text-green-800"
+              "px-2 py-1 rounded-md shadow-sm font-medium text-xs", 
+              assignmentsCount === 0 ? "bg-red-100 text-red-900 border border-red-200" :
+              assignmentsCount < requiredAssignments ? "bg-yellow-100 text-yellow-900 border border-yellow-200" :
+              "bg-green-100 text-green-900 border border-green-200"
             )}>
               {assignmentsCount}/{requiredAssignments}
             </span>
