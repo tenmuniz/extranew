@@ -1,12 +1,5 @@
 [
   {
-    "id": 2,
-    "personnelId": 1,
-    "operationType": "PMF",
-    "date": "2025-04-02",
-    "createdAt": "2025-04-22T20:13:01.034Z"
-  },
-  {
     "id": 4,
     "personnelId": 1,
     "operationType": "PMF",
@@ -26,13 +19,6 @@
     "operationType": "PMF",
     "date": "2025-04-10",
     "createdAt": "2025-04-22T20:44:29.980Z"
-  },
-  {
-    "id": 8,
-    "personnelId": 1,
-    "operationType": "PMF",
-    "date": "2025-04-04",
-    "createdAt": "2025-04-22T20:44:31.760Z"
   },
   {
     "id": 9,

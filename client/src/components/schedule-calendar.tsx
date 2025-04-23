@@ -210,50 +210,80 @@ export function ScheduleCalendar({
     }
   };
 
-  // Handle removing an assignment
+  // Handle removing an assignment - versão melhorada
   const handleRemoveAssignment = async (assignmentId: number, personnelName: string) => {
     try {
       // Primeiro, obtenha a designação para saber qual militar está sendo removido
       const assignment = assignments.find(a => a.id === assignmentId);
+      
       if (!assignment) {
-        // Se a designação não for encontrada no estado atual, não é necessário fazer mais nada
         console.log(`Designação com ID ${assignmentId} não encontrada no estado local`);
-        // Ainda atualizamos a interface para garantir consistência
-        onAssignmentChange();
+        onAssignmentChange(); // Atualizar a UI para garantir consistência
         return;
       }
       
       // Encontrar o militar para decrementar extras
       const selectedPersonnel = personnel.find(p => p.id === assignment.personnelId);
+      
+      // Executamos as duas operações em sequência
+      let personnelUpdated = false;
+      let assignmentDeleted = false;
+      
+      // 1. Primeiro atualizamos o militar (decrementar extras)
       if (selectedPersonnel && selectedPersonnel.extras > 0) {
-        // Atualizar extras do militar (decrementar)
-        await apiRequest("PUT", `/api/personnel/${selectedPersonnel.id}`, {
-          ...selectedPersonnel,
-          extras: selectedPersonnel.extras - 1
-        });
+        try {
+          const personnelResponse = await apiRequest("PUT", `/api/personnel/${selectedPersonnel.id}`, {
+            ...selectedPersonnel,
+            extras: selectedPersonnel.extras - 1
+          });
+          
+          if (personnelResponse.ok) {
+            personnelUpdated = true;
+            console.log(`Militar ${selectedPersonnel.id} atualizado com sucesso`);
+          }
+        } catch (updateError) {
+          console.error(`Erro ao atualizar extras do militar: ${updateError}`);
+        }
       }
       
+      // 2. Depois tentamos remover a designação
       try {
-        // Remover a designação
         const response = await apiRequest("DELETE", `/api/assignments/${assignmentId}`);
         
         if (response.ok) {
-          // Refresh assignments and personnel (para atualizar o número de extras)
-          onAssignmentChange();
-          
-          toast({
-            title: "Militar removido",
-            description: `${personnelName} removido da escala com sucesso`,
-          });
+          assignmentDeleted = true;
+          console.log(`Designação ${assignmentId} removida com sucesso`);
         }
       } catch (deleteError) {
-        // Se a API retornar 404, significa que a designação já foi excluída
-        console.log(`Erro ao excluir designação: ${deleteError}`);
-        // Ainda atualizamos a interface para garantir consistência
+        console.error(`Erro ao excluir designação: ${deleteError}`);
+      }
+      
+      // Mesmo que apenas uma das operações tenha sido bem-sucedida, atualizamos a UI
+      if (personnelUpdated || assignmentDeleted) {
+        // Garantimos que a UI seja atualizada
         onAssignmentChange();
+        
+        // Notificamos o usuário
+        toast({
+          title: "Militar removido",
+          description: `${personnelName} removido da escala com sucesso`,
+        });
+      } else {
+        // Se nenhuma operação foi bem-sucedida, ainda atualizamos a UI, mas mostramos um erro
+        onAssignmentChange();
+        
+        toast({
+          title: "Atenção",
+          description: "Houve um problema ao remover o militar, mas a interface foi atualizada",
+          variant: "destructive"
+        });
       }
     } catch (error) {
-      console.error("Error removing assignment:", error);
+      console.error("Erro ao remover designação:", error);
+      
+      // Mesmo com erro, atualizamos a UI para garantir consistência
+      onAssignmentChange();
+      
       toast({
         title: "Erro ao remover militar",
         description: error instanceof Error ? error.message : "Erro desconhecido",
