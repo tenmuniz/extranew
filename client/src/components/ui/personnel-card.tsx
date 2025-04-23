@@ -289,14 +289,14 @@ export function PersonnelCard({
             </div>
             <div className="min-w-0 flex flex-col flex-grow mr-1">
               <div className="flex items-center w-full">
-                <p className="font-bold text-gray-900 text-sm whitespace-nowrap overflow-hidden text-ellipsis flex-grow" style={{ minWidth: "140px", maxWidth: "170px", paddingRight: "2px" }}>
+                <p className="font-bold text-gray-900 text-sm whitespace-nowrap overflow-hidden text-ellipsis flex-grow" style={{ width: "calc(100% - 30px)", maxWidth: "200px", paddingRight: "2px" }}>
                   {personnel.name}
                 </p>
                 
                 {/* Botão de remover ao lado do nome */}
                 {onRemove && (
                   <button 
-                    className="flex-shrink-0 w-5 h-5 ml-0.5 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 hover:text-white transition-all duration-150 shadow-sm remove-button touch-manipulation prevent-select hover:scale-110"
+                    className="flex-shrink-0 w-6 h-6 ml-0.5 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 hover:text-white transition-all duration-150 shadow-sm remove-button touch-manipulation prevent-select hover:scale-110"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
