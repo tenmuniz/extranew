@@ -1,12 +1,5 @@
 [
   {
-    "id": 2,
-    "personnelId": 1,
-    "operationType": "PMF",
-    "date": "2025-04-02",
-    "createdAt": "2025-04-22T20:13:01.034Z"
-  },
-  {
     "id": 4,
     "personnelId": 1,
     "operationType": "PMF",

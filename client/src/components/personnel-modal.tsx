@@ -348,7 +348,7 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
                   </div>
                   <div className="flex space-x-2">
                     <button
-                      className="bg-[#708090] hover:bg-[#708090]/90 text-white p-2 rounded touch-manipulation prevent-select"
+                      className="bg-[#708090] hover:bg-[#708090]/80 text-white p-1.5 rounded touch-manipulation prevent-select"
                       onClick={() => handleEditPersonnel(person)}
                       aria-label="Editar"
                     >
@@ -357,7 +357,7 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
                       </svg>
                     </button>
                     <button
-                      className="bg-[#960018] hover:bg-[#960018]/90 text-white p-2 rounded touch-manipulation prevent-select"
+                      className="bg-[#960018] hover:bg-[#960018]/80 text-white p-1.5 rounded touch-manipulation prevent-select"
                       onClick={() => handleDeletePersonnel(person)}
                       aria-label="Excluir"
                     >
