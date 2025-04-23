@@ -69,9 +69,9 @@ export function CalendarDay({
     
     if (requiredAssignments === 0) return "bg-gray-200";
     
-    if (assignmentsCount === 0) return "bg-red-500";
-    if (assignmentsCount < requiredAssignments) return "bg-yellow-500";
-    if (assignmentsCount >= requiredAssignments) return "bg-green-500";
+    if (assignmentsCount === 0) return "bg-red-400";
+    if (assignmentsCount < requiredAssignments) return "bg-yellow-400";
+    if (assignmentsCount >= requiredAssignments) return "bg-green-400";
     
     return "bg-gray-200";
   };
@@ -79,16 +79,15 @@ export function CalendarDay({
   return (
     <div
       className={cn(
-        "calendar-day aspect-square rounded-lg p-0 overflow-hidden border transition-all duration-200 hover:shadow-lg relative",
+        "calendar-day rounded-xl min-h-[160px] p-0 overflow-hidden border transition-all duration-200 hover:shadow-lg relative",
         isCurrentMonth 
-          ? "shadow border-[#E7EBF0] opacity-100" 
+          ? "shadow-md border-[#E7EBF0] opacity-100" 
           : "border-dashed border-gray-300 opacity-80",
         isDisabled && "cursor-not-allowed bg-opacity-30",
-        isToday && "ring-2 ring-blue-500 ring-offset-2"
+        isToday && "ring-2 ring-blue-400 ring-offset-1"
       )}
       style={{ 
         background: generateCardGradient(),
-        boxShadow: isToday ? "0 4px 12px rgba(66, 153, 225, 0.15)" : "0 4px 6px rgba(0, 0, 0, 0.05)",
       }}
       data-date={date.toISOString().split('T')[0]}
       onDragOver={isDisabled ? (e: React.DragEvent) => e.preventDefault() : onDragOver}
@@ -97,18 +96,17 @@ export function CalendarDay({
       {/* Indicador de ocupação na lateral */}
       <div 
         className={cn(
-          "absolute left-0 top-0 bottom-0 w-1.5 rounded-l",
+          "absolute left-0 top-0 bottom-0 w-1",
           getOccupationIndicator()
         )}
       />
       
       {/* Header do card com dia e guarnição */}
       <div 
-        className="flex justify-between items-center px-2 py-1.5 text-white"
+        className="flex justify-between items-center px-3 py-2 text-white"
         style={{ 
           backgroundColor: guarnitionColor,
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          backgroundImage: `linear-gradient(to right, ${guarnitionColor}, ${guarnitionColor}DD)`
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
         }}
       >
         <div className="flex flex-col">
@@ -132,9 +130,9 @@ export function CalendarDay({
       {/* Container para os militares designados */}
       <div className={cn(
         "assigned-personnel px-2 pt-2 pb-1 relative",
-        !isDisabled && "flex-grow"
+        !isDisabled && "min-h-[100px]"
       )}>
-        <div className="flex flex-col w-full gap-3 touch-manipulation">
+        <div className="flex flex-col w-full gap-1">
           {children}
         </div>
         
@@ -142,10 +140,10 @@ export function CalendarDay({
         {!children && !isDisabled && (
           <div className="flex items-center justify-center h-full py-6 opacity-60 hover:opacity-100 transition-opacity">
             <div className="text-gray-500 text-xs text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mx-auto mb-2 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto mb-1 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              <span className="block font-medium">Arraste um militar</span>
+              <span className="block">Arraste um militar</span>
             </div>
           </div>
         )}
@@ -163,10 +161,10 @@ export function CalendarDay({
         {!isDisabled && activeOperation && (
           <div className="absolute bottom-1 right-2 text-xs font-medium">
             <span className={cn(
-              "px-2 py-1 rounded-md shadow-sm font-medium text-xs", 
-              assignmentsCount === 0 ? "bg-red-100 text-red-900 border border-red-200" :
-              assignmentsCount < requiredAssignments ? "bg-yellow-100 text-yellow-900 border border-yellow-200" :
-              "bg-green-100 text-green-900 border border-green-200"
+              "px-1.5 py-0.5 rounded-md", 
+              assignmentsCount === 0 ? "bg-red-100 text-red-800" :
+              assignmentsCount < requiredAssignments ? "bg-yellow-100 text-yellow-800" :
+              "bg-green-100 text-green-800"
             )}>
               {assignmentsCount}/{requiredAssignments}
             </span>

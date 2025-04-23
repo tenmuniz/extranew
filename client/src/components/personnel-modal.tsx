@@ -124,16 +124,10 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
 
   // Delete personnel
   const handleDeletePersonnel = async (person: Personnel) => {
-    if (!window.confirm(`Tem certeza que deseja excluir ${person.name}?`)) {
-      return;
-    }
-    
     try {
-      console.log("Tentando excluir militar:", person.id);
       const response = await apiRequest("DELETE", `/api/personnel/${person.id}`);
       
       if (response.ok) {
-        console.log("Militar excluído com sucesso:", person.id);
         toast({
           title: "Sucesso",
           description: `${person.name} removido com sucesso`,
@@ -141,16 +135,9 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
         
         // Refresh personnel list
         onPersonnelChange();
-      } else {
-        console.error("Erro ao excluir militar, status:", response.status);
-        toast({
-          title: "Erro",
-          description: `Erro ao excluir: ${response.status}`,
-          variant: "destructive",
-        });
       }
     } catch (error) {
-      console.error("Exceção ao excluir militar:", error);
+      console.error("Error deleting personnel:", error);
       toast({
         title: "Erro",
         description: error instanceof Error ? error.message : "Erro desconhecido",
@@ -348,7 +335,7 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
                   </div>
                   <div className="flex space-x-2">
                     <button
-                      className="bg-[#708090] hover:bg-[#708090]/80 text-white p-1.5 rounded touch-manipulation prevent-select"
+                      className="bg-[#708090] hover:bg-[#708090]/90 text-white p-1 rounded"
                       onClick={() => handleEditPersonnel(person)}
                       aria-label="Editar"
                     >
@@ -357,7 +344,7 @@ export function PersonnelModal({ isOpen, onClose, personnel, onPersonnelChange }
                       </svg>
                     </button>
                     <button
-                      className="bg-[#960018] hover:bg-[#960018]/80 text-white p-1.5 rounded touch-manipulation prevent-select"
+                      className="bg-[#960018] hover:bg-[#960018]/90 text-white p-1 rounded"
                       onClick={() => handleDeletePersonnel(person)}
                       aria-label="Excluir"
                     >

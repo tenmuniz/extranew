@@ -571,35 +571,24 @@ export function NewReportModal({
   // Se não há dados para exibir
   if (personnelWithExtras.length === 0) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] z-50 overflow-auto">
-        <div className="bg-[#F8FAFC] min-h-screen w-full flex flex-col">
-          <div className="bg-[#1A3A5F] text-white py-4 px-6 flex justify-between items-center shadow-md">
-            <h2 className="text-xl md:text-2xl font-bold">Relatório de Operações</h2>
-            <button 
-              onClick={onClose}
-              className="bg-gradient-to-r from-[#FF416C] to-[#FF4B2B] hover:shadow-lg text-white rounded-lg px-4 py-2 shadow-md transition-all duration-300 flex items-center"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+      <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl shadow-2xl w-[90%] max-w-lg overflow-hidden">
+          <div className="p-6 text-center">
+            <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              <span className="font-medium">Voltar ao Calendário</span>
-            </button>
-          </div>
-          
-          <div className="flex items-center justify-center p-8 flex-1">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-8">
-              <div className="text-center">
-                <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <h2 className="text-3xl font-bold text-gray-800 mb-3">Sem Dados para Relatório</h2>
-                <p className="text-gray-600 mb-8 text-lg">
-                  Não existem operações atribuídas no período selecionado. Adicione atribuições de operações no calendário para gerar um relatório.
-                </p>
-              </div>
             </div>
+            <h2 className="text-3xl font-bold text-gray-800 mb-3">Sem Dados para Relatório</h2>
+            <p className="text-gray-600 mb-8 text-lg">
+              Não existem operações atribuídas no período selecionado. Adicione atribuições de operações no calendário para gerar um relatório.
+            </p>
+            <Button 
+              onClick={onClose}
+              className="bg-[#1A3A5F] hover:bg-[#12283F] text-white font-bold py-3 px-6 rounded-lg text-lg"
+            >
+              Voltar ao Calendário
+            </Button>
           </div>
         </div>
       </div>
@@ -607,8 +596,8 @@ export function NewReportModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] z-50 overflow-auto">
-      <div id="report-content" className="bg-[#F8FAFC] min-h-screen w-full flex flex-col">
+    <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] flex items-center justify-center z-50 overflow-auto">
+      <div id="report-content" className="bg-[#F8FAFC] rounded-xl shadow-2xl w-full max-w-7xl h-[95vh] overflow-hidden flex flex-col">
         <div className="bg-[#1A3A5F] text-white py-4 px-6 flex justify-between items-center shadow-md">
           <h2 className="text-xl md:text-2xl font-bold">Relatório de Operações</h2>
           <div className="flex items-center gap-3">

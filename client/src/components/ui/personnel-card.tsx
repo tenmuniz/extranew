@@ -187,7 +187,7 @@ export function PersonnelCard({
     
     return (
       <div 
-        className="assigned-person relative p-3 rounded-md text-xs shadow-sm w-full mb-1 overflow-hidden touch-manipulation"
+        className="assigned-person relative p-2 rounded-md text-xs shadow-sm w-full mb-1 overflow-hidden"
         style={{
           background: getGradient(),
           borderLeft: `3px solid ${personnel.platoon ? getGarrisonColor(personnel.platoon) : "#1A3A5F"}`,
@@ -195,47 +195,31 @@ export function PersonnelCard({
       >
         <div className="flex flex-col w-full">
           {/* Nome do militar com o rank como prefixo e símbolo */}
-          <div className="flex items-center mb-1.5">
-            <div className="flex items-center flex-grow min-w-0">
-              <div className="flex-shrink-0 w-6 h-6 mr-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center">
-                <div className="text-white text-[9px]">{getRankSymbols(personnel.rank)}</div>
-              </div>
-              <div className="flex items-center justify-between w-full">
-                <div className="flex-grow mr-2 overflow-hidden">
-                  <p className="font-medium text-gray-800 text-sm truncate">
-                    {personnel.name}
-                  </p>
-                </div>
-                
-                {/* Botão de remover ao lado do nome */}
-                {onRemove && (
-                  <button 
-                    className="flex-shrink-0 w-6 h-6 ml-1 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 hover:text-white transition-colors duration-150 shadow-sm remove-button touch-manipulation prevent-select"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      console.log("Botão de remover clicado");
-                      if (typeof onRemove === 'function') {
-                        try {
-                          onRemove();
-                        } catch (error) {
-                          console.error("Erro ao executar a função onRemove:", error);
-                        }
-                      }
-                    }}
-                    aria-label="Remover"
-                    type="button"
-                    style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.2)" }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                    <span className="touch-target-helper"></span>
-                  </button>
-                )}
-              </div>
+          <div className="flex items-center mb-1">
+            <div className="flex-shrink-0 w-5 h-5 mr-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center">
+              <div className="text-white text-[9px]">{getRankSymbols(personnel.rank)}</div>
+            </div>
+            <div className="flex-1">
+              <p className="font-medium text-gray-800 text-xs leading-tight break-words">
+                {personnel.name}
+              </p>
             </div>
           </div>
+          
+          {/* Botão de remover */}
+          {onRemove && (
+            <div className="flex justify-end mt-0.5">
+              <button 
+                className="flex-shrink-0 w-5 h-5 rounded-full bg-white/80 flex items-center justify-center text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors duration-150 shadow-sm"
+                onClick={onRemove}
+                aria-label="Remover"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -252,9 +236,8 @@ export function PersonnelCard({
   return (
     <div
       className={cn(
-        "personnel-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 flex flex-col w-full",
-        isDraggable && "cursor-grab active:cursor-grabbing",
-        "touch-manipulation" // Melhora interação em dispositivos touch
+        "personnel-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 flex flex-col w-full",
+        isDraggable && "cursor-grab active:cursor-grabbing"
       )}
       draggable={isDraggable}
       onDragStart={handleDragStart}
@@ -271,70 +254,36 @@ export function PersonnelCard({
       
       {/* Conteúdo principal */}
       <div 
-        className="p-2.5 sm:p-3 flex flex-col"
-        style={{ 
-          background: getGradientBackground(),
-          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.15)"
-        }}
+        className="p-3 flex flex-col"
+        style={{ background: getGradientBackground() }}
       >
-        {/* Informações principais - Patente e Nome com botão de excluir ao lado */}
+        {/* Informações principais - Patente e Nome */}
         <div className="flex items-center w-full mb-2">
-          <div className="flex items-center min-w-0 flex-grow">
-            <div 
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 shadow-sm"
-              style={{ 
-                background: `linear-gradient(135deg, #1A3A5F, #2c5a8c)` 
-              }}
-            >
-              <div className="text-white">{getRankSymbols(personnel.rank)}</div>
-            </div>
-            <div className="min-w-0 flex flex-col flex-grow mr-1">
-              <div className="flex items-center justify-between w-full">
-                <div className="flex-grow mr-2 overflow-hidden">
-                  <p className="font-bold text-gray-900 text-sm truncate">
-                    {personnel.name}
-                  </p>
-                </div>
-                
-                {/* Botão de remover separado */}
-                {onRemove && (
-                  <button 
-                    className="flex-shrink-0 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 transition-colors"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      console.log("Botão de remover clicado");
-                      if (typeof onRemove === 'function') {
-                        try {
-                          onRemove();
-                        } catch (error) {
-                          console.error("Erro ao executar a função onRemove:", error);
-                        }
-                      }
-                    }}
-                    aria-label="Remover"
-                    type="button"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </button>
-                )}
-              </div>
-              <p className="text-xs text-gray-600 mt-0.5">
-                {getRankFullName(personnel.rank)}
-              </p>
-            </div>
+          <div 
+            className="w-10 h-10 rounded-full flex items-center justify-center mr-3 flex-shrink-0 shadow-sm"
+            style={{ 
+              background: `linear-gradient(135deg, #1A3A5F, #2c5a8c)` 
+            }}
+          >
+            <div className="text-white">{getRankSymbols(personnel.rank)}</div>
+          </div>
+          <div className="w-full">
+            <p className="font-bold text-gray-900 text-sm leading-tight break-words">
+              {personnel.name}
+            </p>
+            <p className="text-xs text-gray-600 mt-0.5">
+              {getRankFullName(personnel.rank)}
+            </p>
           </div>
         </div>
         
         {/* Barra inferior com detalhes e status */}
-        <div className="flex flex-wrap justify-between items-center mt-1 w-full gap-y-2">
+        <div className="flex justify-between items-center mt-1 w-full">
           <div className="flex items-center space-x-2">
             {/* Contador de Extras - Versão 3D com alerta quando chegar a 12 */}
             <div 
               className={cn(
-                "px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg flex items-center shadow-md relative overflow-hidden transform hover:scale-105 transition-all duration-150",
+                "px-3 py-1.5 rounded-lg flex items-center shadow-md relative overflow-hidden transform hover:scale-105 transition-all duration-150",
                 (personnel.extras || 0) >= 12 
                   ? "bg-gradient-to-r from-red-600 to-red-700 border border-red-800" 
                   : (personnel.extras || 0) >= 9
@@ -370,7 +319,7 @@ export function PersonnelCard({
             {(personnel.extras || 0) >= 12 ? (
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200">
                 <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-1"></span>
-                Limite
+                Limite atingido
               </span>
             ) : (
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">

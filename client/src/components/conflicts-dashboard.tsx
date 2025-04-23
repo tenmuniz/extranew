@@ -210,34 +210,31 @@ export function ConflictsDashboard({
 
   if (conflictsData.personnelWithConflicts.length === 0) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] z-50 overflow-auto">
-        <div className="bg-[#F8FAFC] min-h-screen w-full flex flex-col">
-          <div className="bg-[#1A3A5F] text-white py-4 px-6 flex justify-between items-center shadow-md">
-            <h2 className="text-xl md:text-2xl font-bold">Dashboard de Conflitos</h2>
-            <button 
-              onClick={onClose}
-              className="bg-gradient-to-r from-[#FF416C] to-[#FF4B2B] hover:shadow-lg text-white rounded-lg px-4 py-2 shadow-md transition-all duration-300 flex items-center"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              <span className="font-medium">Voltar ao Calendário</span>
-            </button>
-          </div>
-          
-          <div className="flex items-center justify-center p-8 flex-1">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-8">
-              <div className="text-center">
-                <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <h2 className="text-3xl font-bold text-gray-800 mb-3">Nenhum Conflito Detectado</h2>
-                <p className="text-gray-600 mb-8 text-lg">
-                  Não há conflitos de escala no período selecionado. Todos os militares estão escalados em dias que não coincidem com seu período de serviço regular.
-                </p>
+      <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl overflow-hidden">
+          <div className="relative px-8 py-6">
+            <div className="absolute right-4 top-4">
+              <button 
+                onClick={onClose}
+                className="bg-gradient-to-r from-[#FF416C] to-[#FF4B2B] hover:shadow-lg text-white rounded-lg px-4 py-2 shadow-md transition-all duration-300 flex items-center"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span className="font-medium">Voltar</span>
+              </button>
+            </div>
+            
+            <div className="text-center mb-6 pt-12">
+              <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
               </div>
+              <h2 className="text-3xl font-bold text-gray-800 mb-3">Nenhum Conflito Detectado</h2>
+              <p className="text-gray-600 mb-8 text-lg">
+                Não há conflitos de escala no período selecionado. Todos os militares estão escalados em dias que não coincidem com seu período de serviço regular.
+              </p>
             </div>
           </div>
         </div>
@@ -246,8 +243,8 @@ export function ConflictsDashboard({
   }
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] z-50 overflow-auto">
-      <div className="bg-[#F8FAFC] min-h-screen w-full flex flex-col">
+    <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] flex items-center justify-center z-50 overflow-auto">
+      <div className="bg-[#F8FAFC] rounded-xl shadow-2xl w-full max-w-7xl h-[95vh] overflow-hidden flex flex-col">
         <div className="bg-[#1A3A5F] text-white py-4 px-6 flex justify-between items-center shadow-md">
           <h2 className="text-xl md:text-2xl font-bold">Dashboard de Conflitos</h2>
           <button 

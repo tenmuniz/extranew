@@ -213,41 +213,26 @@ export function ScheduleCalendar({
   // Handle removing an assignment
   const handleRemoveAssignment = async (assignmentId: number, personnelName: string) => {
     try {
-      console.log(`Tentando remover designação ${assignmentId} para ${personnelName}`);
-      
       // Primeiro, obtenha a designação para saber qual militar está sendo removido
       const assignment = assignments.find(a => a.id === assignmentId);
       if (!assignment) {
-        console.error(`Designação ${assignmentId} não encontrada`);
         throw new Error("Designação não encontrada");
       }
       
       // Encontrar o militar para decrementar extras
       const selectedPersonnel = personnel.find(p => p.id === assignment.personnelId);
       if (selectedPersonnel && selectedPersonnel.extras > 0) {
-        console.log(`Atualizando extras para ${selectedPersonnel.name} de ${selectedPersonnel.extras} para ${selectedPersonnel.extras - 1}`);
-        
         // Atualizar extras do militar (decrementar)
-        const updateResponse = await apiRequest("PUT", `/api/personnel/${selectedPersonnel.id}`, {
+        await apiRequest("PUT", `/api/personnel/${selectedPersonnel.id}`, {
           ...selectedPersonnel,
           extras: selectedPersonnel.extras - 1
         });
-        
-        if (!updateResponse.ok) {
-          console.error("Falha ao atualizar extras do militar:", updateResponse.statusText);
-        }
-      } else {
-        console.log(`Militar não encontrado ou extras = 0 para personnel ID ${assignment.personnelId}`);
       }
       
       // Remover a designação
-      console.log(`Enviando DELETE para /api/assignments/${assignmentId}`);
       const response = await apiRequest("DELETE", `/api/assignments/${assignmentId}`);
       
-      console.log(`Resposta do DELETE:`, response.status, response.statusText);
-      
-      // Atualizar dados independentemente da resposta (204 No Content não tem .ok)
-      if (response.status === 204 || response.ok) {
+      if (response.ok) {
         // Refresh assignments and personnel (para atualizar o número de extras)
         onAssignmentChange();
         
@@ -255,14 +240,6 @@ export function ScheduleCalendar({
           title: "Militar removido",
           description: `${personnelName} removido da escala com sucesso`,
         });
-      } else {
-        // Possível erro 404 - assignment pode já ter sido removido
-        if (response.status === 404) {
-          console.log("Designação já removida, atualizando dados");
-          onAssignmentChange();
-        } else {
-          throw new Error(`Erro ao remover designação: ${response.statusText}`);
-        }
       }
     } catch (error) {
       console.error("Error removing assignment:", error);
@@ -311,15 +288,15 @@ export function ScheduleCalendar({
 
 
   return (
-    <div className="w-full lg:w-3/4">
-      <div className="bg-white rounded-lg shadow-md p-2 sm:p-3">        
+    <div className="lg:w-3/4">
+      <div className="bg-white rounded-lg shadow-md p-4">        
         {/* Título do mês e ano */}
-        <div className="text-center font-bold text-lg sm:text-xl text-[#1A3A5F] p-2 mb-2 border-b-2 border-[#1A3A5F]/20">
+        <div className="text-center font-bold text-xl text-[#1A3A5F] p-2 mb-4 border-b-2 border-[#1A3A5F]/20">
           Escalas para {new Date(currentYear, currentMonth, 1).toLocaleDateString('pt-BR', {month: 'long', year: 'numeric'}).charAt(0).toUpperCase() + new Date(currentYear, currentMonth, 1).toLocaleDateString('pt-BR', {month: 'long', year: 'numeric'}).slice(1)}
         </div>
         
-        {/* Calendar grid - responsivo para mobile e desktop */}
-        <div id="calendar-grid" className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 grid-flow-row gap-2">
+        {/* Calendar grid - grid simples sem alinhamento com dias da semana */}
+        <div id="calendar-grid" className="grid grid-cols-7 auto-rows-fr gap-2">
           {/* Dias do mês - começando sempre no primeiro card */}
           {calendarDays.map((day, index) => {
             const dayAssignments = getAssignmentsForDate(day);
@@ -346,17 +323,13 @@ export function ScheduleCalendar({
                   if (!person) return null;
                   
                   return (
-                    <div key={assignment.id} className="touch-manipulation mb-2">
-                      <PersonnelCard
-                        personnel={person}
-                        isAssigned={true}
-                        isDraggable={false}
-                        onRemove={() => {
-                          console.log(`Iniciando remoção da designação: ${assignment.id} - ${person.name}`);
-                          handleRemoveAssignment(assignment.id, person.name);
-                        }}
-                      />
-                    </div>
+                    <PersonnelCard
+                      key={assignment.id}
+                      personnel={person}
+                      isAssigned={true}
+                      isDraggable={false}
+                      onRemove={() => handleRemoveAssignment(assignment.id, person.name)}
+                    />
                   );
                 })}
               </CalendarDay>

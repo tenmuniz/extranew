@@ -192,20 +192,16 @@ export default function Home() {
       </div>
 
       {/* Calendar and Personnel List */}
-      <div className="flex flex-col lg:flex-row gap-4">
-        <div className="lg:w-1/5 lg:flex-shrink-0">
-          <PersonnelList personnel={sortedPersonnel} />
-        </div>
-        <div className="lg:w-4/5">
-          <ScheduleCalendar
-            currentYear={currentYear}
-            currentMonth={currentMonth}
-            activeOperation={activeOperation}
-            assignments={assignments}
-            personnel={sortedPersonnel}
-            onAssignmentChange={handleAssignmentChange}
-          />
-        </div>
+      <div className="flex flex-col lg:flex-row gap-6">
+        <PersonnelList personnel={sortedPersonnel} />
+        <ScheduleCalendar
+          currentYear={currentYear}
+          currentMonth={currentMonth}
+          activeOperation={activeOperation}
+          assignments={assignments}
+          personnel={sortedPersonnel}
+          onAssignmentChange={handleAssignmentChange}
+        />
       </div>
 
       {/* Personnel Management Modal */}

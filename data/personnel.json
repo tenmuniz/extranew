@@ -3,7 +3,7 @@
     "id": 1,
     "name": "CAP MUNIZ",
     "rank": "CAP",
-    "extras": 6,
+    "extras": 11,
     "platoon": "EXPEDIENTE"
   },
   {
@@ -17,14 +17,14 @@
     "id": 3,
     "name": "TEN VANILSON",
     "rank": "TEN",
-    "extras": 4,
+    "extras": 3,
     "platoon": "EXPEDIENTE"
   },
   {
     "id": 4,
     "name": "SUB TEN ANDRÉ",
     "rank": "SUBTEN",
-    "extras": 0,
+    "extras": 1,
     "platoon": "EXPEDIENTE"
   },
   {

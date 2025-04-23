@@ -1,5 +1,3 @@
-@import url('./components/ui/card-touch-styles.css');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
