@@ -9,6 +9,7 @@ import {
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import { WebSocketServer, WebSocket } from 'ws';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Error handling utility
@@ -228,5 +229,123 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   const httpServer = createServer(app);
+  
+  // Configurar WebSocket server para atualizações em tempo real
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  
+  // Armazenar clientes conectados
+  const clients: WebSocket[] = [];
+  
+  wss.on('connection', (ws: WebSocket) => {
+    console.log('WebSocket client conectado');
+    
+    // Adicionar cliente à lista de clientes conectados
+    clients.push(ws);
+    
+    // Enviar dados iniciais para o cliente quando se conectar
+    const sendInitialData = async () => {
+      try {
+        const personnel = await storage.getAllPersonnel();
+        const assignments = await storage.getAllAssignments();
+        
+        const initialData = {
+          type: 'INITIAL_DATA',
+          payload: {
+            personnel,
+            assignments
+          }
+        };
+        
+        // Verificar se o socket está aberto (OPEN = 1)
+        if (ws.readyState === 1) {
+          ws.send(JSON.stringify(initialData));
+        }
+      } catch (error) {
+        console.error('Erro enviando dados iniciais via WebSocket:', error);
+      }
+    };
+    
+    sendInitialData();
+    
+    // Lidar com mensagens do cliente
+    ws.on('message', async (message: string) => {
+      try {
+        const data = JSON.parse(message.toString());
+        console.log('Mensagem recebida do cliente:', data.type);
+        
+        // Processar mensagens específicas se necessário
+        if (data.type === 'REQUEST_REFRESH') {
+          sendInitialData();
+        }
+      } catch (error) {
+        console.error('Erro processando mensagem do cliente:', error);
+      }
+    });
+    
+    // Remover cliente quando desconectar
+    ws.on('close', () => {
+      const index = clients.indexOf(ws);
+      if (index !== -1) {
+        clients.splice(index, 1);
+      }
+      console.log('WebSocket client desconectado');
+    });
+  });
+  
+  // Função para enviar atualização para todos os clientes
+  const broadcastUpdate = (type: string, payload: any) => {
+    const message = JSON.stringify({ type, payload });
+    
+    clients.forEach(client => {
+      // Verificar se o socket está aberto (OPEN = 1)
+      if (client.readyState === 1) {
+        client.send(message);
+      }
+    });
+  };
+  
+  // Sobrescrever métodos de storage para adicionar sincronização
+  const originalCreatePersonnel = storage.createPersonnel;
+  storage.createPersonnel = async (data) => {
+    const result = await originalCreatePersonnel(data);
+    const personnel = await storage.getAllPersonnel();
+    broadcastUpdate('PERSONNEL_UPDATED', { personnel });
+    return result;
+  };
+  
+  const originalUpdatePersonnel = storage.updatePersonnel;
+  storage.updatePersonnel = async (id, data) => {
+    const result = await originalUpdatePersonnel(id, data);
+    const personnel = await storage.getAllPersonnel();
+    broadcastUpdate('PERSONNEL_UPDATED', { personnel });
+    return result;
+  };
+  
+  const originalDeletePersonnel = storage.deletePersonnel;
+  storage.deletePersonnel = async (id) => {
+    const result = await originalDeletePersonnel(id);
+    const personnel = await storage.getAllPersonnel();
+    broadcastUpdate('PERSONNEL_UPDATED', { personnel });
+    return result;
+  };
+  
+  const originalCreateAssignment = storage.createAssignment;
+  storage.createAssignment = async (data) => {
+    const result = await originalCreateAssignment(data);
+    const assignments = await storage.getAllAssignments();
+    const personnel = await storage.getAllPersonnel();
+    broadcastUpdate('DATA_UPDATED', { assignments, personnel });
+    return result;
+  };
+  
+  const originalDeleteAssignment = storage.deleteAssignment;
+  storage.deleteAssignment = async (id) => {
+    const result = await originalDeleteAssignment(id);
+    const assignments = await storage.getAllAssignments();
+    const personnel = await storage.getAllPersonnel();
+    broadcastUpdate('DATA_UPDATED', { assignments, personnel });
+    return result;
+  };
+  
   return httpServer;
 }

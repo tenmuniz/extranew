@@ -11,6 +11,7 @@ import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { getMonthDateRange, formatDateToISO } from "@/lib/utils";
 import { Assignment, OperationType, Personnel } from "@shared/schema";
+import syncService from "@/lib/syncService";
 
 // Mapa de ordem de patentes (para ordenação hierárquica)
 const rankOrder: Record<string, number> = {
@@ -98,6 +99,20 @@ export default function Home() {
       queryKey: ["/api/assignments"]
     });
   }, [currentMonth, currentYear, queryClient]);
+  
+  // Efeito para iniciar o serviço de sincronização em tempo real
+  useEffect(() => {
+    // Garantir que o serviço de sincronização esteja conectado
+    if (!syncService.isConnected()) {
+      syncService.connect();
+    }
+    
+    // Retornar função de limpeza que será executada quando o componente for desmontado
+    return () => {
+      // Não desconectar o serviço quando o componente for desmontado
+      // para manter a sincronização durante toda a sessão do usuário
+    };
+  }, []);
   
   // Ordenar a lista de pessoal por patente (hierarquia militar)
   const sortedPersonnel = useMemo(() => {
