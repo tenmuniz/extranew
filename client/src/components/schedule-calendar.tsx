@@ -319,7 +319,7 @@ export function ScheduleCalendar({
         </div>
         
         {/* Calendar grid - responsivo para mobile e desktop */}
-        <div id="calendar-grid" className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 auto-rows-fr gap-2">
+        <div id="calendar-grid" className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 auto-rows-fr gap-3 sm:gap-4">
           {/* Dias do mês - começando sempre no primeiro card */}
           {calendarDays.map((day, index) => {
             const dayAssignments = getAssignmentsForDate(day);
@@ -346,7 +346,7 @@ export function ScheduleCalendar({
                   if (!person) return null;
                   
                   return (
-                    <div key={assignment.id} className="touch-manipulation mb-1.5">
+                    <div key={assignment.id} className="touch-manipulation mb-2">
                       <PersonnelCard
                         personnel={person}
                         isAssigned={true}
