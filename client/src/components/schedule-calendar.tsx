@@ -346,7 +346,7 @@ export function ScheduleCalendar({
                   if (!person) return null;
                   
                   return (
-                    <div key={assignment.id} className="touch-manipulation">
+                    <div key={assignment.id} className="touch-manipulation mb-1.5">
                       <PersonnelCard
                         personnel={person}
                         isAssigned={true}

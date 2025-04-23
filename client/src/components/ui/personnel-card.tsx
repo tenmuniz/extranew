@@ -187,7 +187,7 @@ export function PersonnelCard({
     
     return (
       <div 
-        className="assigned-person relative p-2 rounded-md text-xs shadow-sm w-full mb-1 overflow-hidden touch-manipulation"
+        className="assigned-person relative p-2.5 rounded-md text-xs shadow-sm w-full mb-1 overflow-hidden touch-manipulation"
         style={{
           background: getGradient(),
           borderLeft: `3px solid ${personnel.platoon ? getGarrisonColor(personnel.platoon) : "#1A3A5F"}`,
@@ -197,11 +197,11 @@ export function PersonnelCard({
           {/* Nome do militar com o rank como prefixo e símbolo */}
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center flex-1 overflow-hidden">
-              <div className="flex-shrink-0 w-5 h-5 mr-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center">
+              <div className="flex-shrink-0 w-6 h-6 mr-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center">
                 <div className="text-white text-[9px]">{getRankSymbols(personnel.rank)}</div>
               </div>
               <div className="flex-1 overflow-hidden">
-                <p className="font-medium text-gray-800 text-xs leading-tight truncate">
+                <p className="font-medium text-gray-800 text-sm leading-tight break-all">
                   {personnel.name}
                 </p>
               </div>
