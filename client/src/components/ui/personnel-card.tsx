@@ -187,7 +187,7 @@ export function PersonnelCard({
     
     return (
       <div 
-        className="assigned-person relative p-2.5 rounded-md text-xs shadow-sm w-full mb-1 overflow-hidden touch-manipulation"
+        className="assigned-person relative p-3 rounded-md text-xs shadow-sm w-full mb-1 overflow-hidden touch-manipulation"
         style={{
           background: getGradient(),
           borderLeft: `3px solid ${personnel.platoon ? getGarrisonColor(personnel.platoon) : "#1A3A5F"}`,
