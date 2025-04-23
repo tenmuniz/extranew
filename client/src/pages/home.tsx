@@ -102,10 +102,14 @@ export default function Home() {
   
   // Efeito para iniciar o serviço de sincronização em tempo real
   useEffect(() => {
+    console.log('Iniciando serviço de sincronização...');
     // Garantir que o serviço de sincronização esteja conectado
     if (!syncService.isConnected()) {
       syncService.connect();
     }
+    
+    // Solicitar atualização de dados ao conectar
+    syncService.requestRefresh();
     
     // Retornar função de limpeza que será executada quando o componente for desmontado
     return () => {

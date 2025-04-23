@@ -14,7 +14,8 @@ class SyncService {
   private isConnecting = false;
 
   constructor() {
-    this.connect();
+    // Não iniciar a conexão automaticamente no construtor 
+    // (será iniciado quando o componente de app for montado)
     // Adicionar event listener para reconectar quando a janela voltar a ficar visível
     window.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible' && !this.isConnected()) {
@@ -50,8 +51,15 @@ class SyncService {
 
       this.socket.onmessage = (event) => {
         try {
+          console.log('Mensagem bruta recebida:', event.data);
           const message: WebSocketMessage = JSON.parse(event.data);
-          this.handleMessage(message);
+          
+          // Verificar se a mensagem tem o formato esperado
+          if (typeof message === 'object' && message !== null && 'type' in message) {
+            this.handleMessage(message);
+          } else {
+            console.log('Mensagem sem formato esperado:', message);
+          }
         } catch (error) {
           console.error('Erro processando mensagem WebSocket:', error);
         }
