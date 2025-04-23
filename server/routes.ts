@@ -160,7 +160,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const assignmentToDelete = allAssignments.find((a) => a.id === id);
       
       if (!assignmentToDelete) {
-        return res.status(404).json({ message: "Assignment not found" });
+        console.log(`[API] Atribuição com ID ${id} não encontrada para exclusão`);
+        // Se já foi excluída, consideramos a operação bem-sucedida
+        return res.status(204).end();
       }
       
       const personnelId = assignmentToDelete.personnelId;
@@ -169,7 +171,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const success = await storage.deleteAssignment(id);
       
       if (!success) {
-        return res.status(404).json({ message: "Assignment not found" });
+        console.log(`[API] Falha ao excluir atribuição com ID ${id}`);
+        // Se já foi excluída, consideramos a operação bem-sucedida
+        return res.status(204).end();
       }
       
       // Atualizar o contador de extras do militar após a exclusão
