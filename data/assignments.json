@@ -14,20 +14,6 @@
     "createdAt": "2025-04-22T20:44:24.459Z"
   },
   {
-    "id": 5,
-    "personnelId": 1,
-    "operationType": "PMF",
-    "date": "2025-04-09",
-    "createdAt": "2025-04-22T20:44:26.323Z"
-  },
-  {
-    "id": 6,
-    "personnelId": 1,
-    "operationType": "PMF",
-    "date": "2025-04-03",
-    "createdAt": "2025-04-22T20:44:28.082Z"
-  },
-  {
     "id": 7,
     "personnelId": 1,
     "operationType": "PMF",
@@ -91,13 +77,6 @@
     "createdAt": "2025-04-22T21:02:23.643Z"
   },
   {
-    "id": 16,
-    "personnelId": 4,
-    "operationType": "PMF",
-    "date": "2025-04-10",
-    "createdAt": "2025-04-22T21:02:34.959Z"
-  },
-  {
     "id": 17,
     "personnelId": 2,
     "operationType": "PMF",
@@ -117,5 +96,12 @@
     "operationType": "PMF",
     "date": "2025-04-11",
     "createdAt": "2025-04-22T21:07:29.891Z"
+  },
+  {
+    "id": 21,
+    "personnelId": 3,
+    "operationType": "PMF",
+    "date": "2025-04-03",
+    "createdAt": "2025-04-23T02:26:33.648Z"
   }
 ]

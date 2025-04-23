@@ -1,0 +1,50 @@
+/* Estilos para melhorar a experiência mobile */
+
+/* Aumentar área de toque para botões */
+.touch-target-helper {
+  position: relative;
+}
+
+.touch-target-helper::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  z-index: -1;
+}
+
+/* Melhoria para interações de toque em drag and drop */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevenir seleção de texto indesejado durante toque */
+.prevent-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Botão de remoção com maior área de clique */
+.remove-button {
+  position: relative;
+  z-index: 10;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Melhoria visual para feedback quando pressionado */
+@media (hover: hover) {
+  .remove-button:hover {
+    transform: scale(1.1);
+  }
+}
+
+.remove-button:active {
+  transform: scale(0.95);
+  opacity: 0.9;
+}

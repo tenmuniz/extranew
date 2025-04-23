@@ -213,26 +213,41 @@ export function ScheduleCalendar({
   // Handle removing an assignment
   const handleRemoveAssignment = async (assignmentId: number, personnelName: string) => {
     try {
+      console.log(`Tentando remover designação ${assignmentId} para ${personnelName}`);
+      
       // Primeiro, obtenha a designação para saber qual militar está sendo removido
       const assignment = assignments.find(a => a.id === assignmentId);
       if (!assignment) {
+        console.error(`Designação ${assignmentId} não encontrada`);
         throw new Error("Designação não encontrada");
       }
       
       // Encontrar o militar para decrementar extras
       const selectedPersonnel = personnel.find(p => p.id === assignment.personnelId);
       if (selectedPersonnel && selectedPersonnel.extras > 0) {
+        console.log(`Atualizando extras para ${selectedPersonnel.name} de ${selectedPersonnel.extras} para ${selectedPersonnel.extras - 1}`);
+        
         // Atualizar extras do militar (decrementar)
-        await apiRequest("PUT", `/api/personnel/${selectedPersonnel.id}`, {
+        const updateResponse = await apiRequest("PUT", `/api/personnel/${selectedPersonnel.id}`, {
           ...selectedPersonnel,
           extras: selectedPersonnel.extras - 1
         });
+        
+        if (!updateResponse.ok) {
+          console.error("Falha ao atualizar extras do militar:", updateResponse.statusText);
+        }
+      } else {
+        console.log(`Militar não encontrado ou extras = 0 para personnel ID ${assignment.personnelId}`);
       }
       
       // Remover a designação
+      console.log(`Enviando DELETE para /api/assignments/${assignmentId}`);
       const response = await apiRequest("DELETE", `/api/assignments/${assignmentId}`);
       
-      if (response.ok) {
+      console.log(`Resposta do DELETE:`, response.status, response.statusText);
+      
+      // Atualizar dados independentemente da resposta (204 No Content não tem .ok)
+      if (response.status === 204 || response.ok) {
         // Refresh assignments and personnel (para atualizar o número de extras)
         onAssignmentChange();
         
@@ -240,6 +255,14 @@ export function ScheduleCalendar({
           title: "Militar removido",
           description: `${personnelName} removido da escala com sucesso`,
         });
+      } else {
+        // Possível erro 404 - assignment pode já ter sido removido
+        if (response.status === 404) {
+          console.log("Designação já removida, atualizando dados");
+          onAssignmentChange();
+        } else {
+          throw new Error(`Erro ao remover designação: ${response.statusText}`);
+        }
       }
     } catch (error) {
       console.error("Error removing assignment:", error);
