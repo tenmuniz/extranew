@@ -200,16 +200,17 @@ export function PersonnelCard({
               <div className="flex-shrink-0 w-6 h-6 mr-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center">
                 <div className="text-white text-[9px]">{getRankSymbols(personnel.rank)}</div>
               </div>
-              <div className="flex items-center min-w-0">
-                <p className="font-medium text-gray-800 text-sm whitespace-nowrap overflow-hidden text-ellipsis"
-                   style={{ maxWidth: "calc(100% - 28px)", minWidth: "100px" }}>
-                  {personnel.name}
-                </p>
+              <div className="flex items-center justify-between w-full">
+                <div className="flex-grow mr-2 overflow-hidden">
+                  <p className="font-medium text-gray-800 text-sm truncate">
+                    {personnel.name}
+                  </p>
+                </div>
                 
                 {/* Botão de remover ao lado do nome */}
                 {onRemove && (
                   <button 
-                    className="flex-shrink-0 w-5 h-5 ml-1 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 hover:text-white transition-colors duration-150 shadow-sm remove-button touch-manipulation prevent-select"
+                    className="flex-shrink-0 w-6 h-6 ml-1 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 hover:text-white transition-colors duration-150 shadow-sm remove-button touch-manipulation prevent-select"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -226,7 +227,7 @@ export function PersonnelCard({
                     type="button"
                     style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.2)" }}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
                     <span className="touch-target-helper"></span>
@@ -288,15 +289,17 @@ export function PersonnelCard({
               <div className="text-white">{getRankSymbols(personnel.rank)}</div>
             </div>
             <div className="min-w-0 flex flex-col flex-grow mr-1">
-              <div className="flex items-center w-full">
-                <p className="font-bold text-gray-900 text-sm whitespace-nowrap overflow-hidden text-ellipsis flex-grow" style={{ width: "calc(100% - 30px)", maxWidth: "200px", paddingRight: "2px" }}>
-                  {personnel.name}
-                </p>
+              <div className="flex items-center justify-between w-full">
+                <div className="flex-grow mr-2 overflow-hidden">
+                  <p className="font-bold text-gray-900 text-sm truncate">
+                    {personnel.name}
+                  </p>
+                </div>
                 
-                {/* Botão de remover ao lado do nome */}
+                {/* Botão de remover separado */}
                 {onRemove && (
                   <button 
-                    className="flex-shrink-0 w-6 h-6 ml-0.5 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 hover:text-white transition-all duration-150 shadow-sm remove-button touch-manipulation prevent-select hover:scale-110"
+                    className="flex-shrink-0 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 transition-colors"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -311,12 +314,10 @@ export function PersonnelCard({
                     }}
                     aria-label="Remover"
                     type="button"
-                    style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.2)" }}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
-                    <span className="touch-target-helper"></span>
                   </button>
                 )}
               </div>
