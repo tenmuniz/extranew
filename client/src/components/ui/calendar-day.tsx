@@ -79,15 +79,16 @@ export function CalendarDay({
   return (
     <div
       className={cn(
-        "calendar-day rounded-xl min-h-[220px] p-0 overflow-hidden border transition-all duration-200 hover:shadow-lg relative",
+        "calendar-day rounded-xl min-h-[250px] p-0 overflow-hidden border transition-all duration-200 hover:shadow-lg relative",
         isCurrentMonth 
           ? "shadow-md border-[#E7EBF0] opacity-100" 
           : "border-dashed border-gray-300 opacity-80",
         isDisabled && "cursor-not-allowed bg-opacity-30",
-        isToday && "ring-2 ring-blue-400 ring-offset-1"
+        isToday && "ring-2 ring-blue-500 ring-offset-2"
       )}
       style={{ 
         background: generateCardGradient(),
+        boxShadow: isToday ? "0 4px 12px rgba(66, 153, 225, 0.15)" : "0 4px 6px rgba(0, 0, 0, 0.05)",
       }}
       data-date={date.toISOString().split('T')[0]}
       onDragOver={isDisabled ? (e: React.DragEvent) => e.preventDefault() : onDragOver}
@@ -103,10 +104,11 @@ export function CalendarDay({
       
       {/* Header do card com dia e guarnição */}
       <div 
-        className="flex justify-between items-center px-3 py-2 text-white"
+        className="flex justify-between items-center px-3 py-2.5 text-white"
         style={{ 
           backgroundColor: guarnitionColor,
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          backgroundImage: `linear-gradient(to right, ${guarnitionColor}, ${guarnitionColor}DD)`
         }}
       >
         <div className="flex flex-col">
@@ -130,9 +132,9 @@ export function CalendarDay({
       {/* Container para os militares designados */}
       <div className={cn(
         "assigned-personnel px-2 pt-2 pb-1 relative",
-        !isDisabled && "min-h-[200px]"
+        !isDisabled && "min-h-[220px]"
       )}>
-        <div className="flex flex-col w-full gap-2 touch-manipulation">
+        <div className="flex flex-col w-full gap-3 touch-manipulation">
           {children}
         </div>
         

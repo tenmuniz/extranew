@@ -251,7 +251,7 @@ export function PersonnelCard({
   return (
     <div
       className={cn(
-        "personnel-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 flex flex-col w-full",
+        "personnel-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 flex flex-col w-full transform hover:-translate-y-1",
         isDraggable && "cursor-grab active:cursor-grabbing",
         "touch-manipulation" // Melhora interação em dispositivos touch
       )}
@@ -270,8 +270,11 @@ export function PersonnelCard({
       
       {/* Conteúdo principal */}
       <div 
-        className="p-2 sm:p-3 flex flex-col"
-        style={{ background: getGradientBackground() }}
+        className="p-2.5 sm:p-3 flex flex-col"
+        style={{ 
+          background: getGradientBackground(),
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.15)"
+        }}
       >
         {/* Informações principais - Patente e Nome com botão de excluir ao lado */}
         <div className="flex items-center w-full mb-2">
@@ -293,7 +296,7 @@ export function PersonnelCard({
                 {/* Botão de remover ao lado do nome */}
                 {onRemove && (
                   <button 
-                    className="flex-shrink-0 w-6 h-6 ml-0.5 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 hover:text-white transition-colors duration-150 shadow-sm remove-button touch-manipulation prevent-select"
+                    className="flex-shrink-0 w-5 h-5 ml-0.5 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 hover:text-white transition-all duration-150 shadow-sm remove-button touch-manipulation prevent-select hover:scale-110"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -310,7 +313,7 @@ export function PersonnelCard({
                     type="button"
                     style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.2)" }}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
                     <span className="touch-target-helper"></span>
