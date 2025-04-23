@@ -3,21 +3,21 @@
     "id": 1,
     "name": "CAP MUNIZ",
     "rank": "CAP",
-    "extras": 10,
+    "extras": 11,
     "platoon": "EXPEDIENTE"
   },
   {
     "id": 2,
     "name": "1º TEN QOPM MONTEIRO",
     "rank": "1TEN",
-    "extras": 0,
+    "extras": 1,
     "platoon": "EXPEDIENTE"
   },
   {
     "id": 3,
     "name": "TEN VANILSON",
     "rank": "TEN",
-    "extras": 1,
+    "extras": 3,
     "platoon": "EXPEDIENTE"
   },
   {

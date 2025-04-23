@@ -81,17 +81,12 @@ export default function Home() {
 
   // Handle refresh of personnel or assignments
   const handlePersonnelChange = () => {
-    // Invalidar a query para forçar uma nova chamada à API
-    queryClient.invalidateQueries({ queryKey: ["/api/personnel"] });
     refetchPersonnel();
   };
 
   const handleAssignmentChange = () => {
-    // Ao alterar designações, invalidamos as queries e depois fazemos o refetch
-    queryClient.invalidateQueries({ queryKey: ["/api/assignments"] });
-    queryClient.invalidateQueries({ queryKey: ["/api/personnel"] });
-    
-    // Refetchs após invalidação das queries
+    // Ao alterar designações, também precisamos atualizar a lista de pessoal
+    // para refletir as mudanças nos extras
     refetchAssignments();
     refetchPersonnel();
   };
