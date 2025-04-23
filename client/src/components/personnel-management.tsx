@@ -116,26 +116,40 @@ export function PersonnelManagement({
 
     if (window.confirm(`Tem certeza que deseja excluir ${selectedPerson.name}?`)) {
       try {
-        await apiRequest('DELETE', `/api/personnel/${selectedPerson.id}`);
+        console.log("Tentando excluir militar:", selectedPerson.id);
+        const response = await apiRequest('DELETE', `/api/personnel/${selectedPerson.id}`);
 
-        toast({
-          title: "Sucesso",
-          description: "Militar excluído com sucesso",
-        });
-
-        resetForm();
-        setSelectedPerson(null);
-        onPersonnelChange();
+        console.log("Resposta recebida:", response.status);
         
-        // Invalidate queries to refresh data
-        queryClient.invalidateQueries({ queryKey: ['/api/personnel'] });
+        // Verifica se a resposta foi bem-sucedida
+        if (response.ok) {
+          console.log("Militar excluído com sucesso");
+          toast({
+            title: "Sucesso",
+            description: "Militar excluído com sucesso",
+          });
+
+          resetForm();
+          setSelectedPerson(null);
+          onPersonnelChange();
+          
+          // Invalidate queries to refresh data
+          queryClient.invalidateQueries({ queryKey: ['/api/personnel'] });
+        } else {
+          console.error("Erro ao excluir, status:", response.status);
+          toast({
+            title: "Erro",
+            description: `Erro ao excluir: ${response.status}`,
+            variant: "destructive"
+          });
+        }
       } catch (error) {
+        console.error('Exceção ao excluir militar:', error);
         toast({
           title: "Erro",
           description: "Ocorreu um erro ao excluir o militar",
           variant: "destructive"
         });
-        console.error('Error deleting personnel:', error);
       }
     }
   };
@@ -340,7 +354,7 @@ export function PersonnelManagement({
                         type="button" 
                         variant="destructive" 
                         onClick={handleDelete}
-                        className="flex-1"
+                        className="flex-1 touch-manipulation prevent-select touch-button"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
