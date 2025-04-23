@@ -202,7 +202,7 @@ export function PersonnelCard({
               </div>
               <div className="flex items-center min-w-0">
                 <p className="font-medium text-gray-800 text-sm whitespace-nowrap overflow-hidden text-ellipsis"
-                   style={{ maxWidth: "calc(100% - 24px)" }}>
+                   style={{ maxWidth: "calc(100% - 28px)", minWidth: "100px" }}>
                   {personnel.name}
                 </p>
                 
@@ -286,14 +286,14 @@ export function PersonnelCard({
             </div>
             <div className="min-w-0 flex flex-col flex-grow mr-1">
               <div className="flex items-center w-full">
-                <p className="font-bold text-gray-900 text-sm whitespace-nowrap overflow-hidden text-ellipsis flex-grow">
+                <p className="font-bold text-gray-900 text-sm whitespace-nowrap overflow-hidden text-ellipsis flex-grow" style={{ minWidth: "140px", maxWidth: "170px", paddingRight: "2px" }}>
                   {personnel.name}
                 </p>
                 
                 {/* Botão de remover ao lado do nome */}
                 {onRemove && (
                   <button 
-                    className="flex-shrink-0 w-6 h-6 ml-1 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 hover:text-white transition-colors duration-150 shadow-sm remove-button touch-manipulation prevent-select"
+                    className="flex-shrink-0 w-6 h-6 ml-0.5 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 hover:text-white transition-colors duration-150 shadow-sm remove-button touch-manipulation prevent-select"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();

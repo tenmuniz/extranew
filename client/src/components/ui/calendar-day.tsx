@@ -79,7 +79,7 @@ export function CalendarDay({
   return (
     <div
       className={cn(
-        "calendar-day rounded-xl min-h-[200px] p-0 overflow-hidden border transition-all duration-200 hover:shadow-lg relative",
+        "calendar-day rounded-xl min-h-[220px] p-0 overflow-hidden border transition-all duration-200 hover:shadow-lg relative",
         isCurrentMonth 
           ? "shadow-md border-[#E7EBF0] opacity-100" 
           : "border-dashed border-gray-300 opacity-80",
@@ -130,7 +130,7 @@ export function CalendarDay({
       {/* Container para os militares designados */}
       <div className={cn(
         "assigned-personnel px-2 pt-2 pb-1 relative",
-        !isDisabled && "min-h-[180px]"
+        !isDisabled && "min-h-[200px]"
       )}>
         <div className="flex flex-col w-full gap-2 touch-manipulation">
           {children}
