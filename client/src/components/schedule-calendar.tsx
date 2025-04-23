@@ -216,7 +216,11 @@ export function ScheduleCalendar({
       // Primeiro, obtenha a designação para saber qual militar está sendo removido
       const assignment = assignments.find(a => a.id === assignmentId);
       if (!assignment) {
-        throw new Error("Designação não encontrada");
+        // Se a designação não for encontrada no estado atual, não é necessário fazer mais nada
+        console.log(`Designação com ID ${assignmentId} não encontrada no estado local`);
+        // Ainda atualizamos a interface para garantir consistência
+        onAssignmentChange();
+        return;
       }
       
       // Encontrar o militar para decrementar extras
@@ -229,17 +233,24 @@ export function ScheduleCalendar({
         });
       }
       
-      // Remover a designação
-      const response = await apiRequest("DELETE", `/api/assignments/${assignmentId}`);
-      
-      if (response.ok) {
-        // Refresh assignments and personnel (para atualizar o número de extras)
-        onAssignmentChange();
+      try {
+        // Remover a designação
+        const response = await apiRequest("DELETE", `/api/assignments/${assignmentId}`);
         
-        toast({
-          title: "Militar removido",
-          description: `${personnelName} removido da escala com sucesso`,
-        });
+        if (response.ok) {
+          // Refresh assignments and personnel (para atualizar o número de extras)
+          onAssignmentChange();
+          
+          toast({
+            title: "Militar removido",
+            description: `${personnelName} removido da escala com sucesso`,
+          });
+        }
+      } catch (deleteError) {
+        // Se a API retornar 404, significa que a designação já foi excluída
+        console.log(`Erro ao excluir designação: ${deleteError}`);
+        // Ainda atualizamos a interface para garantir consistência
+        onAssignmentChange();
       }
     } catch (error) {
       console.error("Error removing assignment:", error);
