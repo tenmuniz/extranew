@@ -322,17 +322,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
   
   // Sobrescrever métodos de storage para adicionar sincronização
-  const originalCreatePersonnel = storage.createPersonnel;
-  storage.createPersonnel = async (data) => {
+  const originalCreatePersonnel = storage.createPersonnel.bind(storage);
+  storage.createPersonnel = async function(data: any): Promise<any> {
     const result = await originalCreatePersonnel(data);
     const personnel = await storage.getAllPersonnel();
     broadcastUpdate('PERSONNEL_UPDATED', { personnel });
     return result;
   };
   
-  const originalUpdatePersonnel = storage.updatePersonnel;
-  storage.updatePersonnel = async (id, data) => {
+  // Vamos definir a função corretamente para preservar 'this'
+  const originalUpdatePersonnel = storage.updatePersonnel.bind(storage);
+  storage.updatePersonnel = async function(id: number, data: any): Promise<any> {
     try {
+      // Chamar o método original, mantendo 'this' como storage
       const result = await originalUpdatePersonnel(id, data);
       if (result) {
         const personnel = await storage.getAllPersonnel();
@@ -345,8 +347,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   };
   
-  const originalDeletePersonnel = storage.deletePersonnel;
-  storage.deletePersonnel = async (id) => {
+  const originalDeletePersonnel = storage.deletePersonnel.bind(storage);
+  storage.deletePersonnel = async function(id: number): Promise<boolean> {
     try {
       const result = await originalDeletePersonnel(id);
       if (result) {
@@ -360,8 +362,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   };
   
-  const originalCreateAssignment = storage.createAssignment;
-  storage.createAssignment = async (data) => {
+  const originalCreateAssignment = storage.createAssignment.bind(storage);
+  storage.createAssignment = async function(data: any): Promise<any> {
     try {
       const result = await originalCreateAssignment(data);
       const assignments = await storage.getAllAssignments();
@@ -374,8 +376,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   };
   
-  const originalDeleteAssignment = storage.deleteAssignment;
-  storage.deleteAssignment = async (id) => {
+  const originalDeleteAssignment = storage.deleteAssignment.bind(storage);
+  storage.deleteAssignment = async function(id: number): Promise<boolean> {
     try {
       const result = await originalDeleteAssignment(id);
       if (result) {
