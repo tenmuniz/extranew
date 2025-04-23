@@ -1,12 +1,30 @@
-/* Estilos para melhorar a experiência mobile */
+/* Estilos para melhor interação em dispositivos móveis touch */
 
-/* Aumentar área de toque para botões */
-.touch-target-helper {
-  position: relative;
+/* 
+  Remove o atraso de 300ms em eventos de toque para elementos com
+  a classe touch-manipulation
+*/
+.touch-manipulation {
+  touch-action: manipulation;
 }
 
-.touch-target-helper::after {
-  content: '';
+/* 
+  Evita seleção de texto em elementos que devem ser apenas clicáveis 
+  como botões e cartões, para prevenir comportamento inesperado em 
+  dispositivos móveis
+*/
+.prevent-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* 
+  Aumenta a área de toque para elementos interativos sem alterar 
+  visualmente o tamanho do elemento
+*/
+.touch-target-helper {
   position: absolute;
   top: -10px;
   left: -10px;
@@ -15,36 +33,52 @@
   z-index: -1;
 }
 
-/* Melhoria para interações de toque em drag and drop */
-.touch-manipulation {
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Prevenir seleção de texto indesejado durante toque */
-.prevent-select {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-/* Botão de remoção com maior área de clique */
-.remove-button {
-  position: relative;
-  z-index: 10;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Melhoria visual para feedback quando pressionado */
-@media (hover: hover) {
-  .remove-button:hover {
-    transform: scale(1.1);
+/* 
+  Feedback visual de clique específico para dispositivos móveis 
+  (usando @media para detectar dispositivos touch)
+*/
+@media (hover: none) {
+  .personnel-card:active {
+    transform: scale(0.97);
+    transition: transform 0.1s;
+  }
+  
+  .remove-button:active {
+    transform: scale(0.9);
+    transition: transform 0.1s;
   }
 }
 
-.remove-button:active {
-  transform: scale(0.95);
-  opacity: 0.9;
+/* 
+  Melhora a aparência de rolagem em dispositivos touch 
+*/
+.mobile-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+}
+
+/* Estilos para botões com melhor área de toque */
+.touch-button {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Versão móvel da aplicação - ajustes específicos */
+@media (max-width: 640px) {
+  .mobile-spacing {
+    margin-bottom: 16px;
+  }
+  
+  .mobile-padding {
+    padding: 16px;
+  }
+  
+  .mobile-full-height {
+    min-height: calc(100vh - 60px);
+  }
 }

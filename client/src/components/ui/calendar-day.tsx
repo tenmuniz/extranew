@@ -130,7 +130,7 @@ export function CalendarDay({
       {/* Container para os militares designados */}
       <div className={cn(
         "assigned-personnel px-2 pt-2 pb-1 relative",
-        !isDisabled && "min-h-[100px]"
+        !isDisabled && "min-h-[120px]"
       )}>
         <div className="flex flex-col w-full gap-1 touch-manipulation">
           {children}
@@ -140,7 +140,7 @@ export function CalendarDay({
         {!children && !isDisabled && (
           <div className="flex items-center justify-center h-full py-6 opacity-60 hover:opacity-100 transition-opacity">
             <div className="text-gray-500 text-xs text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mx-auto mb-1 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mx-auto mb-1 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
               <span className="block">Arraste um militar</span>
