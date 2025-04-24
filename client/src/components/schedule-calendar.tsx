@@ -341,20 +341,24 @@ export function ScheduleCalendar({
             </div>
           </div>
           
-          {/* Botão Voltar ao Topo */}
+          {/* Botão Voltar ao Topo - Fixo no canto inferior direito */}
           <button 
             onClick={() => {
               const container = document.getElementById('calendar-container');
               if (container) {
-                container.scrollTop = 0;
-                container.scrollLeft = 0;
+                // Usando scrollTo com comportamento suave
+                container.scrollTo({
+                  top: 0,
+                  left: 0,
+                  behavior: 'smooth'
+                });
               }
             }}
-            className="absolute bottom-2 right-2 bg-[#1A3A5F] hover:bg-[#4A6741] text-white p-2 rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 opacity-80 hover:opacity-100"
+            className="fixed bottom-6 right-6 z-50 bg-[#1A3A5F] hover:bg-[#4A6741] text-white p-3 rounded-full shadow-xl transform transition-all duration-300 hover:scale-110 opacity-80 hover:opacity-100"
             aria-label="Voltar ao topo"
             title="Voltar ao topo"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
             </svg>
           </button>

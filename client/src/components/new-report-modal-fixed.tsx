@@ -784,9 +784,14 @@ export function NewReportModal({
                       <button 
                         onClick={() => {
                           const list = document.getElementById('report-personnel-list');
-                          if (list) list.scrollTop = 0;
+                          if (list) {
+                            list.scrollTo({
+                              top: 0,
+                              behavior: 'smooth'
+                            });
+                          }
                         }}
-                        className="absolute bottom-2 right-2 bg-[#1A3A5F] hover:bg-[#4A6741] text-white p-2 rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 opacity-80 hover:opacity-100"
+                        className="absolute bottom-2 right-2 z-10 bg-[#1A3A5F] hover:bg-[#4A6741] text-white p-2 rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 opacity-80 hover:opacity-100"
                         aria-label="Voltar ao topo"
                         title="Voltar ao topo"
                       >
