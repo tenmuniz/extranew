@@ -97,12 +97,36 @@ export function PersonnelList({ personnel }: PersonnelListProps) {
               : "Nenhum militar disponível"}
           </div>
         ) : (
-          <div className="space-y-4 max-h-[calc(100vh-280px)] overflow-y-auto pr-1.5 pt-1 pl-0.5" id="personnel-list">
-            {filteredPersonnel.map((person) => (
-              <div key={person.id} className="transform transition-transform duration-200 hover:-translate-y-1">
-                <PersonnelCard personnel={person} />
-              </div>
-            ))}
+          <div className="relative">
+            <div 
+              className="space-y-4 max-h-[calc(100vh-280px)] overflow-y-auto pr-1.5 pt-1 pl-0.5 custom-scrollbar" 
+              id="personnel-list"
+              style={{
+                scrollbarWidth: 'thin',
+                scrollbarColor: '#4A6741 #f0f0f0'
+              }}
+            >
+              {filteredPersonnel.map((person) => (
+                <div key={person.id} className="transform transition-transform duration-200 hover:-translate-y-1">
+                  <PersonnelCard personnel={person} />
+                </div>
+              ))}
+            </div>
+            
+            {/* Botão Voltar ao Topo */}
+            <button 
+              onClick={() => {
+                const list = document.getElementById('personnel-list');
+                if (list) list.scrollTop = 0;
+              }}
+              className="absolute bottom-0 right-0 bg-[#1A3A5F] hover:bg-[#4A6741] text-white p-2 rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 opacity-80 hover:opacity-100"
+              aria-label="Voltar ao topo"
+              title="Voltar ao topo"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              </svg>
+            </button>
           </div>
         )}
         

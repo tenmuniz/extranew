@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Estilos personalizados para a barra de rolagem */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  transition: all 0.3s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #4A6741;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #1A3A5F;
+  width: 10px;
+}
+
+/* Ao passar o mouse por cima do container, a barra fica mais larga */
+.custom-scrollbar:hover::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Efeitos de scroll suave */
+.custom-scrollbar {
+  scroll-behavior: smooth;
+}
+
 :root {
       --background: 0 0% 100%;
 --foreground: 20 14.3% 4.1%;

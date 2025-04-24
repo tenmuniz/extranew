@@ -305,34 +305,51 @@ export function ConflictsDashboard({
                 Militares com Conflitos
               </h2>
               
-              <div className="space-y-4">
-                {conflictsData.personnelWithConflicts.map(person => (
-                  <div
-                    key={person.id}
-                    className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${
-                      selectedPerson?.id === person.id
-                        ? "border-[#1A3A5F] bg-[#F0F7FF] shadow-md"
-                        : "border-gray-200 hover:bg-gray-50"
-                    }`}
-                    onClick={() => setSelectedPerson(person)}
-                  >
-                    <div className="flex items-center">
-                      <div className={`${getGuarnitionColor(person.platoon)} text-white w-12 h-12 rounded-full flex items-center justify-center mr-4 shadow-md`}>
-                        <span className="font-bold text-xs">{person.rank}</span>
+              <div className="relative">
+                <div className="space-y-4 max-h-[calc(100vh-280px)] overflow-y-auto pr-1.5 pt-1 pl-0.5 custom-scrollbar" id="conflict-personnel-list">
+                  {conflictsData.personnelWithConflicts.map(person => (
+                    <div
+                      key={person.id}
+                      className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${
+                        selectedPerson?.id === person.id
+                          ? "border-[#1A3A5F] bg-[#F0F7FF] shadow-md"
+                          : "border-gray-200 hover:bg-gray-50"
+                      }`}
+                      onClick={() => setSelectedPerson(person)}
+                    >
+                      <div className="flex items-center">
+                        <div className={`${getGuarnitionColor(person.platoon)} text-white w-12 h-12 rounded-full flex items-center justify-center mr-4 shadow-md`}>
+                          <span className="font-bold text-xs">{person.rank}</span>
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-800">{person.name}</p>
+                          <span className="text-sm text-gray-500">{person.platoon || "Sem Guarnição"}</span>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-semibold text-gray-800">{person.name}</p>
-                        <span className="text-sm text-gray-500">{person.platoon || "Sem Guarnição"}</span>
+                      
+                      <div className="text-center">
+                        <span className="bg-red-600 text-white text-lg font-bold rounded-full h-8 w-8 flex items-center justify-center shadow-md">
+                          {person.extras}
+                        </span>
                       </div>
                     </div>
-                    
-                    <div className="text-center">
-                      <span className="bg-red-600 text-white text-lg font-bold rounded-full h-8 w-8 flex items-center justify-center shadow-md">
-                        {person.extras}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                
+                {/* Botão Voltar ao Topo */}
+                <button 
+                  onClick={() => {
+                    const list = document.getElementById('conflict-personnel-list');
+                    if (list) list.scrollTop = 0;
+                  }}
+                  className="absolute bottom-2 right-2 bg-[#1A3A5F] hover:bg-[#4A6741] text-white p-2 rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 opacity-80 hover:opacity-100"
+                  aria-label="Voltar ao topo"
+                  title="Voltar ao topo"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                  </svg>
+                </button>
               </div>
             </div>
             
@@ -375,51 +392,70 @@ export function ConflictsDashboard({
                     Detalhes dos Conflitos
                   </h3>
                   
-                  <div className="space-y-4">
-                    {[...selectedPerson.conflictDetails]
-                      .sort((a, b) => (a.dateObj instanceof Date && b.dateObj instanceof Date) 
-                        ? a.dateObj.getTime() - b.dateObj.getTime() 
-                        : 0)
-                      .map((conflict, index) => (
-                      <div key={index} className="border rounded-lg overflow-hidden shadow-sm">
-                        <div className={`py-3 px-4 text-white font-medium ${
-                          conflict.operation === 'PMF' 
-                            ? 'bg-blue-600' 
-                            : 'bg-green-600'
-                        }`}>
-                          {conflict.operation === 'PMF' ? 'Polícia Mais Forte' : 'Escola Segura'}
-                        </div>
-                        <div className="bg-white p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex flex-col">
-                              <div className="flex items-center mb-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                <span className="text-lg font-semibold text-gray-800">{conflict.date}</span>
+                  <div className="relative">
+                    <div className="space-y-4 max-h-[370px] overflow-y-auto pr-1.5 custom-scrollbar" id="conflict-details-list">
+                      {[...selectedPerson.conflictDetails]
+                        .sort((a, b) => (a.dateObj instanceof Date && b.dateObj instanceof Date) 
+                          ? a.dateObj.getTime() - b.dateObj.getTime() 
+                          : 0)
+                        .map((conflict, index) => (
+                        <div key={index} className="border rounded-lg overflow-hidden shadow-sm">
+                          <div className={`py-3 px-4 text-white font-medium ${
+                            conflict.operation === 'PMF' 
+                              ? 'bg-blue-600' 
+                              : 'bg-green-600'
+                          }`}>
+                            {conflict.operation === 'PMF' ? 'Polícia Mais Forte' : 'Escola Segura'}
+                          </div>
+                          <div className="bg-white p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex flex-col">
+                                <div className="flex items-center mb-2">
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                  </svg>
+                                  <span className="text-lg font-semibold text-gray-800">{conflict.date}</span>
+                                </div>
+                                <div className="flex items-center">
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                  </svg>
+                                  <span className="text-gray-700">
+                                    Guarnição <strong>{conflict.guarnition}</strong> em serviço
+                                  </span>
+                                </div>
                               </div>
-                              <div className="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                                <span className="text-gray-700">
-                                  Guarnição <strong>{conflict.guarnition}</strong> em serviço
-                                </span>
-                              </div>
+                              <Badge 
+                                className={`${
+                                  conflict.operation === 'PMF' 
+                                    ? 'bg-blue-100 text-blue-800 hover:bg-blue-100' 
+                                    : 'bg-green-100 text-green-800 hover:bg-green-100'
+                                } text-sm font-medium py-1 px-3`}
+                              >
+                                CONFLITO
+                              </Badge>
                             </div>
-                            <Badge 
-                              className={`${
-                                conflict.operation === 'PMF' 
-                                  ? 'bg-blue-100 text-blue-800 hover:bg-blue-100' 
-                                  : 'bg-green-100 text-green-800 hover:bg-green-100'
-                              } text-sm font-medium py-1 px-3`}
-                            >
-                              CONFLITO
-                            </Badge>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                    
+                    {/* Botão Voltar ao Topo - Lista de Detalhes */}
+                    {selectedPerson.conflictDetails.length > 4 && (
+                      <button 
+                        onClick={() => {
+                          const list = document.getElementById('conflict-details-list');
+                          if (list) list.scrollTop = 0;
+                        }}
+                        className="absolute bottom-2 right-2 bg-[#1A3A5F] hover:bg-[#4A6741] text-white p-2 rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 opacity-80 hover:opacity-100"
+                        aria-label="Voltar ao topo"
+                        title="Voltar ao topo"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                        </svg>
+                      </button>
+                    )}
                   </div>
                   
                   <div className="mt-6 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4">
