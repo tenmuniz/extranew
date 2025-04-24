@@ -103,10 +103,7 @@ export class BackupUtility {
         return null;
       }
       
-      // Usar as funções importadas no topo do arquivo em vez de require
-      // Listar todos os backups do tipo especificado
-      import { readdirSync } from 'fs';
-      
+      // Listar todos os backups do tipo especificado usando a função importada no topo do arquivo
       const backups = readdirSync(BACKUP_DIR)
         .filter((dir: string) => dir.startsWith(type))
         .map((dir: string) => ({
