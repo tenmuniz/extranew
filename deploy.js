@@ -91,15 +91,26 @@ async function deploy() {
   console.log('Verificando configuração de ambiente...');
   createEnvProductionFile();
   
-  // 2. Exibir informações e próximos passos
+  // 2. Executar pós-deploy para restaurar dados
+  console.log('\nExecutando restauração automática de dados...');
+  try {
+    const { execSync } = await import('child_process');
+    execSync('./post-deploy.sh', { stdio: 'inherit' });
+    console.log('✓ Restauração automática de dados concluída com sucesso');
+  } catch (error) {
+    console.error('❌ Erro na restauração automática de dados:', error.message);
+    console.warn('Os dados podem ser restaurados manualmente se necessário.');
+  }
+  
+  // 3. Exibir informações e próximos passos
   console.log('\n=== DEPLOY CONCLUÍDO ===');
   console.log('\nPróximos passos:');
   console.log('1. Verifique se as variáveis de ambiente estão corretamente configuradas');
   console.log('2. Execute o build com: npm run build');
   console.log('3. Inicie o servidor com: npm run start');
   console.log('\nOu use o botão de deploy do Replit para fazer o deploy automaticamente.\n');
-  console.log('IMPORTANTE: Seus dados foram protegidos antes do deploy. Em caso de problemas,');
-  console.log('você pode encontrar backups na pasta ./backups');
+  console.log('IMPORTANTE: Seus dados foram protegidos antes do deploy e restaurados automaticamente.');
+  console.log('Em caso de problemas, você pode encontrar backups na pasta ./backups');
 }
 
 // Executar se for chamado diretamente
