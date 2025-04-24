@@ -295,46 +295,69 @@ export function ScheduleCalendar({
           Escalas para {new Date(currentYear, currentMonth, 1).toLocaleDateString('pt-BR', {month: 'long', year: 'numeric'}).charAt(0).toUpperCase() + new Date(currentYear, currentMonth, 1).toLocaleDateString('pt-BR', {month: 'long', year: 'numeric'}).slice(1)}
         </div>
         
-        {/* Calendar grid - grid simples sem alinhamento com dias da semana */}
-        <div id="calendar-grid" className="grid grid-cols-7 auto-rows-fr gap-2">
-          {/* Dias do mês - começando sempre no primeiro card */}
-          {calendarDays.map((day, index) => {
-            const dayAssignments = getAssignmentsForDate(day);
-            const disabled = isDayDisabled(day);
-            
-            // Contar quantos militares estão na data atual para a operação ativa
-            const filteredAssignments = dayAssignments.filter(
-              assignment => assignment.operationType === activeOperation
-            );
-            
-            return (
-              <CalendarDay
-                key={index}
-                date={day}
-                isCurrentMonth={isCurrentMonth(day)}
-                isDisabled={disabled}
-                onDragOver={handleDragOver as React.DragEventHandler<HTMLDivElement>}
-                onDrop={(e: React.DragEvent<HTMLDivElement>) => handleDrop(e, day)}
-                activeOperation={activeOperation}
-                assignmentsCount={filteredAssignments.length}
-              >
-                {dayAssignments.map((assignment) => {
-                  const person = getPersonnelFromAssignment(assignment);
-                  if (!person) return null;
-                  
-                  return (
-                    <PersonnelCard
-                      key={assignment.id}
-                      personnel={person}
-                      isAssigned={true}
-                      isDraggable={false}
-                      onRemove={() => handleRemoveAssignment(assignment.id, person.name)}
-                    />
-                  );
-                })}
-              </CalendarDay>
-            );
-          })}
+        <div className="relative">
+          {/* Container do Calendário com Scrollbar Personalizada */}
+          <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-240px)] custom-scrollbar pr-1" id="calendar-container">
+            {/* Calendar grid - grid simples sem alinhamento com dias da semana */}
+            <div id="calendar-grid" className="grid grid-cols-7 auto-rows-fr gap-2 min-w-[1000px]">
+              {/* Dias do mês - começando sempre no primeiro card */}
+              {calendarDays.map((day, index) => {
+                const dayAssignments = getAssignmentsForDate(day);
+                const disabled = isDayDisabled(day);
+                
+                // Contar quantos militares estão na data atual para a operação ativa
+                const filteredAssignments = dayAssignments.filter(
+                  assignment => assignment.operationType === activeOperation
+                );
+                
+                return (
+                  <CalendarDay
+                    key={index}
+                    date={day}
+                    isCurrentMonth={isCurrentMonth(day)}
+                    isDisabled={disabled}
+                    onDragOver={handleDragOver as React.DragEventHandler<HTMLDivElement>}
+                    onDrop={(e: React.DragEvent<HTMLDivElement>) => handleDrop(e, day)}
+                    activeOperation={activeOperation}
+                    assignmentsCount={filteredAssignments.length}
+                  >
+                    {dayAssignments.map((assignment) => {
+                      const person = getPersonnelFromAssignment(assignment);
+                      if (!person) return null;
+                      
+                      return (
+                        <PersonnelCard
+                          key={assignment.id}
+                          personnel={person}
+                          isAssigned={true}
+                          isDraggable={false}
+                          onRemove={() => handleRemoveAssignment(assignment.id, person.name)}
+                        />
+                      );
+                    })}
+                  </CalendarDay>
+                );
+              })}
+            </div>
+          </div>
+          
+          {/* Botão Voltar ao Topo */}
+          <button 
+            onClick={() => {
+              const container = document.getElementById('calendar-container');
+              if (container) {
+                container.scrollTop = 0;
+                container.scrollLeft = 0;
+              }
+            }}
+            className="absolute bottom-2 right-2 bg-[#1A3A5F] hover:bg-[#4A6741] text-white p-2 rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 opacity-80 hover:opacity-100"
+            aria-label="Voltar ao topo"
+            title="Voltar ao topo"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>

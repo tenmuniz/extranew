@@ -22,12 +22,31 @@
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #1A3A5F;
+}
+
+/* Ao passar o mouse por cima do container, a barra vertical fica mais larga */
+.custom-scrollbar:hover::-webkit-scrollbar {
   width: 10px;
 }
 
-/* Ao passar o mouse por cima do container, a barra fica mais larga */
-.custom-scrollbar:hover::-webkit-scrollbar {
-  width: 10px;
+/* Ao passar o mouse por cima do container, a barra horizontal fica mais alta */
+.custom-scrollbar:hover::-webkit-scrollbar:horizontal {
+  height: 10px;
+}
+
+/* Estilo específico para a barra de rolagem horizontal */
+.custom-scrollbar::-webkit-scrollbar:horizontal {
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:horizontal {
+  background: #4A6741;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:horizontal:hover {
+  background: #1A3A5F;
 }
 
 /* Efeitos de scroll suave */

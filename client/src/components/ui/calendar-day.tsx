@@ -132,7 +132,7 @@ export function CalendarDay({
         "assigned-personnel px-2 pt-2 pb-1 relative",
         !isDisabled && "min-h-[100px]"
       )}>
-        <div className="flex flex-col w-full gap-1">
+        <div className="flex flex-col w-full gap-1 max-h-[150px] overflow-y-auto custom-scrollbar pr-1">
           {children}
         </div>
         
