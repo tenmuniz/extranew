@@ -1,0 +1,86 @@
+[
+  {
+    "id": 4,
+    "personnelId": 1,
+    "operationType": "PMF",
+    "date": "2025-04-08",
+    "createdAt": "2025-04-22T20:44:24.459Z"
+  },
+  {
+    "id": 5,
+    "personnelId": 1,
+    "operationType": "PMF",
+    "date": "2025-04-09",
+    "createdAt": "2025-04-22T20:44:26.323Z"
+  },
+  {
+    "id": 7,
+    "personnelId": 1,
+    "operationType": "PMF",
+    "date": "2025-04-10",
+    "createdAt": "2025-04-22T20:44:29.980Z"
+  },
+  {
+    "id": 9,
+    "personnelId": 1,
+    "operationType": "PMF",
+    "date": "2025-04-11",
+    "createdAt": "2025-04-22T20:44:33.587Z"
+  },
+  {
+    "id": 11,
+    "personnelId": 1,
+    "operationType": "PMF",
+    "date": "2025-04-12",
+    "createdAt": "2025-04-22T20:44:37.906Z"
+  },
+  {
+    "id": 12,
+    "personnelId": 1,
+    "operationType": "PMF",
+    "date": "2025-04-06",
+    "createdAt": "2025-04-22T20:44:40.131Z"
+  },
+  {
+    "id": 14,
+    "personnelId": 3,
+    "operationType": "PMF",
+    "date": "2025-04-10",
+    "createdAt": "2025-04-22T21:02:20.719Z"
+  },
+  {
+    "id": 15,
+    "personnelId": 5,
+    "operationType": "PMF",
+    "date": "2025-04-11",
+    "createdAt": "2025-04-22T21:02:23.643Z"
+  },
+  {
+    "id": 16,
+    "personnelId": 4,
+    "operationType": "PMF",
+    "date": "2025-04-10",
+    "createdAt": "2025-04-22T21:02:34.959Z"
+  },
+  {
+    "id": 17,
+    "personnelId": 2,
+    "operationType": "PMF",
+    "date": "2025-04-02",
+    "createdAt": "2025-04-22T21:06:21.077Z"
+  },
+  {
+    "id": 18,
+    "personnelId": 3,
+    "operationType": "PMF",
+    "date": "2025-04-02",
+    "createdAt": "2025-04-22T21:06:24.249Z"
+  },
+  {
+    "id": 20,
+    "personnelId": 3,
+    "operationType": "PMF",
+    "date": "2025-04-11",
+    "createdAt": "2025-04-22T21:07:29.891Z"
+  }
+]
