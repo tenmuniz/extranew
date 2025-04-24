@@ -317,6 +317,31 @@ export function NewReportModal({
     }
   }, [personnel, assignments, currentMonth, currentYear, selectedPerson]);
   
+  // Função auxiliar para obter cor da guarnição
+  const getGuarnitionColor = (platoon?: string) => {
+    switch (platoon) {
+      case 'ALFA':
+        return 'bg-blue-700';
+      case 'BRAVO':
+        return 'bg-green-700';
+      case 'CHARLIE':
+        return 'bg-red-700';
+      case 'EXPEDIENTE':
+        return 'bg-purple-700';
+      default:
+        return 'bg-gray-700';
+    }
+  };
+  
+  // Função auxiliar para obter o nome do mês
+  const getMonthName = (month: number) => {
+    const monthNames = [
+      'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    ];
+    return monthNames[month];
+  };
+  
   // Gerar PDF do relatório
   const handleGeneratePDF = (guarnition?: 'alfa' | 'bravo' | 'charlie' | 'expediente') => {
     // Selecionar os dados corretos com base na guarnição
@@ -402,383 +427,432 @@ export function NewReportModal({
         <div style="display: flex; justify-content: space-between; margin-top: 15px;">
           <div style="text-align: center; background-color: #f0f7ff; padding: 10px; border-radius: 8px; width: 23%;">
             <span style="display: block; font-size: 24px; font-weight: bold; color: ${colorPrimary};">${selectedStats.totalOperations}</span>
-            <span style="color: #666; font-size: 14px;">Total de Extras</span>
+            <span style="color: #555; font-size: 14px;">Total de Extras</span>
           </div>
-          <div style="text-align: center; background-color: #f0faf0; padding: 10px; border-radius: 8px; width: 23%;">
-            <span style="display: block; font-size: 24px; font-weight: bold; color: #4A6741;">${selectedStats.pmfOperations}</span>
-            <span style="color: #666; font-size: 14px;">PMF</span>
+          <div style="text-align: center; background-color: #f0f7ff; padding: 10px; border-radius: 8px; width: 23%;">
+            <span style="display: block; font-size: 24px; font-weight: bold; color: ${colorPrimary};">${selectedStats.personnelCount}</span>
+            <span style="color: #555; font-size: 14px;">Militares Envolvidos</span>
           </div>
-          <div style="text-align: center; background-color: #f5f0ff; padding: 10px; border-radius: 8px; width: 23%;">
-            <span style="display: block; font-size: 24px; font-weight: bold; color: #6441A5;">${selectedStats.escolaOperations}</span>
-            <span style="color: #666; font-size: 14px;">Escola Segura</span>
+          <div style="text-align: center; background-color: #f0f7ff; padding: 10px; border-radius: 8px; width: 23%;">
+            <span style="display: block; font-size: 24px; font-weight: bold; color: ${colorPrimary};">${selectedStats.avgOperationsPerPerson}</span>
+            <span style="color: #555; font-size: 14px;">Média por Militar</span>
           </div>
-          <div style="text-align: center; background-color: #fff0f3; padding: 10px; border-radius: 8px; width: 23%;">
-            <span style="display: block; font-size: 24px; font-weight: bold; color: #FF416C;">${selectedStats.personnelCount}</span>
-            <span style="color: #666; font-size: 14px;">Militares Envolvidos</span>
+          <div style="text-align: center; background-color: #f0f7ff; padding: 10px; border-radius: 8px; width: 23%;">
+            <span style="display: block; font-size: 24px; font-weight: bold; color: ${colorPrimary};">${selectedStats.maxOperations.count}</span>
+            <span style="color: #555; font-size: 14px;">Máximo por Militar</span>
+          </div>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+          <div style="width: 48%; background-color: #ebf8ff; padding: 15px; border-radius: 8px;">
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+              <div style="width: 20px; height: 20px; background-color: #3182ce; border-radius: 4px; margin-right: 10px;"></div>
+              <h3 style="margin: 0; font-size: 16px; color: #3182ce;">Polícia Mais Forte</h3>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+              <div style="text-align: center; width: 48%;">
+                <span style="display: block; font-size: 22px; font-weight: bold; color: #3182ce;">${selectedStats.pmfOperations}</span>
+                <span style="color: #555; font-size: 14px;">Extras</span>
+              </div>
+              <div style="text-align: center; width: 48%;">
+                <span style="display: block; font-size: 22px; font-weight: bold; color: #3182ce;">${selectedStats.totalOperations > 0 ? Math.round((selectedStats.pmfOperations / selectedStats.totalOperations) * 100) : 0}%</span>
+                <span style="color: #555; font-size: 14px;">Do total</span>
+              </div>
+            </div>
+          </div>
+          
+          <div style="width: 48%; background-color: #f0fff4; padding: 15px; border-radius: 8px;">
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+              <div style="width: 20px; height: 20px; background-color: #38a169; border-radius: 4px; margin-right: 10px;"></div>
+              <h3 style="margin: 0; font-size: 16px; color: #38a169;">Escola Segura</h3>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+              <div style="text-align: center; width: 48%;">
+                <span style="display: block; font-size: 22px; font-weight: bold; color: #38a169;">${selectedStats.escolaOperations}</span>
+                <span style="color: #555; font-size: 14px;">Extras</span>
+              </div>
+              <div style="text-align: center; width: 48%;">
+                <span style="display: block; font-size: 22px; font-weight: bold; color: #38a169;">${selectedStats.totalOperations > 0 ? Math.round((selectedStats.escolaOperations / selectedStats.totalOperations) * 100) : 0}%</span>
+                <span style="color: #555; font-size: 14px;">Do total</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     `;
     pdfContainer.appendChild(statsSection);
     
-    // Destaque
-    const highlightSection = document.createElement('div');
-    
-    highlightSection.innerHTML = `
-      <div style="margin-bottom: 25px;">
-        <h2 style="color: ${colorPrimary}; border-bottom: 1px solid #ccc; padding-bottom: 5px; font-size: 18px;">DESTAQUES</h2>
-        <div style="display: flex; margin-top: 15px;">
-          <div style="background-color: #fff0f3; padding: 15px; border-radius: 8px; width: 100%;">
-            <h3 style="margin-top: 0; color: #FF416C; font-size: 16px;">Maior Participação em Extras</h3>
-            <p style="margin-bottom: 5px; font-size: 14px;"><strong>Militar:</strong> ${selectedStats.maxOperations.person?.name || "Nenhum"}</p>
-            <p style="margin-bottom: 5px; font-size: 14px;"><strong>Quantidade:</strong> ${selectedStats.maxOperations.count} extras</p>
-            <p style="margin-bottom: 5px; font-size: 14px;"><strong>Média por Militar:</strong> ${selectedStats.avgOperationsPerPerson} extras</p>
-          </div>
-        </div>
-      </div>
-    `;
-    pdfContainer.appendChild(highlightSection);
-    
-    // Lista de militares com extras
+    // Lista de militares
     const personnelSection = document.createElement('div');
     personnelSection.innerHTML = `
       <div style="margin-bottom: 25px;">
-        <h2 style="color: ${colorPrimary}; border-bottom: 1px solid #ccc; padding-bottom: 5px; font-size: 18px;">MILITARES COM EXTRAS</h2>
-        <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-          <thead>
-            <tr style="background-color: ${colorPrimary}; color: white;">
-              <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Militar</th>
-              <th style="padding: 8px; text-align: center; border: 1px solid #ddd;">Posto/Grad</th>
-              <th style="padding: 8px; text-align: center; border: 1px solid #ddd;">PMF</th>
-              <th style="padding: 8px; text-align: center; border: 1px solid #ddd;">Escola</th>
-              <th style="padding: 8px; text-align: center; border: 1px solid #ddd;">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${personnelList.map((person, index) => `
-              <tr style="background-color: ${index % 2 === 0 ? '#f9f9f9' : 'white'};">
-                <td style="padding: 8px; border: 1px solid #ddd;">${person.name}</td>
-                <td style="padding: 8px; text-align: center; border: 1px solid #ddd;">${person.rank}</td>
-                <td style="padding: 8px; text-align: center; border: 1px solid #ddd;">${person.pmfCount}</td>
-                <td style="padding: 8px; text-align: center; border: 1px solid #ddd;">${person.escolaCount}</td>
-                <td style="padding: 8px; text-align: center; border: 1px solid #ddd; font-weight: bold;">${person.operationsCount}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
+        <h2 style="color: ${colorPrimary}; border-bottom: 1px solid #ccc; padding-bottom: 5px; font-size: 18px;">MILITARES ENVOLVIDOS</h2>
+        <div id="personnel-list" style="margin-top: 15px;">
+          ${personnelList.map(person => `
+            <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center;">
+                  <div style="width: 45px; height: 45px; background-color: ${getGuarnitionColorHex(person.platoon)}; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: bold; font-size: 14px;">
+                    ${person.rank}
+                  </div>
+                  <div>
+                    <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333;">${person.name}</h3>
+                    <div style="display: flex; align-items: center;">
+                      <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: ${getGuarnitionColorHex(person.platoon)}; margin-right: 5px;"></span>
+                      <span style="color: #666; font-size: 14px;">${person.platoon || "Sem Guarnição"}</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                  <div style="display: flex; flex-direction: column; align-items: center; background-color: #f0f7ff; padding: 5px 10px; border-radius: 6px;">
+                    <span style="font-weight: bold; color: #3182ce;">${person.pmfCount}</span>
+                    <span style="font-size: 12px; color: #3182ce;">PMF</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; background-color: #f0fff4; padding: 5px 10px; border-radius: 6px;">
+                    <span style="font-weight: bold; color: #38a169;">${person.escolaCount}</span>
+                    <span style="font-size: 12px; color: #38a169;">Escola</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; background-color: #ebf8ff; padding: 5px 10px; border-radius: 6px;">
+                    <span style="font-weight: bold; color: ${colorPrimary};">${person.operationsCount}</span>
+                    <span style="font-size: 12px; color: ${colorPrimary};">Total</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0;">
+                <h4 style="margin: 0 0 8px 0; font-size: 14px; color: #666;">Detalhes dos Extras:</h4>
+                <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                  ${person.details
+                    .sort((a, b) => (a.dateObj instanceof Date && b.dateObj instanceof Date) 
+                      ? a.dateObj.getTime() - b.dateObj.getTime() 
+                      : 0)
+                    .map(detail => `
+                      <div style="font-size: 13px; background-color: ${detail.operation === 'PMF' ? '#ebf8ff' : '#f0fff4'}; color: ${detail.operation === 'PMF' ? '#2c5282' : '#22543d'}; padding: 3px 8px; border-radius: 4px; display: inline-flex; align-items: center;">
+                        <span>${detail.date}</span>
+                        <span style="margin-left: 5px; font-size: 11px; background-color: ${detail.operation === 'PMF' ? '#bee3f8' : '#c6f6d5'}; color: ${detail.operation === 'PMF' ? '#2c5282' : '#22543d'}; padding: 1px 4px; border-radius: 3px;">${detail.operation}</span>
+                      </div>
+                    `).join('')}
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
       </div>
     `;
     pdfContainer.appendChild(personnelSection);
     
-    // Datas e detalhes das operações
-    if (personnelList.length > 0) {
-      const datesSection = document.createElement('div');
-      datesSection.innerHTML = `
-        <div style="margin-bottom: 25px;">
-          <h2 style="color: ${colorPrimary}; border-bottom: 1px solid #ccc; padding-bottom: 5px; font-size: 18px;">DETALHAMENTO POR DATA</h2>
-          
-          <div style="margin-top: 15px;">
-            ${personnelList.map((person) => `
-              <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
-                <div style="background-color: ${colorPrimary}; color: white; padding: 8px 12px;">
-                  <h3 style="margin: 0; font-size: 16px;">${person.name} - ${person.rank}</h3>
-                </div>
-                <div style="padding: 12px;">
-                  <p style="margin: 0 0 10px 0;"><strong>Total de extras:</strong> ${person.operationsCount}</p>
-                  
-                  <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-                    <thead>
-                      <tr style="background-color: #f0f0f0;">
-                        <th style="padding: 6px; text-align: center; border: 1px solid #ddd;">Data</th>
-                        <th style="padding: 6px; text-align: center; border: 1px solid #ddd;">Operação</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      ${person.details
-                        .sort((a, b) => (a.dateObj instanceof Date && b.dateObj instanceof Date) 
-                          ? a.dateObj.getTime() - b.dateObj.getTime() 
-                          : 0)
-                        .map((detail) => `
-                        <tr>
-                          <td style="padding: 6px; text-align: center; border: 1px solid #ddd;">${detail.date}</td>
-                          <td style="padding: 6px; text-align: center; border: 1px solid #ddd;">
-                            ${detail.operation === 'PMF' ? 'Polícia Mais Forte' : 'Escola Segura'}
-                          </td>
-                        </tr>
-                      `).join('')}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-      pdfContainer.appendChild(datesSection);
-    }
-    
     // Rodapé
     const footer = document.createElement('div');
     footer.innerHTML = `
-      <div style="margin-top: 30px; text-align: center; font-size: 12px; color: #666;">
+      <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #666;">
         <p>Documento gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
-        <p>Sistema de Escalas - 20ª CIPM</p>
+        <p>Sistema de Gerenciamento de Escalas - 20ª CIPM</p>
       </div>
     `;
     pdfContainer.appendChild(footer);
     
-    // Gerar o PDF
+    // Configurar opções do PDF
     const options = {
       margin: 10,
-      filename: `relatorio-extras-${guarnition ? guarnition+'-' : ''}${
+      filename: `${reportTitle.replace(/\s+/g, '_')}_${
         currentMonth !== undefined && currentYear !== undefined 
-        ? `${getMonthName(currentMonth)}-${currentYear}`
-        : 'completo'
+          ? `${getMonthName(currentMonth)}_${currentYear}` 
+          : 'Todos_Periodos'
       }.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
-
+    
+    // Gerar o PDF
     html2pdf().from(pdfContainer).set(options).save();
   };
   
-  // Função para obter o nome do mês
-  const getMonthName = (month: number): string => {
-    const monthNames = [
-      'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-    ];
-    return monthNames[month];
-  };
-  
-  // Obter a cor de fundo baseada na guarnição
-  const getGuarnitionColor = (platoon?: string): string => {
+  // Função auxiliar para obter cor hexadecimal da guarnição para o PDF
+  const getGuarnitionColorHex = (platoon?: string) => {
     switch (platoon) {
-      case "ALFA":
-        return "bg-blue-700";
-      case "BRAVO":
-        return "bg-green-700";
-      case "CHARLIE":
-        return "bg-red-700";
-      case "EXPEDIENTE":
-        return "bg-purple-700";
+      case 'ALFA':
+        return '#1E429F'; // Azul escuro
+      case 'BRAVO':
+        return '#065F46'; // Verde escuro
+      case 'CHARLIE':
+        return '#991B1B'; // Vermelho escuro
+      case 'EXPEDIENTE':
+        return '#5B21B6'; // Roxo escuro
       default:
-        return "bg-gray-700";
+        return '#4B5563'; // Cinza escuro
     }
   };
-
-  // Se não há dados para exibir
-  if (personnelWithExtras.length === 0) {
-    return (
-      <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] flex items-center justify-center z-50">
-        <div className="bg-white rounded-xl shadow-2xl w-[90%] max-w-lg overflow-hidden">
-          <div className="p-6 text-center">
-            <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <h2 className="text-3xl font-bold text-gray-800 mb-3">Sem Dados para Relatório</h2>
-            <p className="text-gray-600 mb-8 text-lg">
-              Não existem operações atribuídas no período selecionado. Adicione atribuições de operações no calendário para gerar um relatório.
-            </p>
-            <Button 
-              onClick={onClose}
-              className="bg-[#1A3A5F] hover:bg-[#12283F] text-white font-bold py-3 px-6 rounded-lg text-lg"
-            >
-              Voltar ao Calendário
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-[#1A3A5F] to-[#4A6741] flex items-center justify-center z-50 overflow-auto">
-      <div id="report-content" className="bg-[#F8FAFC] rounded-xl shadow-2xl w-full max-w-7xl h-[95vh] overflow-hidden flex flex-col">
-        <div className="bg-[#1A3A5F] text-white py-4 px-6 flex justify-between items-center shadow-md">
-          <h2 className="text-xl md:text-2xl font-bold">Relatório de Operações</h2>
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => handleGeneratePDF(activeTab !== 'geral' ? activeTab : undefined)}
-              className="bg-gradient-to-r from-[#4A6741] to-[#6BA368] hover:shadow-xl text-white rounded-lg px-3 py-2 shadow-md transition-all duration-300 flex items-center text-sm"
+    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-[#F8FAFC] rounded-xl w-full max-w-7xl mx-auto relative">
+        {/* Cabeçalho Modal */}
+        <div className="bg-gradient-to-r from-[#1A3A5F] to-[#4A6741] text-white p-4 rounded-t-xl flex justify-between items-center">
+          <h2 className="text-xl font-bold">Relatório de Extras</h2>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => handleGeneratePDF()}
+              className="bg-white/10 hover:bg-white/20 text-white rounded-lg px-3 py-1.5 transition-colors duration-200 flex items-center"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
-              <span className="font-medium">Exportar PDF</span>
+              Exportar PDF
             </button>
-            
             <button 
               onClick={onClose}
-              className="bg-gradient-to-r from-[#FF416C] to-[#FF4B2B] hover:shadow-lg text-white rounded-lg px-4 py-2 shadow-md transition-all duration-300 flex items-center"
+              className="bg-white/10 hover:bg-white/20 text-white rounded-lg p-1 transition-colors duration-200"
+              aria-label="Fechar"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
-              <span className="font-medium">Voltar ao Calendário</span>
             </button>
           </div>
         </div>
         
-        <div className="relative p-6 overflow-auto flex-1">
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-[#1A3A5F] to-[#4A6741] bg-clip-text text-transparent mb-2">
-                Relatório de Extras
-              </h1>
-              
-              <p className="text-gray-600 text-lg">
-                {currentMonth !== undefined && currentYear !== undefined
-                  ? `${getMonthName(currentMonth)} / ${currentYear}`
-                  : "Todos os Períodos"}
-                {' '}- 20ª CIPM
-              </p>
+        {/* Conteúdo Modal */}
+        <div className="p-6 max-h-[80vh] overflow-y-auto custom-scrollbar">
+          {/* Abas de Navegação */}
+          <div className="flex mb-6">
+            <div className="space-x-1 border-b border-gray-200 w-full flex overflow-x-auto pb-2">
+              <Button 
+                variant="ghost"
+                className={`rounded-lg px-4 py-2 transition-colors duration-200 ${
+                  activeTab === 'geral' 
+                    ? 'bg-[#1A3A5F] text-white'
+                    : 'hover:bg-gray-100'
+                }`}
+                onClick={() => setActiveTab('geral')}
+              >
+                Geral
+              </Button>
+              <Button 
+                variant="ghost"
+                className={`rounded-lg px-4 py-2 transition-colors duration-200 ${
+                  activeTab === 'alfa' 
+                    ? 'bg-blue-700 text-white'
+                    : 'hover:bg-gray-100'
+                }`}
+                onClick={() => setActiveTab('alfa')}
+              >
+                ALFA
+              </Button>
+              <Button 
+                variant="ghost"
+                className={`rounded-lg px-4 py-2 transition-colors duration-200 ${
+                  activeTab === 'bravo' 
+                    ? 'bg-green-700 text-white'
+                    : 'hover:bg-gray-100'
+                }`}
+                onClick={() => setActiveTab('bravo')}
+              >
+                BRAVO
+              </Button>
+              <Button 
+                variant="ghost"
+                className={`rounded-lg px-4 py-2 transition-colors duration-200 ${
+                  activeTab === 'charlie' 
+                    ? 'bg-red-700 text-white'
+                    : 'hover:bg-gray-100'
+                }`}
+                onClick={() => setActiveTab('charlie')}
+              >
+                CHARLIE
+              </Button>
+              <Button 
+                variant="ghost"
+                className={`rounded-lg px-4 py-2 transition-colors duration-200 ${
+                  activeTab === 'expediente' 
+                    ? 'bg-purple-700 text-white'
+                    : 'hover:bg-gray-100'
+                }`}
+                onClick={() => setActiveTab('expediente')}
+              >
+                EXPEDIENTE
+              </Button>
             </div>
           </div>
           
-          {/* Abas para diferentes visualizações */}
-          <div className="flex flex-wrap gap-2 mb-6 overflow-x-auto pb-2">
-            <button 
-              onClick={() => setActiveTab('geral')} 
-              className={`rounded-lg px-4 py-2 font-medium text-sm flex items-center ${
-                activeTab === 'geral' 
-                  ? 'bg-[#1A3A5F] text-white shadow-md' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              Visão Geral
-            </button>
-            
-            {alfaPersonnel.length > 0 && (
-              <button 
-                onClick={() => setActiveTab('alfa')} 
-                className={`rounded-lg px-4 py-2 font-medium text-sm flex items-center ${
-                  activeTab === 'alfa' 
-                    ? 'bg-blue-700 text-white shadow-md' 
-                    : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                }`}
-              >
-                <span className="w-3 h-3 bg-blue-700 rounded-full mr-2 border border-white"></span>
-                Guarnição ALFA
-              </button>
-            )}
-            
-            {bravoPersonnel.length > 0 && (
-              <button 
-                onClick={() => setActiveTab('bravo')} 
-                className={`rounded-lg px-4 py-2 font-medium text-sm flex items-center ${
-                  activeTab === 'bravo' 
-                    ? 'bg-green-700 text-white shadow-md' 
-                    : 'bg-green-100 text-green-800 hover:bg-green-200'
-                }`}
-              >
-                <span className="w-3 h-3 bg-green-700 rounded-full mr-2 border border-white"></span>
-                Guarnição BRAVO
-              </button>
-            )}
-            
-            {charliePersonnel.length > 0 && (
-              <button 
-                onClick={() => setActiveTab('charlie')} 
-                className={`rounded-lg px-4 py-2 font-medium text-sm flex items-center ${
-                  activeTab === 'charlie' 
-                    ? 'bg-red-700 text-white shadow-md' 
-                    : 'bg-red-100 text-red-800 hover:bg-red-200'
-                }`}
-              >
-                <span className="w-3 h-3 bg-red-700 rounded-full mr-2 border border-white"></span>
-                Guarnição CHARLIE
-              </button>
-            )}
-            
-            {expedientePersonnel.length > 0 && (
-              <button 
-                onClick={() => setActiveTab('expediente')} 
-                className={`rounded-lg px-4 py-2 font-medium text-sm flex items-center ${
-                  activeTab === 'expediente' 
-                    ? 'bg-purple-700 text-white shadow-md' 
-                    : 'bg-purple-100 text-purple-800 hover:bg-purple-200'
-                }`}
-              >
-                <span className="w-3 h-3 bg-purple-700 rounded-full mr-2 border border-white"></span>
-                EXPEDIENTE
-              </button>
-            )}
+          {/* Título do Período */}
+          <div className="bg-gray-100 rounded-lg py-3 px-4 mb-6">
+            <h3 className="text-lg font-semibold text-gray-800">
+              {currentMonth !== undefined && currentYear !== undefined 
+                ? `Período: ${getMonthName(currentMonth)} / ${currentYear}`
+                : "Todos os períodos"}
+            </h3>
           </div>
           
-          {/* Conteúdo baseado na aba selecionada */}
+          {/* Conteúdo da Aba Geral */}
           {activeTab === 'geral' && (
             <div>
-              {/* Cards com estatísticas */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                <div className="bg-gradient-to-br from-[#1A3A5F] to-[#3066BE] rounded-xl shadow-lg p-6 text-white">
-                  <h3 className="text-lg font-medium opacity-80 mb-2">Total de Extras</h3>
-                  <div className="text-5xl font-bold mb-1">{stats.totalOperations}</div>
-                  <p className="text-sm opacity-70">No período</p>
+              {/* Cards de estatísticas */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div className="bg-white rounded-xl shadow-md p-6 text-center">
+                  <span className="block text-3xl font-bold text-[#1A3A5F]">{stats.totalOperations}</span>
+                  <span className="text-gray-600">Total de Extras</span>
                 </div>
-                
-                <div className="bg-gradient-to-br from-[#4A6741] to-[#6BA368] rounded-xl shadow-lg p-6 text-white">
-                  <h3 className="text-lg font-medium opacity-80 mb-2">Militares Envolvidos</h3>
-                  <div className="text-5xl font-bold mb-1">{stats.personnelInvolved}</div>
-                  <p className="text-sm opacity-70">Em extras</p>
+                <div className="bg-white rounded-xl shadow-md p-6 text-center">
+                  <span className="block text-3xl font-bold text-[#1A3A5F]">{stats.personnelInvolved}</span>
+                  <span className="text-gray-600">Militares Envolvidos</span>
                 </div>
-                
-                <div className="bg-gradient-to-br from-[#6441A5] to-[#8843E8] rounded-xl shadow-lg p-6 text-white">
-                  <h3 className="text-lg font-medium opacity-80 mb-2">Média por Militar</h3>
-                  <div className="text-5xl font-bold mb-1">{stats.avgOperationsPerPerson}</div>
-                  <p className="text-sm opacity-70">Extras/Policial</p>
+                <div className="bg-white rounded-xl shadow-md p-6 text-center">
+                  <span className="block text-3xl font-bold text-[#1A3A5F]">{stats.avgOperationsPerPerson}</span>
+                  <span className="text-gray-600">Média por Militar</span>
                 </div>
-                
-                <div className="bg-gradient-to-br from-[#FF416C] to-[#FF4B2B] rounded-xl shadow-lg p-6 text-white">
-                  <h3 className="text-lg font-medium opacity-80 mb-2">Maior Participação</h3>
-                  <div className="text-5xl font-bold mb-1">{stats.maxOperations.count}</div>
-                  <p className="text-sm opacity-70 truncate">{stats.maxOperations.person?.name || "Nenhum"}</p>
+                <div className="bg-white rounded-xl shadow-md p-6 text-center">
+                  <span className="block text-3xl font-bold text-[#1A3A5F]">{stats.maxOperations.count}</span>
+                  <span className="text-gray-600">Máximo por Militar</span>
                 </div>
               </div>
               
-              {/* Container principal de duas colunas */}
-              <div className="flex flex-col md:flex-row gap-8">
-                {/* Coluna da esquerda: Lista de militares com operações */}
-                <div className="w-full md:w-2/5 bg-white rounded-xl shadow-lg p-6">
-                  <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">
-                    Militares com Extras
-                  </h2>
+              {/* Distribuição por guarnição */}
+              <div className="mb-8">
+                <h2 className="text-xl font-bold text-gray-800 mb-4">Distribuição por Guarnição</h2>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div className="bg-blue-700 text-white py-3 px-4">
+                      <h3 className="font-bold">ALFA</h3>
+                    </div>
+                    <div className="p-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-gray-600">Extras</span>
+                        <span className="font-bold text-gray-800">{guStats.alfa.totalOperations}</span>
+                      </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-gray-600">Militares</span>
+                        <span className="font-bold text-gray-800">{guStats.alfa.personnelCount}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Média</span>
+                        <span className="font-bold text-gray-800">{guStats.alfa.avgOperationsPerPerson}</span>
+                      </div>
+                    </div>
+                  </div>
                   
-                  <div className="max-h-[360px] overflow-y-auto pr-2">
-                    <div className="space-y-4">
-                      {personnelWithExtras.map(person => (
-                        <div
-                          key={person.id}
-                          className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${
-                            selectedPerson?.id === person.id
-                              ? "border-[#1A3A5F] bg-[#F0F7FF] shadow-md"
-                              : "border-gray-200 hover:bg-gray-50"
-                          }`}
-                          onClick={() => setSelectedPerson(person)}
+                  <div className="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div className="bg-green-700 text-white py-3 px-4">
+                      <h3 className="font-bold">BRAVO</h3>
+                    </div>
+                    <div className="p-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-gray-600">Extras</span>
+                        <span className="font-bold text-gray-800">{guStats.bravo.totalOperations}</span>
+                      </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-gray-600">Militares</span>
+                        <span className="font-bold text-gray-800">{guStats.bravo.personnelCount}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Média</span>
+                        <span className="font-bold text-gray-800">{guStats.bravo.avgOperationsPerPerson}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div className="bg-red-700 text-white py-3 px-4">
+                      <h3 className="font-bold">CHARLIE</h3>
+                    </div>
+                    <div className="p-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-gray-600">Extras</span>
+                        <span className="font-bold text-gray-800">{guStats.charlie.totalOperations}</span>
+                      </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-gray-600">Militares</span>
+                        <span className="font-bold text-gray-800">{guStats.charlie.personnelCount}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Média</span>
+                        <span className="font-bold text-gray-800">{guStats.charlie.avgOperationsPerPerson}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div className="bg-purple-700 text-white py-3 px-4">
+                      <h3 className="font-bold">EXPEDIENTE</h3>
+                    </div>
+                    <div className="p-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-gray-600">Extras</span>
+                        <span className="font-bold text-gray-800">{guStats.expediente.totalOperations}</span>
+                      </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-gray-600">Militares</span>
+                        <span className="font-bold text-gray-800">{guStats.expediente.personnelCount}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Média</span>
+                        <span className="font-bold text-gray-800">{guStats.expediente.avgOperationsPerPerson}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Lista de militares e detalhes */}
+              <div className="flex flex-col md:flex-row gap-6">
+                {/* Coluna da esquerda: Lista de militares */}
+                <div className="w-full md:w-2/5">
+                  <div className="bg-white rounded-xl shadow-lg p-4">
+                    <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
+                      Militares com Extras ({personnelWithExtras.length})
+                    </h3>
+                    <div className="relative">
+                      <div className="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar" id="report-personnel-list">
+                        {personnelWithExtras.map(person => (
+                          <div
+                            key={person.id}
+                            className={`flex justify-between items-center p-3 mb-2 rounded-lg border cursor-pointer transition-colors ${
+                              selectedPerson?.id === person.id
+                                ? 'bg-blue-50 border-blue-200'
+                                : 'bg-white hover:bg-gray-50 border-gray-200'
+                            }`}
+                            onClick={() => setSelectedPerson(person)}
+                          >
+                            <div className="flex items-center">
+                              <div className={`${getGuarnitionColor(person.platoon)} text-white w-12 h-12 rounded-full flex items-center justify-center mr-4 shadow-md`}>
+                                <span className="font-bold text-xs">{person.rank}</span>
+                              </div>
+                              <div>
+                                <p className="font-semibold text-gray-800">{person.name}</p>
+                                <span className="text-sm text-gray-500">{person.platoon || "Sem Guarnição"}</span>
+                              </div>
+                            </div>
+                            
+                            <div className="text-center">
+                              <span className="bg-blue-600 text-white text-lg font-bold rounded-full h-8 w-8 flex items-center justify-center shadow-md">
+                                {person.operationsCount}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Botão Voltar ao Topo */}
+                      {personnelWithExtras.length > 5 && (
+                        <button 
+                          onClick={() => {
+                            const list = document.getElementById('report-personnel-list');
+                            if (list) {
+                              list.scrollTo({
+                                top: 0,
+                                behavior: 'smooth'
+                              });
+                            }
+                          }}
+                          className="absolute bottom-2 right-2 z-10 bg-[#1A3A5F] hover:bg-[#4A6741] text-white p-2 rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 opacity-80 hover:opacity-100"
+                          aria-label="Voltar ao topo"
+                          title="Voltar ao topo"
                         >
-                          <div className="flex items-center">
-                            <div className={`${getGuarnitionColor(person.platoon)} text-white w-12 h-12 rounded-full flex items-center justify-center mr-4 shadow-md`}>
-                              <span className="font-bold text-xs">{person.rank}</span>
-                            </div>
-                            <div>
-                              <p className="font-semibold text-gray-800">{person.name}</p>
-                              <span className="text-sm text-gray-500">{person.platoon || "Sem Guarnição"}</span>
-                            </div>
-                          </div>
-                          
-                          <div className="text-center">
-                            <span className="bg-blue-600 text-white text-lg font-bold rounded-full h-8 w-8 flex items-center justify-center shadow-md">
-                              {person.operationsCount}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                          </svg>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -822,32 +896,56 @@ export function NewReportModal({
                         Detalhes dos Extras
                       </h3>
                       
-                      <div className="max-h-[240px] overflow-y-auto pr-2">
-                        <div className="space-y-4">
+                      <div className="relative">
+                        <div className="max-h-[240px] overflow-y-auto pr-2 custom-scrollbar" id="report-details-list">
+                          <div className="space-y-4">
                           {[...selectedPerson.details]
                             .sort((a, b) => (a.dateObj instanceof Date && b.dateObj instanceof Date) 
                               ? a.dateObj.getTime() - b.dateObj.getTime() 
                               : 0)
                             .map((detail, index) => (
-                            <div key={index} className="border rounded-lg overflow-hidden shadow-sm">
-                              <div className={`py-3 px-4 text-white font-medium ${
-                                detail.operation === 'PMF' 
-                                  ? 'bg-blue-600' 
-                                  : 'bg-green-600'
-                              }`}>
-                                {detail.operation === 'PMF' ? 'Polícia Mais Forte' : 'Escola Segura'}
-                              </div>
-                              <div className="bg-white p-4">
-                                <div className="flex items-center">
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                  </svg>
-                                  <span className="text-lg font-semibold text-gray-800">{detail.date}</span>
+                              <div key={index} className="border rounded-lg overflow-hidden shadow-sm">
+                                <div className={`py-3 px-4 text-white font-medium ${
+                                  detail.operation === 'PMF' 
+                                    ? 'bg-blue-600' 
+                                    : 'bg-green-600'
+                                }`}>
+                                  {detail.operation === 'PMF' ? 'Polícia Mais Forte' : 'Escola Segura'}
+                                </div>
+                                <div className="bg-white p-4">
+                                  <div className="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span className="text-lg font-semibold text-gray-800">{detail.date}</span>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
+                        
+                        {/* Botão Voltar ao Topo - Detalhes */}
+                        {selectedPerson.details.length > 3 && (
+                          <button 
+                            onClick={() => {
+                              const list = document.getElementById('report-details-list');
+                              if (list) {
+                                list.scrollTo({
+                                  top: 0,
+                                  behavior: 'smooth'
+                                });
+                              }
+                            }}
+                            className="absolute bottom-2 right-2 z-10 bg-[#1A3A5F] hover:bg-[#4A6741] text-white p-2 rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 opacity-80 hover:opacity-100"
+                            aria-label="Voltar ao topo"
+                            title="Voltar ao topo"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                            </svg>
+                          </button>
+                        )}
                       </div>
                     </div>
                   ) : (
@@ -930,7 +1028,7 @@ export function NewReportModal({
             </div>
           )}
           
-          {/* Visualização por guarnição */}
+          {/* Visualização por guarnição ALFA */}
           {activeTab === 'alfa' && (
             <div>
               <div className="bg-blue-100 rounded-xl p-6 mb-6">
@@ -1023,8 +1121,7 @@ export function NewReportModal({
                                   {detail.operation}
                                 </span>
                               </div>
-                            ))
-                          }
+                            ))}
                         </div>
                       </div>
                     </div>
@@ -1034,7 +1131,7 @@ export function NewReportModal({
             </div>
           )}
           
-          {/* Visualização para BRAVO */}
+          {/* Visualização por guarnição BRAVO */}
           {activeTab === 'bravo' && (
             <div>
               <div className="bg-green-100 rounded-xl p-6 mb-6">
@@ -1068,7 +1165,6 @@ export function NewReportModal({
                 </button>
               </div>
               
-              {/* Lista de militares BRAVO */}
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <h3 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">
                   Militares da Guarnição BRAVO
@@ -1128,8 +1224,7 @@ export function NewReportModal({
                                   {detail.operation}
                                 </span>
                               </div>
-                            ))
-                          }
+                            ))}
                         </div>
                       </div>
                     </div>
@@ -1139,7 +1234,7 @@ export function NewReportModal({
             </div>
           )}
           
-          {/* Visualização para CHARLIE */}
+          {/* Visualização por guarnição CHARLIE */}
           {activeTab === 'charlie' && (
             <div>
               <div className="bg-red-100 rounded-xl p-6 mb-6">
@@ -1173,7 +1268,6 @@ export function NewReportModal({
                 </button>
               </div>
               
-              {/* Lista de militares CHARLIE */}
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <h3 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">
                   Militares da Guarnição CHARLIE
@@ -1233,8 +1327,7 @@ export function NewReportModal({
                                   {detail.operation}
                                 </span>
                               </div>
-                            ))
-                          }
+                            ))}
                         </div>
                       </div>
                     </div>
@@ -1244,7 +1337,7 @@ export function NewReportModal({
             </div>
           )}
           
-          {/* Visualização para EXPEDIENTE */}
+          {/* Visualização por guarnição EXPEDIENTE */}
           {activeTab === 'expediente' && (
             <div>
               <div className="bg-purple-100 rounded-xl p-6 mb-6">
@@ -1278,10 +1371,9 @@ export function NewReportModal({
                 </button>
               </div>
               
-              {/* Lista de militares EXPEDIENTE */}
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <h3 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">
-                  Militares de EXPEDIENTE
+                  Militares do EXPEDIENTE
                 </h3>
                 <div className="space-y-4">
                   {expedientePersonnel.map(person => (
@@ -1338,8 +1430,7 @@ export function NewReportModal({
                                   {detail.operation}
                                 </span>
                               </div>
-                            ))
-                          }
+                            ))}
                         </div>
                       </div>
                     </div>
