@@ -76,6 +76,17 @@ NODE_ENV=production
 async function deploy() {
   console.log('\n=== INICIANDO DEPLOY ===\n');
   
+  // 0. Executar pré-deploy para proteger dados
+  console.log('Executando pré-deploy para proteção de dados...');
+  try {
+    const { execSync } = await import('child_process');
+    execSync('./pre-deploy.sh', { stdio: 'inherit' });
+    console.log('✓ Pré-deploy concluído com sucesso');
+  } catch (error) {
+    console.error('❌ Erro no pré-deploy:', error.message);
+    console.warn('Continuando o deploy mesmo com falha no pré-deploy...');
+  }
+  
   // 1. Verificar e criar arquivo .env.production
   console.log('Verificando configuração de ambiente...');
   createEnvProductionFile();
@@ -87,6 +98,8 @@ async function deploy() {
   console.log('2. Execute o build com: npm run build');
   console.log('3. Inicie o servidor com: npm run start');
   console.log('\nOu use o botão de deploy do Replit para fazer o deploy automaticamente.\n');
+  console.log('IMPORTANTE: Seus dados foram protegidos antes do deploy. Em caso de problemas,');
+  console.log('você pode encontrar backups na pasta ./backups');
 }
 
 // Executar se for chamado diretamente
