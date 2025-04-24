@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, writeFileSync, readFileSync, copyFileSync } from 'fs';
+import { existsSync, mkdirSync, writeFileSync, readFileSync, copyFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import axios from 'axios';
 
@@ -103,8 +103,11 @@ export class BackupUtility {
         return null;
       }
       
+      // Usar as funções importadas no topo do arquivo em vez de require
       // Listar todos os backups do tipo especificado
-      const backups = require('fs').readdirSync(BACKUP_DIR)
+      import { readdirSync } from 'fs';
+      
+      const backups = readdirSync(BACKUP_DIR)
         .filter((dir: string) => dir.startsWith(type))
         .map((dir: string) => ({
           path: join(BACKUP_DIR, dir),
