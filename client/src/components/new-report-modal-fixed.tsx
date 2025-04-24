@@ -746,36 +746,55 @@ export function NewReportModal({
                     Militares com Extras
                   </h2>
                   
-                  <div className="max-h-[360px] overflow-y-auto pr-2">
-                    <div className="space-y-4">
-                      {personnelWithExtras.map(person => (
-                        <div
-                          key={person.id}
-                          className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${
-                            selectedPerson?.id === person.id
-                              ? "border-[#1A3A5F] bg-[#F0F7FF] shadow-md"
-                              : "border-gray-200 hover:bg-gray-50"
-                          }`}
-                          onClick={() => setSelectedPerson(person)}
-                        >
-                          <div className="flex items-center">
-                            <div className={`${getGuarnitionColor(person.platoon)} text-white w-12 h-12 rounded-full flex items-center justify-center mr-4 shadow-md`}>
-                              <span className="font-bold text-xs">{person.rank}</span>
+                  <div className="relative">
+                    <div className="max-h-[360px] overflow-y-auto pr-2 custom-scrollbar" id="report-personnel-list">
+                      <div className="space-y-4">
+                        {personnelWithExtras.map(person => (
+                          <div
+                            key={person.id}
+                            className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${
+                              selectedPerson?.id === person.id
+                                ? "border-[#1A3A5F] bg-[#F0F7FF] shadow-md"
+                                : "border-gray-200 hover:bg-gray-50"
+                            }`}
+                            onClick={() => setSelectedPerson(person)}
+                          >
+                            <div className="flex items-center">
+                              <div className={`${getGuarnitionColor(person.platoon)} text-white w-12 h-12 rounded-full flex items-center justify-center mr-4 shadow-md`}>
+                                <span className="font-bold text-xs">{person.rank}</span>
+                              </div>
+                              <div>
+                                <p className="font-semibold text-gray-800">{person.name}</p>
+                                <span className="text-sm text-gray-500">{person.platoon || "Sem Guarnição"}</span>
+                              </div>
                             </div>
-                            <div>
-                              <p className="font-semibold text-gray-800">{person.name}</p>
-                              <span className="text-sm text-gray-500">{person.platoon || "Sem Guarnição"}</span>
+                            
+                            <div className="text-center">
+                              <span className="bg-blue-600 text-white text-lg font-bold rounded-full h-8 w-8 flex items-center justify-center shadow-md">
+                                {person.operationsCount}
+                              </span>
                             </div>
                           </div>
-                          
-                          <div className="text-center">
-                            <span className="bg-blue-600 text-white text-lg font-bold rounded-full h-8 w-8 flex items-center justify-center shadow-md">
-                              {person.operationsCount}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
+                    
+                    {/* Botão Voltar ao Topo */}
+                    {personnelWithExtras.length > 5 && (
+                      <button 
+                        onClick={() => {
+                          const list = document.getElementById('report-personnel-list');
+                          if (list) list.scrollTop = 0;
+                        }}
+                        className="absolute bottom-2 right-2 bg-[#1A3A5F] hover:bg-[#4A6741] text-white p-2 rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 opacity-80 hover:opacity-100"
+                        aria-label="Voltar ao topo"
+                        title="Voltar ao topo"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                        </svg>
+                      </button>
+                    )}
                   </div>
                 </div>
                 
@@ -818,32 +837,51 @@ export function NewReportModal({
                         Detalhes dos Extras
                       </h3>
                       
-                      <div className="max-h-[240px] overflow-y-auto pr-2">
-                        <div className="space-y-4">
-                          {[...selectedPerson.details]
-                            .sort((a, b) => (a.dateObj instanceof Date && b.dateObj instanceof Date) 
-                              ? a.dateObj.getTime() - b.dateObj.getTime() 
-                              : 0)
-                            .map((detail, index) => (
-                            <div key={index} className="border rounded-lg overflow-hidden shadow-sm">
-                              <div className={`py-3 px-4 text-white font-medium ${
-                                detail.operation === 'PMF' 
-                                  ? 'bg-blue-600' 
-                                  : 'bg-green-600'
-                              }`}>
-                                {detail.operation === 'PMF' ? 'Polícia Mais Forte' : 'Escola Segura'}
-                              </div>
-                              <div className="bg-white p-4">
-                                <div className="flex items-center">
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                  </svg>
-                                  <span className="text-lg font-semibold text-gray-800">{detail.date}</span>
+                      <div className="relative">
+                        <div className="max-h-[240px] overflow-y-auto pr-2 custom-scrollbar" id="report-details-list">
+                          <div className="space-y-4">
+                            {[...selectedPerson.details]
+                              .sort((a, b) => (a.dateObj instanceof Date && b.dateObj instanceof Date) 
+                                ? a.dateObj.getTime() - b.dateObj.getTime() 
+                                : 0)
+                              .map((detail, index) => (
+                              <div key={index} className="border rounded-lg overflow-hidden shadow-sm">
+                                <div className={`py-3 px-4 text-white font-medium ${
+                                  detail.operation === 'PMF' 
+                                    ? 'bg-blue-600' 
+                                    : 'bg-green-600'
+                                }`}>
+                                  {detail.operation === 'PMF' ? 'Polícia Mais Forte' : 'Escola Segura'}
+                                </div>
+                                <div className="bg-white p-4">
+                                  <div className="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span className="text-lg font-semibold text-gray-800">{detail.date}</span>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
+                        
+                        {/* Botão Voltar ao Topo - Detalhes */}
+                        {selectedPerson.details.length > 3 && (
+                          <button 
+                            onClick={() => {
+                              const list = document.getElementById('report-details-list');
+                              if (list) list.scrollTop = 0;
+                            }}
+                            className="absolute bottom-2 right-2 bg-[#1A3A5F] hover:bg-[#4A6741] text-white p-2 rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 opacity-80 hover:opacity-100"
+                            aria-label="Voltar ao topo"
+                            title="Voltar ao topo"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                            </svg>
+                          </button>
+                        )}
                       </div>
                     </div>
                   ) : (
