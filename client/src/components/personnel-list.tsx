@@ -1,5 +1,5 @@
 import { Personnel } from "@shared/schema";
-import { PersonnelCard } from "@/components/ui/personnel-card-new";
+import { PersonnelCard } from "@/components/ui/personnel-card";
 import { useState, useEffect, useRef } from 'react';
 // Substituindo o ícone de pesquisa da biblioteca por um SVG inline para evitar problemas
 // import { Search } from "lucide-react"; 
