@@ -203,7 +203,7 @@ export class MemStorage implements IStorage {
     
     // Carregar dados do arquivo quando a classe é inicializada
     this.loadPersonnelFromFile();
-    this.loadAssignmentsToFile();
+    this.loadAssignmentsFromFile();
   }
 
   // Métodos para operações com pessoal (Personnel)
@@ -388,9 +388,6 @@ export class MemStorage implements IStorage {
     return count;
   }
 
-  private loadAssignmentsToFile(): void {
-    this.loadAssignmentsFromFile();
-  }
 }
 
 // Exportar uma instância do armazenamento em memória
