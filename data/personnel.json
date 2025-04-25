@@ -8,7 +8,7 @@
   },
   {
     "id": 2,
-    "name": "1º TEN QOPM MONTEIRO",
+    "name": "1º TEN MONTEIRO",
     "rank": "1TEN",
     "extras": 0,
     "platoon": "EXPEDIENTE"
@@ -29,266 +29,266 @@
   },
   {
     "id": 5,
-    "name": "1º SGT PM OLIMAR",
+    "name": "1º SGT OLIMAR",
     "rank": "1SGT",
     "extras": 6,
     "platoon": "BRAVO"
   },
   {
     "id": 6,
-    "name": "2º SGT PM PEIXOTO",
+    "name": "2º SGT PEIXOTO",
     "rank": "2SGT",
     "extras": 8,
     "platoon": "ALFA"
   },
   {
     "id": 7,
-    "name": "2º SGT PM FÁBIO",
+    "name": "2º SGT FÁBIO",
     "rank": "2SGT",
     "extras": 1,
     "platoon": "BRAVO"
   },
   {
     "id": 8,
-    "name": "2º SGT PM PINHEIRO",
+    "name": "2º SGT PINHEIRO",
     "rank": "2SGT",
     "extras": 9,
     "platoon": "CHARLIE"
   },
   {
     "id": 9,
-    "name": "2º SGT PM A. TAVARES",
+    "name": "2º SGT A. TAVARES",
     "rank": "2SGT",
     "extras": 0,
     "platoon": "EXPEDIENTE"
   },
   {
     "id": 10,
-    "name": "3º SGT PM RODRIGO",
+    "name": "3º SGT RODRIGO",
     "rank": "3SGT",
     "extras": 0,
     "platoon": "ALFA"
   },
   {
     "id": 11,
-    "name": "3º SGT PM LEDO",
+    "name": "3º SGT LEDO",
     "rank": "3SGT",
     "extras": 6,
     "platoon": "ALFA"
   },
   {
     "id": 12,
-    "name": "3º SGT PM NUNES",
+    "name": "3º SGT NUNES",
     "rank": "3SGT",
     "extras": 0,
     "platoon": "ALFA"
   },
   {
     "id": 13,
-    "name": "3º SGT PM AMARAL",
+    "name": "3º SGT AMARAL",
     "rank": "3SGT",
     "extras": 0,
     "platoon": "ALFA"
   },
   {
     "id": 14,
-    "name": "3º SGT PM ANA CLEIDE",
+    "name": "3º SGT ANA CLEIDE",
     "rank": "3SGT",
     "extras": 1,
     "platoon": "BRAVO"
   },
   {
     "id": 15,
-    "name": "3º SGT PM GLEIDSON",
+    "name": "3º SGT GLEIDSON",
     "rank": "3SGT",
     "extras": 8,
     "platoon": "BRAVO"
   },
   {
     "id": 16,
-    "name": "3º SGT PM CARLOS EDUARDO",
+    "name": "3º SGT CARLOS EDUARDO",
     "rank": "3SGT",
     "extras": 7,
     "platoon": "BRAVO"
   },
   {
     "id": 17,
-    "name": "3º SGT PM NEGRÃO",
+    "name": "3º SGT NEGRÃO",
     "rank": "3SGT",
     "extras": 1,
     "platoon": "BRAVO"
   },
   {
     "id": 18,
-    "name": "3º SGT PM RAFAEL",
+    "name": "3º SGT RAFAEL",
     "rank": "3SGT",
     "extras": 6,
     "platoon": "CHARLIE"
   },
   {
     "id": 19,
-    "name": "3º SGT PM CUNHA",
+    "name": "3º SGT CUNHA",
     "rank": "3SGT",
     "extras": 0,
     "platoon": "EXPEDIENTE"
   },
   {
     "id": 20,
-    "name": "3º SGT PM CARAVELAS",
+    "name": "3º SGT CARAVELAS",
     "rank": "3SGT",
     "extras": 0,
     "platoon": "EXPEDIENTE"
   },
   {
     "id": 21,
-    "name": "CB PM CARLA",
+    "name": "CB CARLA",
     "rank": "CB",
     "extras": 2,
     "platoon": "ALFA"
   },
   {
     "id": 22,
-    "name": "CB PM FELIPE",
+    "name": "CB FELIPE",
     "rank": "CB",
     "extras": 8,
     "platoon": "ALFA"
   },
   {
     "id": 23,
-    "name": "CB PM BARROS",
+    "name": "CB BARROS",
     "rank": "CB",
     "extras": 0,
     "platoon": "ALFA"
   },
   {
     "id": 24,
-    "name": "CB PM A. SILVA",
+    "name": "CB A. SILVA",
     "rank": "CB",
     "extras": 1,
     "platoon": "ALFA"
   },
   {
     "id": 25,
-    "name": "CB PM BRASIL",
+    "name": "CB BRASIL",
     "rank": "CB",
     "extras": 7,
     "platoon": "BRAVO"
   },
   {
     "id": 26,
-    "name": "CB PM MIQUEIAS",
+    "name": "CB MIQUEIAS",
     "rank": "CB",
     "extras": 7,
     "platoon": "CHARLIE"
   },
   {
     "id": 27,
-    "name": "CB PM M. PAIXÃO",
+    "name": "CB M. PAIXÃO",
     "rank": "CB",
     "extras": 7,
     "platoon": "CHARLIE"
   },
   {
     "id": 28,
-    "name": "CB PM ALAX",
+    "name": "CB ALAX",
     "rank": "CB",
     "extras": 0,
     "platoon": "BRAVO"
   },
   {
     "id": 29,
-    "name": "CB PM VELOSO",
+    "name": "CB VELOSO",
     "rank": "CB",
     "extras": 0,
     "platoon": "BRAVO"
   },
   {
     "id": 30,
-    "name": "CB PM TONI",
+    "name": "CB TONI",
     "rank": "CB",
     "extras": 0,
     "platoon": "EXPEDIENTE"
   },
   {
     "id": 31,
-    "name": "SD PM LUAN",
+    "name": "SD LUAN",
     "rank": "SD",
     "extras": 0,
     "platoon": "ALFA"
   },
   {
     "id": 32,
-    "name": "SD PM NAVARRO",
+    "name": "SD NAVARRO",
     "rank": "SD",
     "extras": 0,
     "platoon": "ALFA"
   },
   {
     "id": 33,
-    "name": "SD PM MARVÃO",
+    "name": "SD MARVÃO",
     "rank": "SD",
     "extras": 0,
     "platoon": "BRAVO"
   },
   {
     "id": 34,
-    "name": "SD PM IDELVAN",
+    "name": "SD IDELVAN",
     "rank": "SD",
     "extras": 0,
     "platoon": "BRAVO"
   },
   {
     "id": 35,
-    "name": "SD PM CHAGAS",
+    "name": "SD CHAGAS",
     "rank": "SD",
     "extras": 2,
     "platoon": "CHARLIE"
   },
   {
     "id": 36,
-    "name": "SD PM CARVALHO",
+    "name": "SD CARVALHO",
     "rank": "SD",
     "extras": 0,
     "platoon": "CHARLIE"
   },
   {
     "id": 37,
-    "name": "SD PM GOVEIA",
+    "name": "SD GOVEIA",
     "rank": "SD",
     "extras": 2,
     "platoon": "CHARLIE"
   },
   {
     "id": 38,
-    "name": "SD PM ALMEIDA",
+    "name": "SD ALMEIDA",
     "rank": "SD",
     "extras": 0,
     "platoon": "CHARLIE"
   },
   {
     "id": 39,
-    "name": "SD PM PATRIK",
+    "name": "SD PATRIK",
     "rank": "SD",
     "extras": 0,
     "platoon": "CHARLIE"
   },
   {
     "id": 40,
-    "name": "SD PM GUIMARÃES",
+    "name": "SD GUIMARÃES",
     "rank": "SD",
     "extras": 0,
     "platoon": "CHARLIE"
   },
   {
     "id": 41,
-    "name": "SD PM S. CORREA",
+    "name": "SD S. CORREA",
     "rank": "SD",
     "extras": 0,
     "platoon": "EXPEDIENTE"
   },
   {
     "id": 42,
-    "name": "SD PM RODRIGUES",
+    "name": "SD RODRIGUES",
     "rank": "SD",
     "extras": 0,
     "platoon": "EXPEDIENTE"
