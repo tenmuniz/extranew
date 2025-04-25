@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { CalendarDay } from "@/components/ui/calendar-day";
-import { PersonnelCard } from "@/components/ui/personnel-card";
+import { PersonnelCard } from "@/components/ui/personnel-card-new";
 import { 
   getFirstDayOfMonth, 
   getLastDayOfMonth, 
