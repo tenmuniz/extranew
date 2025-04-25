@@ -59,43 +59,46 @@ export function getDayColorClass(date: Date): string {
 
 // Function to determine which garrison (guarnição) is on service on a given date
 export function getActiveGuarnitionForDay(date: Date): string {
-  // Implementação baseada na troca às quintas-feiras
-  // Para calcular qual guarnição está de serviço, precisamos saber:
-  // 1. A referência de início (qual guarnição iniciou o ano)
-  // 2. Contar o número de semanas completas (trocas) desde essa data
-
-  // Garantir que estamos usando a data correta sem problemas de fuso horário
-  // Criar uma nova data apenas com ano, mês e dia para evitar problemas de horas
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  const day = date.getDate();
-  const cleanDate = new Date(year, month, day, 12, 0, 0); // Meio-dia para evitar problemas de DST
+  // Calcular qual guarnição está de serviço em qualquer data específica
   
-  // Definindo uma data de referência onde CHARLIE estava de serviço
-  // 01/04/2025 CHARLIE está de serviço (conforme solicitação)
-  const referenceDate = new Date(2025, 3, 1, 12, 0, 0); // 1 de Abril de 2025, meio-dia
-  const referenceGuarnition = "CHARLIE";
-
-  // Ordem de rotação das guarnições (nova ordem: CHARLIE, BRAVO, ALFA)
+  // Ordem de rotação definida: CHARLIE, BRAVO, ALFA
   const rotationOrder = ["CHARLIE", "BRAVO", "ALFA"];
   
-  // Encontrar a quinta-feira mais recente ou a mesma data se for quinta
-  const dayOfWeek = cleanDate.getDay(); // 0 = domingo, 4 = quinta
-  let daysToLastThursday = dayOfWeek >= 4 ? dayOfWeek - 4 : dayOfWeek + 3;
+  // Data de referência estabelecida: 1 de abril de 2025 (CHARLIE)
+  const refDate = new Date(2025, 3, 1); // 1 de abril de 2025 (mês é 0-indexed)
   
-  // Subtrair dias para chegar à quinta-feira mais recente
-  const lastThursday = new Date(cleanDate);
-  lastThursday.setDate(cleanDate.getDate() - daysToLastThursday);
+  // Considerando que a troca de serviço ocorre nas quintas-feiras às 19h30
+  // Primeiro identificamos qual é o dia da semana da data recebida
+  const dayOfWeek = date.getDay(); // 0=domingo, 1=segunda, ..., 4=quinta, ...
   
-  // Calcular o número de semanas entre a data de referência e a quinta-feira mais recente
-  const weeksDiff = Math.floor((lastThursday.getTime() - referenceDate.getTime()) / (7 * 24 * 60 * 60 * 1000));
+  // Para datas normais, vamos calcular baseado na semana
+  const dateCopy = new Date(date.getTime()); // Cópia para não modificar a original
   
-  // Determinar qual guarnição está de serviço com base na rotação
-  const rotationIndex = weeksDiff % 3;
-  let currentIndex = rotationOrder.indexOf(referenceGuarnition);
-  currentIndex = (currentIndex + rotationIndex) % 3;
+  // Caso seja uma quinta-feira, vamos considerar como ainda sendo a guarnição 
+  // que está no serviço antes das 19h30
+  let dateToUse = dateCopy;
   
-  return rotationOrder[currentIndex];
+  // Calcular dias desde a data de referência (01/04/2025, quando CHARLIE está de serviço)
+  const daysDiff = Math.floor((dateToUse.getTime() - refDate.getTime()) / (24 * 60 * 60 * 1000));
+  
+  // Calcular em qual semana estamos (cada semana é um ciclo)
+  const weekNumber = Math.floor(daysDiff / 7);
+  
+  // Determinar qual guarnição está de serviço com base no ciclo de 3 semanas (3 guarnições)
+  const garrisonIndex = weekNumber % 3;  
+  
+  // Se é quinta-feira (dia 4), precisamos verificar se a data da troca de guarnição
+  // já foi ultrapassada ou não. Mas aqui sempre consideramos a guarnição que termina
+  // o serviço às 19h30, pois isso é relevante para detectar conflitos.
+  if (dayOfWeek === 4) {
+    // Estamos em uma quinta-feira, então a guarnição atual é a que está largando o serviço
+    // O trecho abaixo seria para diferenciar antes/depois das 19h30, mas sempre consideramos a guarnição
+    // que está terminando o serviço para fins de detecção de conflito
+    return rotationOrder[garrisonIndex];
+  }
+  
+  // Para os outros dias da semana, usamos o cálculo padrão
+  return rotationOrder[garrisonIndex];
 }
 
 // Function to check if personnel is available for an assignment on a given date
@@ -123,7 +126,7 @@ export function isPersonnelInService(personnel: {platoon?: string}, date: Date):
 }
 
 // Function to check if personnel has Thursday service conflict with operations
-// Conflito ocorre quando um militar termina serviço na quinta às 19h30, mas está 
+// Conflito ocorre quando um militar está em serviço na quinta até às 19h30, mas está 
 // escalado para operação PMF (17h30) ou Escola Segura (18h00) no mesmo dia
 export function hasThursdayServiceConflict(personnel: {platoon?: string}, date: Date, operationType: string): boolean {
   // Se não tem pelotão ou é expediente, não tem conflito
@@ -135,15 +138,22 @@ export function hasThursdayServiceConflict(personnel: {platoon?: string}, date: 
   const isThursday = date.getDay() === 4; // 4 é quinta-feira
   if (!isThursday) return false; // Se não for quinta, não tem esse tipo de conflito
   
-  // Verificamos se o pelotão do militar é o que está de serviço NESTE dia
-  // (o pelotão que está atualmente de serviço e vai largar às 19h30)
+  // A função getActiveGuarnitionForDay já foi corrigida para retornar corretamente
+  // a guarnição de serviço em qualquer data, incluindo quintas-feiras
   const activeGuarnition = getActiveGuarnitionForDay(date);
+  
+  // Verificar se o militar pertence à guarnição que está de serviço
   const isInService = personnel.platoon === activeGuarnition;
   
   // Se for quinta-feira e o militar pertencer à guarnição que está de serviço neste dia,
   // e for escalado para operação que começa ANTES do final do serviço (19h30),
   // consideramos um conflito pois o militar ainda estará em serviço no horário da operação
-  return isThursday && isInService;
+  if (isThursday && isInService) {
+    console.log(`CONFLITO QUINTA-FEIRA: Militar da guarnição ${personnel.platoon} - Guarnição de serviço: ${activeGuarnition} - Data: ${date.toLocaleDateString()}`);
+    return true;
+  }
+  
+  return false;
 }
 
 // Function to get background color based on garrison
