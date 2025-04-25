@@ -88,7 +88,7 @@ export function ScheduleCalendar({
         if (hasThursdayServiceConflict(militarSelecionado, date, activeOperation)) {
           toast({
             title: "Atenção: Conflito de Horário",
-            description: `O militar da guarnição ${militarSelecionado.platoon} estará largando serviço na quinta-feira às 19h30, mas a operação ${activeOperation === "PMF" ? "PMF (17h30)" : "Escola Segura (18h00)"} começa antes. Confirme se deseja escalá-lo mesmo assim.`,
+            description: `O militar da guarnição ${militarSelecionado.platoon} está de serviço na quinta-feira e só larga às 19h30, mas a operação ${activeOperation === "PMF" ? "PMF (17h30)" : "Escola Segura (18h00)"} começa antes do término do serviço. Confirme se deseja escalá-lo mesmo assim.`,
             variant: "destructive"
           });
           // Não retornamos, permitimos continuar mas com alerta em vermelho

@@ -134,12 +134,13 @@ export function hasThursdayServiceConflict(personnel: {platoon?: string}, date: 
   // Verificamos se é quinta-feira
   const isThursday = date.getDay() === 4; // 4 é quinta-feira
   
-  // Verificamos se é o pelotão que está saindo de serviço neste dia
+  // Verificamos se o pelotão do militar é o que está de serviço NESTE dia
+  // (não o que está entrando, mas o que está atualmente de serviço e vai largar às 19h30)
   const activeGuarnition = getActiveGuarnitionForDay(date);
   const isInService = personnel.platoon === activeGuarnition;
   
-  // Se é quinta-feira e o militar está no pelotão que está de serviço, temos um conflito
-  // com PMF (17h30) ou Escola Segura (18h00) pois só termina às 19h30
+  // Se é quinta-feira e o militar está no pelotão que está de serviço hoje
+  // (portanto só larga às 19h30), temos um conflito com PMF (17h30) ou Escola Segura (18h00)
   return isThursday && isInService;
 }
 

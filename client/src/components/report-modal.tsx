@@ -931,8 +931,9 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
                           uma operação em um dia em que sua própria guarnição está de serviço regular.
                         </p>
                         <p className="text-sm text-gray-600">
-                          <span className="font-semibold">Atenção:</span> Militares que largam serviço às quintas-feiras 19h30 
-                          e são escalados para PMF (17h30) ou Escola Segura (18h00) também constam como conflito.
+                          <span className="font-semibold">Atenção:</span> Militares que estão de serviço nas quintas-feiras 
+                          (largam apenas às 19h30) e são escalados para PMF (17h30) ou Escola Segura (18h00) também constam como conflito, 
+                          pois as operações começam antes do militar largar serviço.
                         </p>
                       </div>
                     </div>
