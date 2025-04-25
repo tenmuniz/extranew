@@ -72,8 +72,8 @@ export function getActiveGuarnitionForDay(date: Date): string {
   const cleanDate = new Date(year, month, day, 12, 0, 0); // Meio-dia para evitar problemas de DST
   
   // Definindo uma data de referência onde CHARLIE estava de serviço
-  // 04/01/2025 agora CHARLIE está de serviço (primeiro ciclo do ano na nova ordem)
-  const referenceDate = new Date(2025, 0, 4, 12, 0, 0); // 4 de Janeiro de 2025, meio-dia
+  // 01/04/2025 CHARLIE está de serviço (conforme solicitação)
+  const referenceDate = new Date(2025, 3, 1, 12, 0, 0); // 1 de Abril de 2025, meio-dia
   const referenceGuarnition = "CHARLIE";
 
   // Ordem de rotação das guarnições (nova ordem: CHARLIE, BRAVO, ALFA)
@@ -133,14 +133,16 @@ export function hasThursdayServiceConflict(personnel: {platoon?: string}, date: 
   
   // Verificamos se é quinta-feira
   const isThursday = date.getDay() === 4; // 4 é quinta-feira
+  if (!isThursday) return false; // Se não for quinta, não tem esse tipo de conflito
   
   // Verificamos se o pelotão do militar é o que está de serviço NESTE dia
-  // (não o que está entrando, mas o que está atualmente de serviço e vai largar às 19h30)
+  // (o pelotão que está atualmente de serviço e vai largar às 19h30)
   const activeGuarnition = getActiveGuarnitionForDay(date);
   const isInService = personnel.platoon === activeGuarnition;
   
-  // Se é quinta-feira e o militar está no pelotão que está de serviço hoje
-  // (portanto só larga às 19h30), temos um conflito com PMF (17h30) ou Escola Segura (18h00)
+  // Se for quinta-feira e o militar pertencer à guarnição que está de serviço neste dia,
+  // e for escalado para operação que começa ANTES do final do serviço (19h30),
+  // consideramos um conflito pois o militar ainda estará em serviço no horário da operação
   return isThursday && isInService;
 }
 

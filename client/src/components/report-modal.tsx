@@ -205,12 +205,18 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
       
       // Se estiver em serviço ou tiver conflito na quinta-feira, adicionar à lista de conflitos
       if (isInService || hasThursdayConflict) {
-        // Adicionar mensagem de log para debug
-        console.log(`Conflito detectado: ${person.name} pertence à guarnição ${person.platoon} ` + 
-                   `que está de serviço no dia ${assignmentDate.toLocaleDateString('pt-BR')}, ` +
-                   `mas foi escalado para operação ${assignment.operationType}`);
-                   
-        // Se estiver em serviço, essa atribuição representa um conflito
+        // Adicionar mensagem de log para debug com detalhes do tipo de conflito
+        if (hasThursdayConflict) {
+          console.log(`Conflito de quinta-feira detectado: ${person.name} pertence à guarnição ${person.platoon} ` + 
+                     `que está de serviço na quinta-feira ${assignmentDate.toLocaleDateString('pt-BR')} até 19h30, ` +
+                     `mas foi escalado para operação ${assignment.operationType} que começa antes (17h30/18h00)`);
+        } else {
+          console.log(`Conflito de serviço detectado: ${person.name} pertence à guarnição ${person.platoon} ` + 
+                     `que está de serviço no dia ${assignmentDate.toLocaleDateString('pt-BR')}, ` +
+                     `mas foi escalado para operação ${assignment.operationType}`);
+        }
+        
+        // Adicionar à lista de conflitos
         conflictsAssignments.push(assignment);
       }
     });
