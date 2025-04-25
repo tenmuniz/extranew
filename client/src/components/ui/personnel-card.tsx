@@ -206,12 +206,14 @@ export function PersonnelCard({
             </div>
           </div>
           
-          {/* Botão de remover */}
-          {onRemove && (
+          {/* Botão de remover - Sempre renderizado para cards atribuídos, com verificação no onClick */}
+          {isAssigned && (
             <div className="flex justify-end mt-0.5">
               <button 
                 className="flex-shrink-0 w-5 h-5 rounded-full bg-white/80 flex items-center justify-center text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors duration-150 shadow-sm"
-                onClick={onRemove}
+                onClick={() => {
+                  if (onRemove) onRemove();
+                }}
                 aria-label="Remover"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
