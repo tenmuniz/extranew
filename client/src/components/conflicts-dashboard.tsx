@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Personnel, Assignment, OperationType } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { getActiveGuarnitionForDay } from "@/lib/utils";
+import { getActiveGuarnitionForDay, hasThursdayServiceConflict } from "@/lib/utils";
 
 interface ConflictDashboardProps {
   personnel: Personnel[];

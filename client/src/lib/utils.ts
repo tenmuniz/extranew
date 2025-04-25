@@ -71,13 +71,13 @@ export function getActiveGuarnitionForDay(date: Date): string {
   const day = date.getDate();
   const cleanDate = new Date(year, month, day, 12, 0, 0); // Meio-dia para evitar problemas de DST
   
-  // Definindo uma data de referência onde ALFA estava de serviço
-  // 04/01/2025 ALFA estava de serviço (primeiro ciclo do ano)
+  // Definindo uma data de referência onde CHARLIE estava de serviço
+  // 04/01/2025 agora CHARLIE está de serviço (primeiro ciclo do ano na nova ordem)
   const referenceDate = new Date(2025, 0, 4, 12, 0, 0); // 4 de Janeiro de 2025, meio-dia
-  const referenceGuarnition = "ALFA";
+  const referenceGuarnition = "CHARLIE";
 
-  // Ordem de rotação das guarnições
-  const rotationOrder = ["ALFA", "BRAVO", "CHARLIE"];
+  // Ordem de rotação das guarnições (nova ordem: CHARLIE, BRAVO, ALFA)
+  const rotationOrder = ["CHARLIE", "BRAVO", "ALFA"];
   
   // Encontrar a quinta-feira mais recente ou a mesma data se for quinta
   const dayOfWeek = cleanDate.getDay(); // 0 = domingo, 4 = quinta
@@ -120,6 +120,27 @@ export function isPersonnelInService(personnel: {platoon?: string}, date: Date):
   // Check if personnel's platoon is on service on the given date
   const activeGuarnition = getActiveGuarnitionForDay(date);
   return personnel.platoon === activeGuarnition;
+}
+
+// Function to check if personnel has Thursday service conflict with operations
+// Conflito ocorre quando um militar termina serviço na quinta às 19h30, mas está 
+// escalado para operação PMF (17h30) ou Escola Segura (18h00) no mesmo dia
+export function hasThursdayServiceConflict(personnel: {platoon?: string}, date: Date, operationType: string): boolean {
+  // Se não tem pelotão ou é expediente, não tem conflito
+  if (!personnel.platoon || personnel.platoon === "EXPEDIENTE") {
+    return false;
+  }
+  
+  // Verificamos se é quinta-feira
+  const isThursday = date.getDay() === 4; // 4 é quinta-feira
+  
+  // Verificamos se é o pelotão que está saindo de serviço neste dia
+  const activeGuarnition = getActiveGuarnitionForDay(date);
+  const isInService = personnel.platoon === activeGuarnition;
+  
+  // Se é quinta-feira e o militar está no pelotão que está de serviço, temos um conflito
+  // com PMF (17h30) ou Escola Segura (18h00) pois só termina às 19h30
+  return isThursday && isInService;
 }
 
 // Function to get background color based on garrison
