@@ -59,33 +59,36 @@ export function getDayColorClass(date: Date): string {
 
 // Function to determine which garrison (guarnição) is on service on a given date
 export function getActiveGuarnitionForDay(date: Date): string {
-  // REGRAS ESPECÍFICAS conforme mostrado na imagem de exemplo:
-  // - Dias 01-07: GU CHARLIE (semana completa)
-  // - Dias 08-14: GU BRAVO (semana completa)
-  // - Dias 15-21: GU ALFA (semana completa)
-  // - Dias 22-28: GU CHARLIE (semana completa)
-  // - Dias 29-30: GU BRAVO (semana completa)
-  // E assim por diante em ciclos de 3 semanas
+  // REGRA SIMPLES: Toda quinta-feira troca a guarnição
+  // Ordem de rotação: CHARLIE -> BRAVO -> ALFA -> CHARLIE...
   
-  // Obter apenas a data (dia)
-  const day = date.getDate();
+  // Vamos usar a imagem de referência para verificar que:
+  // - Em 03/04/2025 (quinta-feira) a guarnição é CHARLIE
+  // - Em 10/04/2025 (quinta-feira) a guarnição é BRAVO
+  // - Em 17/04/2025 (quinta-feira) a guarnição é ALFA
   
-  // Verificamos em qual semana do mês estamos
-  // baseado apenas no dia do mês
-  if (day >= 1 && day <= 7) {
-    return "CHARLIE";
-  } else if (day >= 8 && day <= 14) {
-    return "BRAVO";
-  } else if (day >= 15 && day <= 21) {
-    return "ALFA";
-  } else if (day >= 22 && day <= 28) {
-    return "CHARLIE";
-  } else if (day >= 29) {
-    return "BRAVO";
-  }
+  // Referência para quinta-feira 03/04/2025: CHARLIE
+  const referenceDate = new Date(2025, 3, 3); // 03/04/2025
+  const referenceGuarnition = "CHARLIE";
   
-  // Não deve chegar até aqui, mas por segurança:
-  return "CHARLIE";
+  // Sequência de rotação
+  const rotationOrder = ["CHARLIE", "BRAVO", "ALFA"];
+  
+  // Calcular o número de quintas-feiras entre a data de referência e a data fornecida
+  
+  // 1. Encontrar a quinta-feira mais próxima (anterior ou a própria data) para a data fornecida
+  const dayOfWeek = date.getDay(); // 0 = domingo, 4 = quinta
+  const daysToLastThursday = dayOfWeek >= 4 ? dayOfWeek - 4 : dayOfWeek + 3;
+  const dateThursday = new Date(date.getTime() - daysToLastThursday * 24 * 60 * 60 * 1000);
+  
+  // 2. Calcular o número de semanas entre a quinta-feira de referência e a quinta-feira da data
+  const weeksDiff = Math.round((dateThursday.getTime() - referenceDate.getTime()) / (7 * 24 * 60 * 60 * 1000));
+  
+  // 3. Calcular qual guarnição está ativa baseado no ciclo de rotação
+  const indexInRotation = ((weeksDiff % 3) + 3) % 3; // +3 e %3 para evitar índices negativos
+  
+  // Retornar a guarnição correspondente ao índice de rotação
+  return rotationOrder[indexInRotation];
 }
 
 // Function to check if personnel is available for an assignment on a given date
@@ -125,18 +128,38 @@ export function hasThursdayServiceConflict(personnel: {platoon?: string}, date: 
   const isThursday = date.getDay() === 4; // 4 é quinta-feira
   if (!isThursday) return false; // Se não for quinta, não tem esse tipo de conflito
   
-  // A função getActiveGuarnitionForDay já foi corrigida para retornar corretamente
-  // a guarnição de serviço em qualquer data, incluindo quintas-feiras
-  const activeGuarnition = getActiveGuarnitionForDay(date);
+  // Importante: nas quintas-feiras, verificamos qual guarnição está de serviço antes da troca
+  // que ocorre às 19:30, pois o conflito ocorre quando o militar ainda está em serviço
+  // mas é escalado para uma operação que começa antes das 19:30
   
-  // Verificar se o militar pertence à guarnição que está de serviço
+  // Usando a mesma referência do getActiveGuarnitionForDay
+  const referenceDate = new Date(2025, 3, 3); // 03/04/2025 - CHARLIE
+  const rotationOrder = ["CHARLIE", "BRAVO", "ALFA"];
+  
+  // Encontrar a quinta-feira atual (que é a data fornecida, já que já verificamos que é quinta)
+  const dateThursday = new Date(date);
+  
+  // Calcular o número de semanas entre a quinta-feira de referência e a quinta-feira atual
+  const weeksDiff = Math.round((dateThursday.getTime() - referenceDate.getTime()) / (7 * 24 * 60 * 60 * 1000));
+  
+  // Calcular qual guarnição está de serviço nesta quinta-feira
+  const indexInRotation = ((weeksDiff % 3) + 3) % 3;
+  const activeGuarnition = rotationOrder[indexInRotation];
+  
+  // Verificar se o militar pertence à guarnição que está de serviço nesta quinta-feira
   const isInService = personnel.platoon === activeGuarnition;
   
   // Se for quinta-feira e o militar pertencer à guarnição que está de serviço neste dia,
   // e for escalado para operação que começa ANTES do final do serviço (19h30),
   // consideramos um conflito pois o militar ainda estará em serviço no horário da operação
-  if (isThursday && isInService) {
-    console.log(`CONFLITO QUINTA-FEIRA: Militar da guarnição ${personnel.platoon} - Guarnição de serviço: ${activeGuarnition} - Data: ${date.toLocaleDateString()}`);
+  if (isInService) {
+    // Adicionamos logs detalhados para diagnóstico
+    console.log(`CONFLITO QUINTA-FEIRA DETECTADO: 
+      Militar: Guarnição ${personnel.platoon}
+      Guarnição de serviço atual: ${activeGuarnition}
+      Data: ${date.toLocaleDateString('pt-BR')} (Quinta-feira)
+      Operação: ${operationType}
+      Motivo: Militar ainda está em serviço até 19h30, mas operação começa antes`);
     return true;
   }
   
