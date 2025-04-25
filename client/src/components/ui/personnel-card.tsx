@@ -6,6 +6,8 @@ interface PersonnelCardProps {
   isAssigned?: boolean;
   isDraggable?: boolean;
   onRemove?: () => void;
+  assignmentCount?: number;
+  maxAssignments?: number;
 }
 
 // Função para gerar elementos de símbolos de patentes e graduações
@@ -104,7 +106,9 @@ export function PersonnelCard({
   personnel,
   isAssigned = false,
   isDraggable = true,
-  onRemove
+  onRemove,
+  assignmentCount = 1,
+  maxAssignments = 3
 }: PersonnelCardProps) {
   // Função para verificar se o militar atingiu o limite de extras
   const hasReachedMaxExtras = () => {
@@ -194,22 +198,22 @@ export function PersonnelCard({
         }}
       >
         <div className="flex flex-col w-full">
-          {/* Nome do militar com o rank como prefixo e símbolo */}
-          <div className="flex items-center mb-1">
-            <div className="flex-shrink-0 w-5 h-5 mr-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center">
-              <div className="text-white text-[9px]">{getRankSymbols(personnel.rank)}</div>
+          {/* Parte superior com nome do militar e botão remover */}
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center flex-1">
+              <div className="flex-shrink-0 w-5 h-5 mr-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center">
+                <div className="text-white text-[9px]">{getRankSymbols(personnel.rank)}</div>
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-gray-800 text-xs leading-tight break-words">
+                  {personnel.name}
+                </p>
+              </div>
             </div>
-            <div className="flex-1">
-              <p className="font-medium text-gray-800 text-xs leading-tight break-words">
-                {personnel.name}
-              </p>
-            </div>
-          </div>
-          
-          {/* Botão de remover - Sempre visível e ativo para todos os militares nos cards do calendário */}
-          <div className="flex justify-end mt-0.5">
+            
+            {/* Botão de remover - Sempre visível ao lado do nome */}
             <button 
-              className="flex-shrink-0 w-5 h-5 rounded-full bg-white/80 flex items-center justify-center text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors duration-150 shadow-sm"
+              className="flex-shrink-0 w-5 h-5 rounded-full bg-white/80 flex items-center justify-center text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors duration-150 shadow-sm ml-1"
               onClick={() => {
                 if (onRemove) onRemove();
               }}
@@ -219,6 +223,13 @@ export function PersonnelCard({
                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
             </button>
+          </div>
+          
+          {/* Barra inferior com indicador de ocupação */}
+          <div className="mt-0.5 flex justify-end">
+            <div className="px-1.5 py-0.5 bg-amber-50 text-amber-800 rounded text-[10px] font-medium border border-amber-200">
+              {assignmentCount}/{maxAssignments}
+            </div>
           </div>
         </div>
       </div>

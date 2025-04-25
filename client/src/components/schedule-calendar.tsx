@@ -331,6 +331,8 @@ export function ScheduleCalendar({
                           personnel={person}
                           isAssigned={true}
                           isDraggable={false}
+                          assignmentCount={filteredAssignments.length}
+                          maxAssignments={activeOperation === "PMF" ? 3 : 2}
                           onRemove={() => handleRemoveAssignment(assignment.id, person.name)}
                         />
                       );
