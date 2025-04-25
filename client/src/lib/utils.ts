@@ -59,46 +59,62 @@ export function getDayColorClass(date: Date): string {
 
 // Function to determine which garrison (guarnição) is on service on a given date
 export function getActiveGuarnitionForDay(date: Date): string {
-  // Calcular qual guarnição está de serviço em qualquer data específica
+  // REGRAS ESPECÍFICAS:
+  // 1. A guarnição CHARLIE está de serviço nos dias 01, 02 e 03 (até às 19:30) de Abril/2025
+  // 2. A guarnição BRAVO assume em 03/04 às 19:31 e fica até a próxima quinta às 19:30
+  // 3. A guarnição ALFA assume após e segue o mesmo padrão
+  // 4. Depois volta para CHARLIE, completando o ciclo
   
-  // Ordem de rotação definida: CHARLIE, BRAVO, ALFA
-  const rotationOrder = ["CHARLIE", "BRAVO", "ALFA"];
+  // Obter o ano, mês e dia da data fornecida
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const day = date.getDate();
   
-  // Data de referência estabelecida: 1 de abril de 2025 (CHARLIE)
-  const refDate = new Date(2025, 3, 1); // 1 de abril de 2025 (mês é 0-indexed)
-  
-  // Considerando que a troca de serviço ocorre nas quintas-feiras às 19h30
-  // Primeiro identificamos qual é o dia da semana da data recebida
-  const dayOfWeek = date.getDay(); // 0=domingo, 1=segunda, ..., 4=quinta, ...
-  
-  // Para datas normais, vamos calcular baseado na semana
-  const dateCopy = new Date(date.getTime()); // Cópia para não modificar a original
-  
-  // Caso seja uma quinta-feira, vamos considerar como ainda sendo a guarnição 
-  // que está no serviço antes das 19h30
-  let dateToUse = dateCopy;
-  
-  // Calcular dias desde a data de referência (01/04/2025, quando CHARLIE está de serviço)
-  const daysDiff = Math.floor((dateToUse.getTime() - refDate.getTime()) / (24 * 60 * 60 * 1000));
-  
-  // Calcular em qual semana estamos (cada semana é um ciclo)
-  const weekNumber = Math.floor(daysDiff / 7);
-  
-  // Determinar qual guarnição está de serviço com base no ciclo de 3 semanas (3 guarnições)
-  const garrisonIndex = weekNumber % 3;  
-  
-  // Se é quinta-feira (dia 4), precisamos verificar se a data da troca de guarnição
-  // já foi ultrapassada ou não. Mas aqui sempre consideramos a guarnição que termina
-  // o serviço às 19h30, pois isso é relevante para detectar conflitos.
-  if (dayOfWeek === 4) {
-    // Estamos em uma quinta-feira, então a guarnição atual é a que está largando o serviço
-    // O trecho abaixo seria para diferenciar antes/depois das 19h30, mas sempre consideramos a guarnição
-    // que está terminando o serviço para fins de detecção de conflito
-    return rotationOrder[garrisonIndex];
+  // Verificação específica para o dia 03/04/2025 (quinta-feira)
+  // Neste dia CHARLIE está de serviço antes das 19:30 e BRAVO após
+  if (year === 2025 && month === 3 && day === 3) {
+    // Para propósitos de detecção de conflito, sempre consideramos a guarnição 
+    // que está largando serviço (CHARLIE)
+    return "CHARLIE";
   }
   
-  // Para os outros dias da semana, usamos o cálculo padrão
-  return rotationOrder[garrisonIndex];
+  // Data de referência: 01/04/2025 - CHARLIE está de serviço
+  const referenceDate = new Date(2025, 3, 1);
+  
+  // As guarnições trocam a cada 7 dias nas quintas-feiras
+  // Encontrar o número de semanas desde a data de referência
+  const diffTime = date.getTime() - referenceDate.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const weekNumber = Math.floor(diffDays / 7);
+  
+  // Lógica para determinar qual guarnição está de serviço
+  // Primeiro período (dias 1, 2, 3*): CHARLIE (*dia 3 até 19:30)
+  // Segundo período (dias 3* a 10*): BRAVO (*dia 3 a partir de 19:31, dia 10 até 19:30)
+  // Terceiro período (dias 10* a 17*): ALFA
+  // Quarto período (dias 17* a 24*): CHARLIE (volta ao início do ciclo)
+  
+  // Para datas antes da primeira referência
+  if (date < referenceDate) {
+    // Caso especial: antes de 01/04/2025
+    return "ALFA"; // Assumindo que ALFA estava de serviço antes de 01/04/2025
+  }
+  
+  // Para os dias 1 e 2 de abril de 2025, é CHARLIE
+  if (year === 2025 && month === 3 && (day === 1 || day === 2)) {
+    return "CHARLIE";
+  }
+  
+  // Para o resto das datas, calculamos com base no ciclo de 21 dias (3 guarnições × 7 dias)
+  const daysFromReference = diffDays;
+  const cyclePosition = daysFromReference % 21; // posição no ciclo de 21 dias
+  
+  if (cyclePosition < 7) { // Primeiros 7 dias do ciclo
+    return "CHARLIE";
+  } else if (cyclePosition < 14) { // Próximos 7 dias
+    return "BRAVO";
+  } else { // Últimos 7 dias
+    return "ALFA";
+  }
 }
 
 // Function to check if personnel is available for an assignment on a given date
