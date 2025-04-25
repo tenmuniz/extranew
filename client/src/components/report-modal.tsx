@@ -17,7 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { getActiveGuarnitionForDay } from "@/lib/utils";
+import { getActiveGuarnitionForDay, hasThursdayServiceConflict } from "@/lib/utils";
 import html2pdf from 'html2pdf.js';
 
 interface ReportModalProps {
@@ -181,6 +181,7 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
     const conflictsAssignments: Assignment[] = [];
     
     // Para cada atribuição, verificar se o militar está em serviço no dia
+    // ou se tem conflito por estar largando serviço na quinta às 19h30
     // Filtrar apenas atribuições do mês atual
     assignments.filter(currentMonthFilter).forEach(assignment => {
       const person = personnel.find(p => p.id === assignment.personnelId);
@@ -197,8 +198,13 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
       const isInService = person.platoon && 
                          person.platoon !== "EXPEDIENTE" && 
                          activeGuarnition === person.platoon;
+                         
+      // Verificar se existe conflito de serviço às quintas-feiras (largar serviço às 19h30)
+      // com operações PMF (17h30) ou Escola Segura (18h00)
+      const hasThursdayConflict = hasThursdayServiceConflict(person, assignmentDate, assignment.operationType);
       
-      if (isInService) {
+      // Se estiver em serviço ou tiver conflito na quinta-feira, adicionar à lista de conflitos
+      if (isInService || hasThursdayConflict) {
         // Adicionar mensagem de log para debug
         console.log(`Conflito detectado: ${person.name} pertence à guarnição ${person.platoon} ` + 
                    `que está de serviço no dia ${assignmentDate.toLocaleDateString('pt-BR')}, ` +
@@ -919,10 +925,14 @@ export function ReportModal({ personnel, assignments, currentMonth, currentYear 
                       </svg>
                       <div>
                         <h3 className="text-md font-medium text-[#8B0000]">Conflitos de Escala</h3>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 mb-2">
                           Militares escalados para extras em dias que sua guarnição está de serviço normal. 
-                          Um conflito ocorre quando um militar de guarnição (ALFA, BRAVO ou CHARLIE) é escalado para 
+                          Um conflito ocorre quando um militar de guarnição (CHARLIE, BRAVO ou ALFA) é escalado para 
                           uma operação em um dia em que sua própria guarnição está de serviço regular.
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          <span className="font-semibold">Atenção:</span> Militares que largam serviço às quintas-feiras 19h30 
+                          e são escalados para PMF (17h30) ou Escola Segura (18h00) também constam como conflito.
                         </p>
                       </div>
                     </div>

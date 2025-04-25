@@ -8,7 +8,8 @@ import {
   formatDateToISO,
   isPersonnelInService,
   getActiveGuarnitionForDay,
-  getGarrisonColor
+  getGarrisonColor,
+  hasThursdayServiceConflict
 } from "@/lib/utils";
 import { Assignment, OperationType, Personnel } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";

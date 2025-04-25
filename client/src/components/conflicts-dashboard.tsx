@@ -64,6 +64,7 @@ export function ConflictsDashboard({
     const conflictsAssignments: Assignment[] = [];
     
     // Para cada atribuição, verificar se o militar está em serviço no dia
+    // ou se tem conflito por estar largando serviço (quintas 19h30)
     assignments.filter(currentMonthFilter).forEach(assignment => {
       const person = personnel.find(p => p.id === assignment.personnelId);
       if (!person || !person.id) return;
@@ -86,8 +87,13 @@ export function ConflictsDashboard({
                          person.platoon !== "EXPEDIENTE" && 
                          activeGuarnition === person.platoon;
       
-      if (isInService) {
-        // Se estiver em serviço, essa atribuição representa um conflito
+      // Verificar se existe conflito de serviço às quintas-feiras (largar serviço às 19h30)
+      // com operações PMF (17h30) ou Escola Segura (18h00)
+      const hasThursdayConflict = hasThursdayServiceConflict(person, assignmentDate, assignment.operationType);
+      
+      // Se estiver em serviço ou tiver conflito na quinta-feira, adicionar à lista de conflitos
+      if (isInService || hasThursdayConflict) {
+        // Essa atribuição representa um conflito
         conflictsAssignments.push(assignment);
       }
     });
